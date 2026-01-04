@@ -119,14 +119,14 @@ export default function ClientsPage() {
 
 	const pickUpdatableFields = (data: Partial<Client>) => {
 		return {
-			name: data.name ?? null,
-			email: data.email ?? null,
-			phone: data.phone ?? null,
-			company_name: data.company_name ?? null,
-			tax_number: data.tax_number ?? null,
-			address: data.address ?? null,
-			city: data.city ?? null,
-			notes: data.notes ?? null,
+			name: data.name ?? undefined,
+			email: data.email ?? undefined,
+			phone: data.phone ?? undefined,
+			company_name: data.company_name ?? undefined,
+			tax_number: data.tax_number ?? undefined,
+			address: data.address ?? undefined,
+			city: data.city ?? undefined,
+			notes: data.notes ?? undefined,
 			status: data.status ?? ("active" as ClientStatus),
 		};
 	};
@@ -625,7 +625,7 @@ export default function ClientsPage() {
 							إلغاء
 						</button>
 					</div>
-				</motion.div>
+				</Card>
 			)}
 
 			{/* Filter & Table Container */}
