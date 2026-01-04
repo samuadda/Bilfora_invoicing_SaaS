@@ -19,8 +19,10 @@ import type {
 	Client,
 	CreateInvoiceInput,
 	CreateInvoiceItemInput,
+	InvoiceType,
 	Product,
 } from "@/types/database";
+import { labelByInvoiceType } from "@/lib/invoiceTypeLabels";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
@@ -41,6 +43,49 @@ interface InvoiceCreationModalProps {
 	onSuccess?: (id?: string) => void;
 }
 
+type CreateInvoiceRpcRow = {
+	id: string;
+	invoice_number: string | null;
+};
+
+function isObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+function pickRpcRow(data: unknown): CreateInvoiceRpcRow | null {
+	// Postgres RETURNS TABLE => Supabase usually returns array of rows
+	// Some setups return object-like; we handle both safely.
+	if (!data) return null;
+
+	if (Array.isArray(data)) {
+		const first = data[0];
+		if (!isObject(first)) return null;
+		const id = typeof first.id === "string" ? first.id : null;
+		const invoice_number =
+			typeof first.invoice_number === "string"
+				? first.invoice_number
+				: first.invoice_number === null
+					? null
+					: null;
+
+		return id ? { id, invoice_number } : null;
+	}
+
+	if (isObject(data)) {
+		const id = typeof data.id === "string" ? data.id : null;
+		const invoice_number =
+			typeof data.invoice_number === "string"
+				? data.invoice_number
+				: data.invoice_number === null
+					? null
+					: null;
+
+		return id ? { id, invoice_number } : null;
+	}
+
+	return null;
+}
+
 export default function InvoiceCreationModal({
 	isOpen,
 	onClose,
@@ -56,6 +101,8 @@ export default function InvoiceCreationModal({
 	const invoiceSchema = z.object({
 		client_id: z.string().uuid("العميل غير صالح"),
 		order_id: z.string().uuid().optional().or(z.literal("")),
+		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"]),
+		document_kind: z.enum(["invoice", "credit_note"]).optional(),
 		issue_date: z.string().min(1, "تاريخ الإصدار مطلوب"),
 		due_date: z.string().min(1, "تاريخ الاستحقاق مطلوب"),
 		status: z.enum(["draft", "sent", "paid", "cancelled"]),
@@ -78,28 +125,21 @@ export default function InvoiceCreationModal({
 	});
 	const [invoiceFormData, setInvoiceFormData] = useState<CreateInvoiceInput>({
 		client_id: "",
-		order_id: "",
-		invoice_type: "standard",
+		order_id: null,
+		invoice_type: "standard_tax",
 		document_kind: "invoice",
 		issue_date: new Date().toISOString().split("T")[0],
-		due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-			.toISOString()
-			.split("T")[0],
+		due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
 		status: "draft",
 		tax_rate: 15,
 		notes: "",
-		items: [
-			{
-				description: "",
-				quantity: 1,
-				unit_price: 0,
-			},
-		],
-	});
+		items: [{ description: "", quantity: 1, unit_price: 0 }],
+	  });
+	  
 	const [error, setError] = useState<string | null>(null);
 	const { toast } = useToast();
 
-	// Totals helpers
+	// Totals helpers (UI only)
 	const calcSubtotal = () =>
 		invoiceFormData.items.reduce(
 			(sum, it) =>
@@ -108,10 +148,7 @@ export default function InvoiceCreationModal({
 		);
 
 	const calcVat = (subtotal: number) => {
-		// If regular (non-tax) invoice, VAT is always 0
-		if (invoiceFormData.invoice_type === "regular") {
-			return 0;
-		}
+		if (invoiceFormData.invoice_type === "non_tax") return 0;
 		return subtotal * (Number(invoiceFormData.tax_rate || 0) / 100);
 	};
 
@@ -205,11 +242,10 @@ export default function InvoiceCreationModal({
 		>,
 	) => {
 		const { name, value } = e.target;
-		const updates: any = { [name]: value };
 
 		setInvoiceFormData((prev) => ({
 			...prev,
-			...updates,
+			[name]: value,
 		}));
 	};
 
@@ -253,7 +289,7 @@ export default function InvoiceCreationModal({
 		setInvoiceFormData({
 			client_id: "",
 			order_id: "",
-			invoice_type: "standard",
+			invoice_type: "standard_tax",
 			document_kind: "invoice",
 			issue_date: new Date().toISOString().split("T")[0],
 			due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -283,6 +319,10 @@ export default function InvoiceCreationModal({
 
 	const handleInvoiceSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// extra guard against double submits
+		if (saving) return;
+
 		try {
 			setSaving(true);
 			setError(null);
@@ -301,6 +341,7 @@ export default function InvoiceCreationModal({
 			const {
 				data: { user },
 			} = await supabase.auth.getUser();
+
 			if (!user) {
 				toast({
 					title: "غير مسجل",
@@ -310,40 +351,36 @@ export default function InvoiceCreationModal({
 				return;
 			}
 
-			// Calculate totals based on invoice type
-			const subtotal = calcSubtotal();
-			const vatAmount = calcVat(subtotal);
-			const totalAmount = calcTotal(subtotal, vatAmount);
+			// enforce VAT=0 for non_tax invoices
 			const finalTaxRate =
-				invoiceFormData.invoice_type === "regular"
+				invoiceFormData.invoice_type === "non_tax"
 					? 0
 					: Number(invoiceFormData.tax_rate) || 0;
 
-			const invoiceType = invoiceFormData.invoice_type || "standard";
+			// Items payload for RPC (DB computes totals, generates invoice_number, inserts atomically)
+			const itemsPayload = invoiceFormData.items.map((item) => ({
+				description: item.description,
+				quantity: Number(item.quantity) || 0,
+				unit_price: Number(item.unit_price) || 0,
+			}));
 
-			// Create invoice (invoice_number is generated by DB)
-			const { data: invoiceData, error: invoiceError } = await supabase
-				.from("invoices")
-				.insert({
-					user_id: user.id,
-					client_id: invoiceFormData.client_id,
-					order_id: null,
-					invoice_type: invoiceType,
-					document_kind: invoiceFormData.document_kind || "invoice",
-					issue_date: invoiceFormData.issue_date,
-					due_date: invoiceFormData.due_date,
-					status: invoiceFormData.status,
-					tax_rate: finalTaxRate,
-					subtotal,
-					vat_amount: vatAmount,
-					total_amount: totalAmount,
-					notes: invoiceFormData.notes,
-				})
-				.select("id, invoice_number")
-				.single();
+			const { data, error: invoiceError } = await supabase.rpc(
+				"create_invoice_with_items",
+				{
+					p_client_id: invoiceFormData.client_id,
+					p_order_id: null,
+					p_invoice_type: invoiceFormData.invoice_type,					p_document_kind: invoiceFormData.document_kind ?? "invoice", 
+					p_issue_date: invoiceFormData.issue_date,
+					p_due_date: invoiceFormData.due_date,
+					p_status: invoiceFormData.status,
+					p_tax_rate: finalTaxRate,
+					p_notes: invoiceFormData.notes ?? "",
+					p_items: itemsPayload,
+				},
+			);
 
 			if (invoiceError) {
-				console.error("Error creating invoice:", invoiceError);
+				console.error("Error creating invoice via RPC:", invoiceError);
 				const msg =
 					invoiceError?.message ||
 					invoiceError?.details ||
@@ -356,49 +393,25 @@ export default function InvoiceCreationModal({
 				return;
 			}
 
-			const itemsToInsert = invoiceFormData.items.map((item) => {
-				const quantity = Number(item.quantity) || 0;
-				const unit_price = Number(item.unit_price) || 0;
-				const total = Number((quantity * unit_price).toFixed(2));
-				return {
-					invoice_id: invoiceData.id,
-					description: item.description,
-					quantity,
-					unit_price,
-					total,
-				};
-			});
-
-			const { error: itemsError } = await supabase
-				.from("invoice_items")
-				.insert(itemsToInsert);
-
-			if (itemsError) {
-				console.error("Error creating invoice items:", itemsError);
+			const created = pickRpcRow(data);
+			if (!created?.id) {
 				toast({
 					title: "خطأ",
-					description: itemsError.message || "فشل في إنشاء عناصر الفاتورة",
+					description: "تم تنفيذ العملية لكن لم يتم استلام بيانات الفاتورة",
 					variant: "destructive",
 				});
 				return;
 			}
 
-			try {
-				await supabase.rpc("recalc_invoice_totals", {
-					inv_id: invoiceData.id,
-				});
-			} catch {}
-
 			toast({
 				title: "تم إنشاء الفاتورة",
-				description: "تم إنشاء الفاتورة بنجاح",
+				description: created.invoice_number
+					? `تم إنشاء الفاتورة بنجاح (${created.invoice_number})`
+					: "تم إنشاء الفاتورة بنجاح",
 			});
 
 			closeModal();
-
-			if (onSuccess) {
-				onSuccess(invoiceData.id);
-			}
+			onSuccess?.(created.id);
 		} catch (err) {
 			console.error("Unexpected error:", err);
 			toast({
@@ -543,7 +556,11 @@ export default function InvoiceCreationModal({
 
 						{/* Scrollable Body */}
 						<div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-							<form id="create-invoice-form" onSubmit={handleInvoiceSubmit} className={layout.stack.large}>
+							<form
+								id="create-invoice-form"
+								onSubmit={handleInvoiceSubmit}
+								className={layout.stack.large}
+							>
 								{/* Customer Selection Section */}
 								<Card background="subtle" padding="large">
 									<div className="flex items-center justify-between mb-4">
@@ -581,7 +598,10 @@ export default function InvoiceCreationModal({
 											))}
 										</Select>
 									) : (
-										<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+										<motion.div
+											initial={{ opacity: 0, y: -10 }}
+											animate={{ opacity: 1, y: 0 }}
+										>
 											<Card padding="standard">
 												<FormRow columns={2} gap="standard">
 													<Field label="الاسم الكامل" required>
@@ -650,7 +670,6 @@ export default function InvoiceCreationModal({
 													</Field>
 												</FormRow>
 
-												{/* Save Button */}
 												<div className="flex justify-end pt-2">
 													<Button
 														type="button"
@@ -671,24 +690,20 @@ export default function InvoiceCreationModal({
 									<Field label="نوع الفاتورة" required>
 										<Select
 											name="invoice_type"
-											value={invoiceFormData.invoice_type || "standard"}
+											value={invoiceFormData.invoice_type || "standard_tax"}
 											onChange={(e) => {
-												const newType = e.target.value as
-													| "standard"
-													| "simplified"
-													| "regular";
+												const newType = e.target.value as InvoiceType;
 												setInvoiceFormData((prev) => ({
 													...prev,
 													invoice_type: newType,
-													tax_rate:
-														newType === "regular" ? 0 : prev.tax_rate || 15,
+													tax_rate: newType === "non_tax" ? 0 : prev.tax_rate || 15,
 												}));
 											}}
 											required
 										>
-											<option value="standard">فاتورة ضريبية</option>
-											<option value="simplified">فاتورة ضريبية مبسطة</option>
-											<option value="regular">فاتورة عادية (غير ضريبية)</option>
+											<option value="standard_tax">{labelByInvoiceType.standard_tax}</option>
+											<option value="simplified_tax">{labelByInvoiceType.simplified_tax}</option>
+											<option value="non_tax">{labelByInvoiceType.non_tax}</option>
 										</Select>
 									</Field>
 
@@ -733,12 +748,12 @@ export default function InvoiceCreationModal({
 											max="100"
 											step="0.01"
 											value={
-												invoiceFormData.invoice_type === "regular"
+												invoiceFormData.invoice_type === "non_tax"
 													? 0
 													: invoiceFormData.tax_rate ?? 15
 											}
 											onChange={handleInvoiceInputChange}
-											disabled={invoiceFormData.invoice_type === "regular"}
+											disabled={invoiceFormData.invoice_type === "non_tax"}
 										/>
 									</Field>
 
@@ -793,16 +808,10 @@ export default function InvoiceCreationModal({
 													<div className={layout.stack.tight}>
 														<Select
 															onChange={(e) => {
-																const p = products.find(
-																	(pr) => pr.id === e.target.value,
-																);
+																const p = products.find((pr) => pr.id === e.target.value);
 																if (p) {
 																	handleInvoiceItemChange(index, "description", p.name);
-																	handleInvoiceItemChange(
-																		index,
-																		"unit_price",
-																		p.unit_price,
-																	);
+																	handleInvoiceItemChange(index, "unit_price", p.unit_price);
 																}
 															}}
 															className="text-xs"
@@ -817,11 +826,7 @@ export default function InvoiceCreationModal({
 														<Input
 															value={item.description}
 															onChange={(e) =>
-																handleInvoiceItemChange(
-																	index,
-																	"description",
-																	e.target.value,
-																)
+																handleInvoiceItemChange(index, "description", e.target.value)
 															}
 															placeholder="وصف العنصر"
 															required
@@ -830,9 +835,7 @@ export default function InvoiceCreationModal({
 												</div>
 
 												<div className="col-span-4 md:col-span-2 space-y-1">
-													<label className="text-xs font-medium text-gray-500">
-														الكمية
-													</label>
+													<label className="text-xs font-medium text-gray-500">الكمية</label>
 													<Input
 														type="number"
 														min="1"
@@ -850,9 +853,7 @@ export default function InvoiceCreationModal({
 												</div>
 
 												<div className="col-span-4 md:col-span-2 space-y-1">
-													<label className="text-xs font-medium text-gray-500">
-														سعر الوحدة
-													</label>
+													<label className="text-xs font-medium text-gray-500">سعر الوحدة</label>
 													<Input
 														type="number"
 														min="0"
@@ -870,13 +871,10 @@ export default function InvoiceCreationModal({
 												</div>
 
 												<div className="col-span-4 md:col-span-3 space-y-1">
-													<label className="text-xs font-medium text-gray-500">
-														الإجمالي
-													</label>
+													<label className="text-xs font-medium text-gray-500">الإجمالي</label>
 													<div className="w-full h-[38px] flex items-center px-3 bg-gray-100 rounded-xl text-sm font-semibold text-gray-700">
 														{formatCurrency(
-															(Number(item.quantity) || 0) *
-																(Number(item.unit_price) || 0),
+															(Number(item.quantity) || 0) * (Number(item.unit_price) || 0),
 														)}
 													</div>
 												</div>
@@ -900,7 +898,7 @@ export default function InvoiceCreationModal({
 															{formatCurrency(subtotal)}
 														</span>
 													</div>
-													{invoiceFormData.invoice_type !== "regular" && (
+													{invoiceFormData.invoice_type !== "non_tax" && (
 														<div className="flex justify-between text-sm">
 															<span className="text-gray-600">
 																الضريبة ({invoiceFormData.tax_rate}%)
@@ -928,11 +926,7 @@ export default function InvoiceCreationModal({
 						<div className="flex items-center justify-between p-6 border-t border-gray-100 bg-gray-50/50">
 							<div className="hidden md:block">
 								{invoiceFormData.client_id ? (
-									<Text
-										variant="body-small"
-										color="muted"
-										className="flex items-center gap-2"
-									>
+									<Text variant="body-small" color="muted" className="flex items-center gap-2">
 										<User size={16} />
 										جاري إنشاء الفاتورة لـ{" "}
 										<span className="font-semibold text-gray-900">
@@ -963,11 +957,7 @@ export default function InvoiceCreationModal({
 									disabled={saving}
 									className="flex-1 md:flex-none flex items-center justify-center gap-2"
 								>
-									{saving ? (
-										<Loader2 size={18} className="animate-spin" />
-									) : (
-										<FileText size={18} />
-									)}
+									{saving ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
 									{saving ? "جاري الحفظ..." : "إنشاء الفاتورة"}
 								</Button>
 							</div>

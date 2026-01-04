@@ -16,6 +16,7 @@ import type {
 	InvoiceWithClientAndItems,
 } from "@/types/database";
 import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
+import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 
 type InvoiceDetailClientProps = {
 	invoice: InvoiceWithClientAndItems;
@@ -23,13 +24,6 @@ type InvoiceDetailClientProps = {
 	items: InvoiceItem[];
 	invoiceSettings: InvoiceSettings | null;
 	isSettingsReady: boolean;
-};
-
-const mapLegacyInvoiceType = (legacy?: string | null): InvoiceType => {
-	if (legacy === "standard_tax") return "standard";
-	if (legacy === "simplified_tax") return "simplified";
-	if (legacy === "non_tax") return "regular";
-	return "standard";
 };
 
 export default function InvoiceDetailClient({
@@ -42,13 +36,14 @@ export default function InvoiceDetailClient({
 	const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 	const [qrWarning, setQrWarning] = useState<string | null>(null);
 
+	// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
 	const invoiceType: InvoiceType =
-		invoice.invoice_type || mapLegacyInvoiceType(invoice.type);
+		invoice.invoice_type ?? (invoice.type as InvoiceType) ?? "standard_tax";
 	const documentKind: DocumentKind = invoice.document_kind || "invoice";
-	const isTax = invoiceType === "standard" || invoiceType === "simplified";
-	const isRegular = invoiceType === "regular";
+	const isTax = invoiceType === "standard_tax" || invoiceType === "simplified_tax";
+	const isNonTax = invoiceType === "non_tax";
 	const isCredit = documentKind === "credit_note";
-	const taxRate = isRegular ? 0 : Number(invoice.tax_rate ?? 0);
+	const taxRate = isNonTax ? 0 : Number(invoice.tax_rate ?? 0);
 	const currency = invoiceSettings?.currency ?? "SAR";
 
 	const formatCurrency = (amount: number) =>
@@ -90,7 +85,7 @@ export default function InvoiceDetailClient({
 		const vatFromInvoice =
 			toNumber(invoice.vat_amount) ?? toNumber((invoice as any).tax_amount);
 
-		const vatComputed = isRegular
+		const vatComputed = isNonTax
 			? 0
 			: vatFromInvoice ?? subtotalComputed * (taxRate / 100);
 
@@ -105,7 +100,7 @@ export default function InvoiceDetailClient({
 			vat: vatComputed,
 			total: totalComputed,
 		};
-	}, [invoice, items, isRegular, isCredit, taxRate]);
+	}, [invoice, items, isNonTax, isCredit, taxRate]);
 
 	useEffect(() => {
 		async function buildQr() {
@@ -172,9 +167,7 @@ export default function InvoiceDetailClient({
 
 	const getTitle = () => {
 		if (isCredit) return "إشعار دائن";
-		if (invoiceType === "standard") return "فاتورة ضريبية";
-		if (invoiceType === "simplified") return "فاتورة ضريبية مبسطة";
-		return "فاتورة";
+		return getInvoiceTypeLabel(invoiceType);
 	};
 
 	const pdfDoc = useMemo(() => {
@@ -306,27 +299,9 @@ export default function InvoiceDetailClient({
 									<h1 className="text-2xl md:text-3xl font-bold text-[#012d46]">
 										{getTitle()} #{invoice.invoice_number || invoice.id}
 									</h1>
-									{(() => {
-										if (invoiceType === "standard") {
-											return (
-												<span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
-													فاتورة ضريبية
-												</span>
-											);
-										}
-										if (invoiceType === "simplified") {
-											return (
-												<span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
-													فاتورة ضريبية مبسطة
-												</span>
-											);
-										}
-										return (
-											<span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium">
-												فاتورة عادية
-											</span>
-										);
-									})()}
+									<span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
+										{getInvoiceTypeLabel(invoiceType)}
+									</span>
 								</div>
 								{isCredit && invoice?.related_invoice_id && (
 									<p className="text-sm text-gray-500 mt-1">
@@ -498,7 +473,7 @@ export default function InvoiceDetailClient({
 											const qty = Number(item.quantity) || 0;
 											const unit = Number(item.unit_price) || 0;
 											const lineNet = qty * unit;
-											const lineVat = isRegular ? 0 : lineNet * (taxRate / 100);
+											const lineVat = isNonTax ? 0 : lineNet * (taxRate / 100);
 											const lineTotal = isCredit ? -(lineNet + lineVat) : lineNet + lineVat;
 
 											return (

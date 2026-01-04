@@ -6,7 +6,7 @@ export type AccountType = "individual" | "business";
 export type ClientStatus = "active" | "inactive";
 export type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
 export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
-export type InvoiceType = "standard" | "simplified" | "regular";
+export type InvoiceType = "standard_tax" | "simplified_tax" | "non_tax";
 export type DocumentKind = "invoice" | "credit_note";
 
 // Base database table interfaces
@@ -89,15 +89,15 @@ export interface Invoice {
 	client_id: string; // UUID, FK to clients.id
 	order_id: string | null; // UUID, FK to orders.id
 	invoice_number: string; // Unique identifier
-	type?: InvoiceType; // Legacy field: standard_tax, simplified_tax, or non_tax (deprecated)
-	invoice_type: InvoiceType; // Invoice type: standard, simplified, or regular
+	type?: InvoiceType; // Legacy field (deprecated, use invoice_type instead)
+	invoice_type: InvoiceType; // Invoice type: standard_tax, simplified_tax, or non_tax
 	document_kind?: DocumentKind; // Document kind: invoice or credit_note
 	related_invoice_id?: string | null; // UUID, FK to invoices.id (for credit notes)
 	issue_date: string; // Date as ISO string
 	due_date: string; // Date as ISO string
 	status: InvoiceStatus;
 	subtotal: number; // Decimal as number
-	tax_rate: number; // Decimal as number (default 15.00)
+	tax_rate: number; // Decimal as number (default 15.00, forced to 0 for non_tax)
 	tax_amount: number; // Decimal as number (also known as vat_amount)
 	vat_amount: number; // Decimal as number (alias for tax_amount)
 	total_amount: number; // Decimal as number
@@ -208,14 +208,13 @@ export interface UpdateOrderInput {
 export interface CreateInvoiceInput {
 	client_id: string;
 	order_id?: string | null;
-	type?: InvoiceType; // Legacy field (deprecated)
-	invoice_type?: InvoiceType; // Invoice type: standard, simplified, or regular
+	invoice_type: InvoiceType;
 	document_kind?: DocumentKind;
 	related_invoice_id?: string | null;
 	issue_date: string;
 	due_date: string;
 	status?: InvoiceStatus;
-	tax_rate?: number;
+	tax_rate?: number; 
 	notes?: string | null;
 	items: CreateInvoiceItemInput[];
 }
@@ -230,14 +229,13 @@ export interface UpdateInvoiceInput {
 	id: string;
 	client_id?: string;
 	order_id?: string | null;
-	type?: InvoiceType; // Legacy field (deprecated)
-	invoice_type?: InvoiceType; // Invoice type: standard, simplified, or regular
+	invoice_type?: InvoiceType; // Invoice type: standard_tax, simplified_tax, or non_tax
 	document_kind?: DocumentKind;
 	related_invoice_id?: string | null;
 	issue_date?: string;
 	due_date?: string;
 	status?: InvoiceStatus;
-	tax_rate?: number;
+	tax_rate?: number; // Forced to 0 for non_tax invoices
 	notes?: string | null;
 }
 
@@ -312,5 +310,4 @@ export type Updatable<T> = Partial<
 	Omit<T, "id" | "created_at" | "updated_at">
 > & { id: string };
 
-// Re-export commonly used types
-export type { Gender, AccountType, ClientStatus, OrderStatus, InvoiceStatus, InvoiceType, DocumentKind };
+// Types are already exported above, no need to re-export

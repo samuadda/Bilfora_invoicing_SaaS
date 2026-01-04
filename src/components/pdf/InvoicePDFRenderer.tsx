@@ -1,6 +1,6 @@
 "use client";
 
-import { InvoiceWithClientAndItems, Client, InvoiceItem } from "@/types/database";
+import { InvoiceWithClientAndItems, Client, InvoiceItem, InvoiceType } from "@/types/database";
 import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { InvoicePDF_Tax } from "./InvoicePDF_Tax";
 import { InvoicePDF_Simplified } from "./InvoicePDF_Simplified";
@@ -22,16 +22,9 @@ export function InvoicePDFRenderer({
 	qrDataUrl,
 	invoiceSettings,
 }: InvoicePDFRendererProps) {
-	// Handle migration from old "type" to new "invoice_type"
-	const invoiceType =
-		invoice.invoice_type ||
-		((invoice as any).type === "standard_tax"
-			? "standard"
-			: (invoice as any).type === "simplified_tax"
-			? "simplified"
-			: (invoice as any).type === "non_tax"
-			? "regular"
-			: "standard");
+	// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
+	const invoiceType: InvoiceType =
+		invoice.invoice_type ?? (invoice.type as InvoiceType) ?? "standard_tax";
 
 	const documentKind = invoice.document_kind || "invoice";
 
@@ -50,7 +43,7 @@ export function InvoicePDFRenderer({
 		);
 	}
 
-	if (invoiceType === "standard") {
+	if (invoiceType === "standard_tax") {
 		return (
 			<InvoicePDF_Tax
 				invoice={invoice}
@@ -62,7 +55,7 @@ export function InvoicePDFRenderer({
 		);
 	}
 
-	if (invoiceType === "simplified") {
+	if (invoiceType === "simplified_tax") {
 		return (
 			<InvoicePDF_Simplified
 				invoice={invoice}
@@ -74,7 +67,7 @@ export function InvoicePDFRenderer({
 		);
 	}
 
-	// Regular (non-tax) invoice
+	// non_tax invoice
 	return (
 		<InvoicePDF_Regular
 			invoice={invoice}

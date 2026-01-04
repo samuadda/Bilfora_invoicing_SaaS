@@ -32,8 +32,9 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { supabase } from "@/lib/supabase";
-import { InvoiceWithClientAndItems, InvoiceStatus } from "@/types/database";
+import { InvoiceWithClientAndItems, InvoiceStatus, InvoiceType } from "@/types/database";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
+import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
@@ -980,45 +981,20 @@ export default function InvoicesPage() {
 														</span>
 													)}
 													{(() => {
-														// Handle migration from old "type" to new "invoice_type"
-														const oldType = (
-															invoice as any
-														).type;
-														const invoiceType =
-															invoice.invoice_type ||
-															(oldType ===
-															"standard_tax"
-																? "standard"
-																: oldType ===
-																  "simplified_tax"
-																? "simplified"
-																: oldType ===
-																  "non_tax"
-																? "regular"
-																: "standard");
-														if (
-															invoiceType ===
-															"standard"
-														) {
-															return (
-																<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">
-																	ضريبية
-																</span>
-															);
-														}
-														if (
-															invoiceType ===
-															"simplified"
-														) {
-															return (
-																<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700 border border-purple-200">
-																	مبسطة
-																</span>
-															);
-														}
+														// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
+														const invoiceType: InvoiceType =
+															invoice.invoice_type ?? (invoice.type as InvoiceType) ?? "standard_tax";
+														const label = getInvoiceTypeLabel(invoiceType);
+														// Determine badge color based on type
+														const badgeClass =
+															invoiceType === "standard_tax"
+																? "bg-blue-100 text-blue-700 border-blue-200"
+																: invoiceType === "simplified_tax"
+																	? "bg-purple-100 text-purple-700 border-purple-200"
+																	: "bg-gray-100 text-gray-700 border-gray-200";
 														return (
-															<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
-																غير ضريبية
+															<span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${badgeClass}`}>
+																{label === "فاتورة ضريبية" ? "ضريبية" : label === "فاتورة ضريبية مبسطة" ? "مبسطة" : "غير ضريبية"}
 															</span>
 														);
 													})()}
