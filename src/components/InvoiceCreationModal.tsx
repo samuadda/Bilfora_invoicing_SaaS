@@ -100,16 +100,24 @@ export default function InvoiceCreationModal({
 
 	const invoiceSchema = z.object({
 		client_id: z.string().uuid("العميل غير صالح"),
-		order_id: z.string().uuid().optional().or(z.literal("")),
-		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"]),
-		document_kind: z.enum(["invoice", "credit_note"]).optional(),
+	  
+		order_id: z.string().uuid().nullable().optional().or(z.literal("")),
+	  
+		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"], {
+		  required_error: "نوع الفاتورة مطلوب",
+		  invalid_type_error: "نوع الفاتورة غير صالح",
+		}),
+	  
+		document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),
+	  
 		issue_date: z.string().min(1, "تاريخ الإصدار مطلوب"),
 		due_date: z.string().min(1, "تاريخ الاستحقاق مطلوب"),
 		status: z.enum(["draft", "sent", "paid", "cancelled"]),
 		tax_rate: z.coerce.number().min(0).max(100),
 		notes: z.string().optional(),
 		items: z.array(itemSchema).min(1, "يجب إضافة عنصر واحد على الأقل"),
-	});
+	  });
+	  
 
 	// Modal state
 	const [clients, setClients] = useState<Client[]>([]);
