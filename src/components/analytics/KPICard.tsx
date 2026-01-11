@@ -27,7 +27,7 @@ export default function KPICard({
 	delay = 0,
 }: KPICardProps) {
 	const colors = {
-		purple: "bg-purple-50 text-[#7f2dfb]",
+		purple: "bg-purple-50 text-brand-primary",
 		blue: "bg-blue-50 text-blue-600",
 		green: "bg-green-50 text-green-600",
 		pink: "bg-pink-50 text-pink-600",
@@ -47,7 +47,7 @@ export default function KPICard({
 		>
 			{/* Subtle gradient background */}
 			<div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-50/50 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity" />
-			
+
 			<div className="flex justify-between items-start mb-4 relative z-10 gap-2 w-full">
 				<div
 					className={cn(

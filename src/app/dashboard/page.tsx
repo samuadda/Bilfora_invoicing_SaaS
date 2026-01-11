@@ -15,6 +15,8 @@ import MonthlyStatsCards from "@/components/dashboard/MonthlyStatsCards";
 import MonthlyRevenueChart from "@/components/dashboard/MonthlyRevenueChart";
 import RecentInvoicesList from "@/components/dashboard/RecentInvoicesList";
 import { useInvoiceStats, MonthlyStats, DailyRevenue } from "@/hooks/useInvoiceStats";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useQueryClient } from "@tanstack/react-query";
 import { InvoiceWithClientAndItems } from "@/types/database";
 import Link from "next/link";
 import { Heading, Text, Card, Button, Select } from "@/components/ui";
@@ -24,30 +26,42 @@ import { cn } from "@/lib/utils";
 export default function DashboardPage() {
 	const router = useRouter();
 	const { toast } = useToast();
-	const { getMonthlyStats, getDailyRevenue, getRecentInvoices } = useInvoiceStats();
 
 	// Month/Year selector state
 	const now = new Date();
 	const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 	const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
 
-	// Data state
-	const [stats, setStats] = useState<MonthlyStats>({
-		totalInvoiced: 0,
-		collected: 0,
-		outstanding: 0,
-		overdueCount: 0,
-		totalInvoices: 0,
-		paidInvoices: 0,
-	});
-	const [dailyRevenue, setDailyRevenue] = useState<DailyRevenue[]>([]);
-	const [recentInvoices, setRecentInvoices] = useState<InvoiceWithClientAndItems[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [userName, setUserName] = useState("");
+	// Modals state
 	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
 	const [showClientModal, setShowClientModal] = useState(false);
 	const [showProductModal, setShowProductModal] = useState(false);
-	const [accountCreatedYear, setAccountCreatedYear] = useState(now.getFullYear());
+
+	// Fetch Data using React Query
+	const {
+		user,
+		profile,
+		monthlyStats: stats,
+		dailyRevenue,
+		recentInvoices,
+		isLoading
+	} = useDashboardData(selectedYear, selectedMonth);
+
+	// Redirect if not authenticated (client-side protection)
+	// Note: Middleware usually handles this, but keeping it as backup
+	useEffect(() => {
+		if (!isLoading && !user) {
+			router.push("/login");
+		}
+	}, [user, isLoading, router]);
+
+
+	// Derived UI state
+	const userName = profile?.full_name || "";
+	// If profile creation year is missing, fallback to current year
+	const accountCreatedYear = profile?.created_at
+		? new Date(profile.created_at).getFullYear()
+		: now.getFullYear();
 
 	// Format currency helper
 	const formatCurrency = (amount: number) =>
@@ -57,59 +71,6 @@ export default function DashboardPage() {
 			maximumFractionDigits: 0,
 		}).format(amount);
 
-	// Load dashboard data when month/year changes
-	useEffect(() => {
-		loadDashboardData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [selectedYear, selectedMonth]);
-
-	const loadDashboardData = async () => {
-		try {
-			setLoading(true);
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (!user) {
-				router.push("/login");
-				return;
-			}
-
-			// Get user profile for name and creation date
-			const { data: profile } = await supabase
-				.from("profiles")
-				.select("full_name, created_at")
-				.eq("id", user.id)
-				.single();
-
-			if (profile) {
-				setUserName(profile.full_name);
-				if (profile.created_at) {
-					const createdYear = new Date(profile.created_at).getFullYear();
-					setAccountCreatedYear(createdYear);
-				}
-			}
-
-			// Load all data for selected month
-			const [monthlyStats, dailyRev, recent] = await Promise.all([
-				getMonthlyStats(user.id, selectedYear, selectedMonth),
-				getDailyRevenue(user.id, selectedYear, selectedMonth),
-				getRecentInvoices(user.id, selectedYear, selectedMonth, 8),
-			]);
-
-			setStats(monthlyStats);
-			setDailyRevenue(dailyRev);
-			setRecentInvoices(recent);
-		} catch (err) {
-			console.error(err);
-			toast({
-				title: "خطأ في التحميل",
-				description: "حدث خطأ أثناء تحميل بيانات لوحة التحكم",
-				variant: "destructive",
-			});
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	// Generate month options for selector
 	const monthOptions = useMemo(() => {
@@ -160,19 +121,27 @@ export default function DashboardPage() {
 
 	const openInvoiceModal = () => setShowInvoiceModal(true);
 	const closeInvoiceModal = () => setShowInvoiceModal(false);
-	
+
 	const openClientModal = () => setShowClientModal(true);
 	const closeClientModal = () => setShowClientModal(false);
-	
+
 	const openProductModal = () => setShowProductModal(true);
 	const closeProductModal = () => setShowProductModal(false);
+
+	// Query Invalidation Helper
+	const queryClient = useQueryClient();
+	const refreshData = () => {
+		queryClient.invalidateQueries({ queryKey: ["monthlyStats"] });
+		queryClient.invalidateQueries({ queryKey: ["dailyRevenue"] });
+		queryClient.invalidateQueries({ queryKey: ["recentInvoices"] });
+	};
 
 	// Build analytics URL with month params
 	const monthStr = String(selectedMonth + 1).padStart(2, "0");
 	const lastDay = new Date(selectedYear, selectedMonth + 1, 0).getDate();
 	const analyticsUrl = `/dashboard/analytics?from=${selectedYear}-${monthStr}-01&to=${selectedYear}-${monthStr}-${lastDay}`;
 
-	if (loading) {
+	if (isLoading) {
 		return <LoadingState message="جاري تحميل لوحة التحكم..." />;
 	}
 
@@ -220,7 +189,7 @@ export default function DashboardPage() {
 							))}
 						</select>
 					</Card>
-					<DashboardQuickActions 
+					<DashboardQuickActions
 						onCreateInvoice={openInvoiceModal}
 						onCreateClient={openClientModal}
 						onCreateProduct={openProductModal}
@@ -277,52 +246,52 @@ export default function DashboardPage() {
 				>
 					<Card hover>
 						<Heading variant="h3-subsection" className="mb-5">ملخص سريع</Heading>
-					<div className={layout.stack.standard}>
-						<div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl border border-purple-100 hover:bg-purple-100 transition-colors group">
-							<div className={cn("flex items-center", layout.gap.standard)}>
-								<div className="p-2 bg-purple-100 rounded-lg group-hover:scale-105 transition-transform">
-									<FileText className="text-[#7f2dfb]" size={18} strokeWidth={2.5} />
+						<div className={layout.stack.standard}>
+							<div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl border border-purple-100 hover:bg-purple-100 transition-colors group">
+								<div className={cn("flex items-center", layout.gap.standard)}>
+									<div className="p-2 bg-purple-100 rounded-lg group-hover:scale-105 transition-transform">
+										<FileText className="text-[#7f2dfb]" size={18} strokeWidth={2.5} />
+									</div>
+									<Text variant="body-small" className="font-medium">عدد الفواتير</Text>
 								</div>
-								<Text variant="body-small" className="font-medium">عدد الفواتير</Text>
+								<Text variant="body-small" className="font-bold">{stats.totalInvoices}</Text>
 							</div>
-							<Text variant="body-small" className="font-bold">{stats.totalInvoices}</Text>
-						</div>
-						<div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100 hover:bg-green-100 transition-colors group">
-							<div className={cn("flex items-center", layout.gap.standard)}>
-								<div className="p-2 bg-green-100 rounded-lg group-hover:scale-105 transition-transform">
-									<TrendingUp className="text-green-600" size={18} strokeWidth={2.5} />
+							<div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100 hover:bg-green-100 transition-colors group">
+								<div className={cn("flex items-center", layout.gap.standard)}>
+									<div className="p-2 bg-green-100 rounded-lg group-hover:scale-105 transition-transform">
+										<TrendingUp className="text-green-600" size={18} strokeWidth={2.5} />
+									</div>
+									<Text variant="body-small" className="font-medium">معدل التحصيل</Text>
 								</div>
-								<Text variant="body-small" className="font-medium">معدل التحصيل</Text>
+								<Text variant="body-small" className="font-bold">
+									{stats.totalInvoices > 0
+										? ((stats.paidInvoices / stats.totalInvoices) * 100).toFixed(1)
+										: 0}%
+								</Text>
 							</div>
-							<Text variant="body-small" className="font-bold">
-								{stats.totalInvoices > 0
-									? ((stats.paidInvoices / stats.totalInvoices) * 100).toFixed(1)
-									: 0}%
-							</Text>
-						</div>
-						<div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors group">
-							<div className={cn("flex items-center", layout.gap.standard)}>
-								<div className="p-2 bg-blue-100 rounded-lg group-hover:scale-105 transition-transform">
-									<DollarSign className="text-blue-600" size={18} strokeWidth={2.5} />
+							<div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors group">
+								<div className={cn("flex items-center", layout.gap.standard)}>
+									<div className="p-2 bg-blue-100 rounded-lg group-hover:scale-105 transition-transform">
+										<DollarSign className="text-blue-600" size={18} strokeWidth={2.5} />
+									</div>
+									<Text variant="body-small" className="font-medium">متوسط الفاتورة</Text>
 								</div>
-								<Text variant="body-small" className="font-medium">متوسط الفاتورة</Text>
+								<Text variant="body-small" className="font-bold">
+									{stats.totalInvoices > 0
+										? formatCurrency(stats.totalInvoiced / stats.totalInvoices)
+										: formatCurrency(0)}
+								</Text>
 							</div>
-							<Text variant="body-small" className="font-bold">
-								{stats.totalInvoices > 0
-									? formatCurrency(stats.totalInvoiced / stats.totalInvoices)
-									: formatCurrency(0)}
-							</Text>
 						</div>
-					</div>
-					{stats.overdueCount > 0 && (
-						<div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-xl flex items-center gap-2">
-							<AlertCircle className="text-orange-600 flex-shrink-0" size={16} />
-							<Text variant="body-xs" className="font-medium text-orange-800">
-								{stats.overdueCount} فاتورة متأخرة تحتاج متابعة
-							</Text>
-						</div>
-					)}
-						</Card>
+						{stats.overdueCount > 0 && (
+							<div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-xl flex items-center gap-2">
+								<AlertCircle className="text-orange-600 flex-shrink-0" size={16} />
+								<Text variant="body-xs" className="font-medium text-orange-800">
+									{stats.overdueCount} فاتورة متأخرة تحتاج متابعة
+								</Text>
+							</div>
+						)}
+					</Card>
 				</motion.div>
 			</div>
 
@@ -354,13 +323,13 @@ export default function DashboardPage() {
 			<InvoiceCreationModal
 				isOpen={showInvoiceModal}
 				onClose={closeInvoiceModal}
-				onSuccess={() => loadDashboardData()}
+				onSuccess={refreshData}
 			/>
 			<QuickClientModal
 				isOpen={showClientModal}
 				onClose={closeClientModal}
 				onSuccess={() => {
-					loadDashboardData();
+					refreshData();
 					closeClientModal();
 				}}
 			/>
@@ -368,7 +337,7 @@ export default function DashboardPage() {
 				isOpen={showProductModal}
 				onClose={closeProductModal}
 				onSuccess={() => {
-					loadDashboardData();
+					refreshData();
 					closeProductModal();
 				}}
 			/>

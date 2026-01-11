@@ -29,19 +29,19 @@ const SimpleNavbar = () => {
 						href="/dashboard"
 						className="hidden items-center gap-0.5 group lg:flex"
 					>
-						<button className="text-[#7f2dfb] font-bold cursor-pointer group-hover:text-[#012d46] transition-all duration-100">
+						<button className="text-brand-primary font-bold cursor-pointer group-hover:text-brand-dark transition-all duration-100">
 							الدخول
 						</button>
 						<ChevronLeft
 							size={20}
 							strokeWidth={1.75}
-							className="text-[#7f2dfb] transition-all duration-200 group-hover:-translate-x-1 group-hover:text-[#012d46]"
+							className="text-brand-primary transition-all duration-200 group-hover:-translate-x-1 group-hover:text-brand-dark"
 						/>
 					</Link>
 					<Link href="/register">
 						<MainButton
 							text="جرب مجاناً"
-							bgColor="bg-[#7f2dfb]"
+							bgColor="bg-brand-primary"
 							textColor="text-white"
 							className="hidden md:flex"
 						/>

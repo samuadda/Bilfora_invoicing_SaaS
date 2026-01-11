@@ -139,7 +139,7 @@ export default function QuickProductModal({
 									type="text"
 									value={form.name}
 									onChange={(e) => setForm({ ...form, name: e.target.value })}
-									className="w-full rounded-xl border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm px-4 py-2"
+									className="w-full rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm px-4 py-2"
 									required
 									placeholder="اسم المنتج أو الخدمة"
 								/>
@@ -158,7 +158,7 @@ export default function QuickProductModal({
 										onChange={(e) =>
 											setForm({ ...form, unit_price: parseFloat(e.target.value) || 0 })
 										}
-										className="w-full rounded-xl border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm px-4 py-2"
+										className="w-full rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm px-4 py-2"
 									/>
 								</div>
 								<div>
@@ -169,7 +169,7 @@ export default function QuickProductModal({
 										type="text"
 										value={form.unit}
 										onChange={(e) => setForm({ ...form, unit: e.target.value })}
-										className="w-full rounded-xl border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm px-4 py-2"
+										className="w-full rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm px-4 py-2"
 										placeholder="مثل: قطعة، ساعة..."
 									/>
 								</div>
@@ -183,7 +183,7 @@ export default function QuickProductModal({
 									type="text"
 									value={form.category}
 									onChange={(e) => setForm({ ...form, category: e.target.value })}
-									className="w-full rounded-xl border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm px-4 py-2"
+									className="w-full rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm px-4 py-2"
 									placeholder="فئة المنتج (اختياري)"
 								/>
 							</div>
@@ -195,7 +195,7 @@ export default function QuickProductModal({
 								<textarea
 									value={form.description}
 									onChange={(e) => setForm({ ...form, description: e.target.value })}
-									className="w-full rounded-xl border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm px-4 py-2"
+									className="w-full rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm px-4 py-2"
 									rows={3}
 									placeholder="وصف المنتج (اختياري)"
 								/>
@@ -213,7 +213,7 @@ export default function QuickProductModal({
 								<button
 									type="submit"
 									disabled={saving}
-									className="flex-1 px-4 py-2 rounded-xl bg-[#7f2dfb] text-white font-medium hover:bg-[#6a25d1] shadow-lg shadow-purple-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+									className="flex-1 px-4 py-2 rounded-xl bg-brand-primary text-white font-medium hover:bg-brand-primaryHover shadow-lg shadow-purple-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 								>
 									{saving ? (
 										<>

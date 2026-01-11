@@ -3,6 +3,7 @@ import { Vazirmatn } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const vazirmatn = Vazirmatn({
 	subsets: ["arabic"],
@@ -38,8 +39,10 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children}
-					<Toaster />
+					<QueryProvider>
+						{children}
+						<Toaster />
+					</QueryProvider>
 				</ThemeProvider>
 			</body>
 		</html>

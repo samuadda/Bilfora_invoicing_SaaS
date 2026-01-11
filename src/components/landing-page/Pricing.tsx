@@ -86,12 +86,12 @@ export function Pricing() {
               <Card
                 padding="xlarge"
                 className={cn(
-                  tier.mostPopular ? "ring-2 ring-[#7f2dfb]" : "ring-1 ring-gray-200",
+                  tier.mostPopular ? "ring-2 ring-brand-primary" : "ring-1 ring-gray-200",
                   "relative"
                 )}
               >
                 {tier.mostPopular ? (
-                  <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 px-3 py-1 text-sm font-semibold text-white bg-[#7f2dfb] rounded-full">
+                  <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 px-3 py-1 text-sm font-semibold text-white bg-brand-primary rounded-full">
                     الأكثر اختياراً - 70% من العملاء
                   </div>
                 ) : null}
@@ -100,7 +100,7 @@ export function Pricing() {
                     variant="h4"
                     id={tier.id}
                     className={cn(
-                      tier.mostPopular ? "text-[#7f2dfb]" : "text-gray-900"
+                      tier.mostPopular ? "text-brand-primary" : "text-gray-900"
                     )}
                   >
                     {tier.name}
@@ -125,7 +125,7 @@ export function Pricing() {
                     variant={tier.mostPopular ? "primary" : "secondary"}
                     className={cn(
                       "mt-6 w-full",
-                      !tier.mostPopular && "text-[#7f2dfb] ring-1 ring-inset ring-[#7f2dfb] hover:ring-[#6a1fd8] hover:bg-[#7f2dfb]/5"
+                      !tier.mostPopular && "text-brand-primary ring-1 ring-inset ring-brand-primary hover:ring-brand-primaryHover hover:bg-brand-primary/5"
                     )}
                   >
                     {tier.id === 'free' ? 'ابدأ مجانًا' : 'اشترك الآن'}
@@ -138,7 +138,7 @@ export function Pricing() {
                   {tier.features.map((feature) => (
                     <li key={feature} className="flex gap-x-3">
                       <Check
-                        className="h-6 w-5 flex-none text-[#7f2dfb]"
+                        className="h-6 w-5 flex-none text-brand-primary"
                         aria-hidden="true"
                       />
                       <Text variant="body-small" color="muted">{feature}</Text>
@@ -149,7 +149,7 @@ export function Pricing() {
             </motion.div>
           ))}
         </div>
-        
+
         <div className="mt-12 text-center">
           <div className={cn("inline-flex items-center bg-gray-50 px-4 py-2 rounded-xl", layout.gap.tight)}>
             <Shield className="h-4 w-4 text-green-500" />

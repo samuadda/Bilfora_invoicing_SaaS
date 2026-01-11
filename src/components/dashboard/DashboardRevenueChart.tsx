@@ -1,4 +1,4 @@
-"use client";
+import { colors } from "@/lib/ui/tokens";
 
 import {
 	LineChart,
@@ -38,7 +38,7 @@ export default function DashboardRevenueChart({
 						<div key={index} className="flex items-center gap-2">
 							<div
 								className="w-2 h-2 rounded-full"
-								style={{ backgroundColor: entry.color || "#7f2dfb" }}
+								style={{ backgroundColor: entry.color || colors.brand.primary }}
 							/>
 							<span className="font-medium">{formatCurrency(entry.value)}</span>
 							<span className="opacity-70 mr-1">{entry.name}</span>
@@ -59,8 +59,8 @@ export default function DashboardRevenueChart({
 				>
 					<defs>
 						<linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="5%" stopColor="#7f2dfb" stopOpacity={0.2} />
-							<stop offset="95%" stopColor="#7f2dfb" stopOpacity={0} />
+							<stop offset="5%" stopColor={colors.brand.primary} stopOpacity={0.2} />
+							<stop offset="95%" stopColor={colors.brand.primary} stopOpacity={0} />
 						</linearGradient>
 					</defs>
 					<CartesianGrid
@@ -91,9 +91,9 @@ export default function DashboardRevenueChart({
 						type="monotone"
 						dataKey="revenue"
 						name="الإيرادات"
-						stroke="#7f2dfb"
+						stroke={colors.brand.primary}
 						strokeWidth={4}
-						dot={{ r: 4, fill: "#7f2dfb", strokeWidth: 2, stroke: "#fff" }}
+						dot={{ r: 4, fill: colors.brand.primary, strokeWidth: 2, stroke: "#fff" }}
 						activeDot={{ r: 6, strokeWidth: 0 }}
 						animationDuration={1500}
 					/>

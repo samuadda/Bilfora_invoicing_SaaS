@@ -69,11 +69,11 @@ const AccordionItem = ({
   return (
     <div className="border-b border-gray-200">
       <button
-        className="flex w-full items-center justify-between py-6 text-right text-lg font-medium transition-colors hover:text-[#7f2dfb]"
+        className="flex w-full items-center justify-between py-6 text-right text-lg font-medium transition-colors hover:text-brand-primary"
         onClick={onClick}
       >
         <div className="flex items-center gap-3 flex-1">
-          <Icon className="h-5 w-5 text-[#7f2dfb] flex-shrink-0" />
+          <Icon className="h-5 w-5 text-brand-primary flex-shrink-0" />
           <span className="text-right">{question}</span>
         </div>
         <motion.div

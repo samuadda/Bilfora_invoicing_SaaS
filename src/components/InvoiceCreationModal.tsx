@@ -28,14 +28,13 @@ import { cn } from "@/lib/utils";
 import {
 	Heading,
 	Text,
-	Card,
 	Button,
-	Input,
-	Select,
-	Field,
-	FormRow,
 } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection";
+import { InvoiceDetailsForm } from "@/components/invoice/InvoiceDetailsForm";
+import { InvoiceItemsTable } from "@/components/invoice/InvoiceItemsTable";
+import { InvoiceSummary } from "@/components/invoice/InvoiceSummary";
 
 interface InvoiceCreationModalProps {
 	isOpen: boolean;
@@ -100,37 +99,28 @@ export default function InvoiceCreationModal({
 
 	const invoiceSchema = z.object({
 		client_id: z.string().uuid("العميل غير صالح"),
-	  
+
 		order_id: z.string().uuid().nullable().optional().or(z.literal("")),
-	  
+
 		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"], {
-		  required_error: "نوع الفاتورة مطلوب",
-		  invalid_type_error: "نوع الفاتورة غير صالح",
+			errorMap: () => ({ message: "نوع الفاتورة مطلوب" }),
 		}),
-	  
+
 		document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),
-	  
+
 		issue_date: z.string().min(1, "تاريخ الإصدار مطلوب"),
 		due_date: z.string().min(1, "تاريخ الاستحقاق مطلوب"),
 		status: z.enum(["draft", "sent", "paid", "cancelled"]),
 		tax_rate: z.coerce.number().min(0).max(100),
 		notes: z.string().optional(),
 		items: z.array(itemSchema).min(1, "يجب إضافة عنصر واحد على الأقل"),
-	  });
-	  
+	});
+
 
 	// Modal state
 	const [clients, setClients] = useState<Client[]>([]);
 	const [products, setProducts] = useState<Product[]>([]);
 	const [saving, setSaving] = useState(false);
-	const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
-	const [newCustomerData, setNewCustomerData] = useState({
-		name: "",
-		email: "",
-		phone: "",
-		company_name: "",
-		tax_number: "",
-	});
 	const [invoiceFormData, setInvoiceFormData] = useState<CreateInvoiceInput>({
 		client_id: "",
 		order_id: null,
@@ -142,25 +132,10 @@ export default function InvoiceCreationModal({
 		tax_rate: 15,
 		notes: "",
 		items: [{ description: "", quantity: 1, unit_price: 0 }],
-	  });
-	  
+	});
+
 	const [error, setError] = useState<string | null>(null);
 	const { toast } = useToast();
-
-	// Totals helpers (UI only)
-	const calcSubtotal = () =>
-		invoiceFormData.items.reduce(
-			(sum, it) =>
-				sum + (Number(it.quantity) || 0) * (Number(it.unit_price) || 0),
-			0,
-		);
-
-	const calcVat = (subtotal: number) => {
-		if (invoiceFormData.invoice_type === "non_tax") return 0;
-		return subtotal * (Number(invoiceFormData.tax_rate || 0) / 100);
-	};
-
-	const calcTotal = (subtotal: number, vat: number) => subtotal + vat;
 
 	const closeModal = useCallback(() => {
 		resetInvoiceForm();
@@ -314,14 +289,6 @@ export default function InvoiceCreationModal({
 				},
 			],
 		});
-		setNewCustomerData({
-			name: "",
-			email: "",
-			phone: "",
-			company_name: "",
-			tax_number: "",
-		});
-		setShowNewCustomerForm(false);
 		setError(null);
 	};
 
@@ -377,7 +344,7 @@ export default function InvoiceCreationModal({
 				{
 					p_client_id: invoiceFormData.client_id,
 					p_order_id: null,
-					p_invoice_type: invoiceFormData.invoice_type,					p_document_kind: invoiceFormData.document_kind ?? "invoice", 
+					p_invoice_type: invoiceFormData.invoice_type, p_document_kind: invoiceFormData.document_kind ?? "invoice",
 					p_issue_date: invoiceFormData.issue_date,
 					p_due_date: invoiceFormData.due_date,
 					p_status: invoiceFormData.status,
@@ -432,81 +399,12 @@ export default function InvoiceCreationModal({
 		}
 	};
 
-	const toggleNewCustomerForm = () => {
-		setShowNewCustomerForm(!showNewCustomerForm);
-		if (showNewCustomerForm) {
-			setNewCustomerData({
-				name: "",
-				email: "",
-				phone: "",
-				company_name: "",
-				tax_number: "",
-			});
-		}
-	};
-
-	const handleNewCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setNewCustomerData((prev) => ({
+	const handleClientCreated = (newClient: Client) => {
+		setClients((prev) => [...prev, newClient]);
+		setInvoiceFormData((prev) => ({
 			...prev,
-			[name]: value,
+			client_id: newClient.id,
 		}));
-	};
-
-	const handleCreateNewCustomer = async () => {
-		try {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (!user) return;
-
-			if (!newCustomerData.name?.trim()) {
-				setError("اسم العميل مطلوب");
-				return;
-			}
-			if (!newCustomerData.phone?.trim()) {
-				setError("رقم الجوال مطلوب");
-				return;
-			}
-
-			const { data: customerData, error: customerError } = await supabase
-				.from("clients")
-				.insert({
-					user_id: user.id,
-					name: newCustomerData.name.trim(),
-					email: newCustomerData.email?.trim() || null,
-					phone: newCustomerData.phone.trim(),
-					company_name: newCustomerData.company_name?.trim() || null,
-					tax_number: newCustomerData.tax_number?.trim() || null,
-					status: "active",
-				})
-				.select()
-				.single();
-
-			if (customerError) {
-				console.error("Error creating customer:", customerError);
-				setError("فشل في إنشاء العميل");
-				return;
-			}
-
-			setClients((prev) => [...prev, customerData]);
-			setInvoiceFormData((prev) => ({
-				...prev,
-				client_id: customerData.id,
-			}));
-
-			setShowNewCustomerForm(false);
-			setNewCustomerData({
-				name: "",
-				email: "",
-				phone: "",
-				company_name: "",
-				tax_number: "",
-			});
-		} catch (err) {
-			console.error("Unexpected error creating customer:", err);
-			setError("حدث خطأ غير متوقع");
-		}
 	};
 
 	const formatCurrency = (amount: number) =>
@@ -569,364 +467,40 @@ export default function InvoiceCreationModal({
 								onSubmit={handleInvoiceSubmit}
 								className={layout.stack.large}
 							>
-								{/* Customer Selection Section */}
-								<Card background="subtle" padding="large">
-									<div className="flex items-center justify-between mb-4">
-										<div
-											className={cn(
-												"flex items-center text-gray-900 font-semibold",
-												layout.gap.tight,
-											)}
-										>
-											<User size={20} className="text-[#7f2dfb]" />
-											<Heading variant="h3-subsection">بيانات العميل</Heading>
-										</div>
-										<button
-											type="button"
-											onClick={toggleNewCustomerForm}
-											className="text-[#7f2dfb] hover:text-[#6a25d1] text-sm font-medium transition-colors"
-										>
-											{showNewCustomerForm ? "اختيار عميل موجود" : "+ عميل جديد"}
-										</button>
-									</div>
+								<InvoiceClientSection
+									clients={clients}
+									selectedClientId={invoiceFormData.client_id}
+									onClientChange={(id) => setInvoiceFormData(prev => ({ ...prev, client_id: id }))}
+									onClientCreated={handleClientCreated}
+								/>
 
-									{!showNewCustomerForm ? (
-										<Select
-											name="client_id"
-											value={invoiceFormData.client_id}
-											onChange={handleInvoiceInputChange}
-											required
-										>
-											<option value="">اختر العميل</option>
-											{clients.map((client) => (
-												<option key={client.id} value={client.id}>
-													{client.name}{" "}
-													{client.company_name ? `(${client.company_name})` : ""}
-												</option>
-											))}
-										</Select>
-									) : (
-										<motion.div
-											initial={{ opacity: 0, y: -10 }}
-											animate={{ opacity: 1, y: 0 }}
-										>
-											<Card padding="standard">
-												<FormRow columns={2} gap="standard">
-													<Field label="الاسم الكامل" required>
-														<Input
-															name="name"
-															value={newCustomerData.name}
-															onChange={handleNewCustomerChange}
-															placeholder="مثال: محمد السعدي"
-															required
-														/>
-													</Field>
-													<Field label="رقم الجوال" required>
-														<div className="relative">
-															<Phone
-																className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-																size={16}
-															/>
-															<Input
-																name="phone"
-																value={newCustomerData.phone}
-																onChange={handleNewCustomerChange}
-																className="pr-9"
-																placeholder="05xxxxxxxx"
-																dir="ltr"
-																required
-															/>
-														</div>
-													</Field>
-												</FormRow>
+								<InvoiceDetailsForm
+									formData={invoiceFormData}
+									onChange={handleInvoiceInputChange}
+									onTypeChange={(newType) => {
+										setInvoiceFormData((prev) => ({
+											...prev,
+											invoice_type: newType,
+											tax_rate: newType === "non_tax" ? 0 : prev.tax_rate || 15,
+										}));
+									}}
+								/>
 
-												<Field label="البريد الإلكتروني" description="(اختياري)">
-													<div className="relative">
-														<Mail
-															className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-															size={16}
-														/>
-														<Input
-															name="email"
-															type="email"
-															value={newCustomerData.email}
-															onChange={handleNewCustomerChange}
-															className="pr-9"
-															placeholder="example@domain.com"
-															dir="ltr"
-														/>
-													</div>
-												</Field>
+								<InvoiceItemsTable
+									items={invoiceFormData.items}
+									products={products}
+									onItemChange={handleInvoiceItemChange}
+									onAddItem={addInvoiceItem}
+									onRemoveItem={removeInvoiceItem}
+									formatCurrency={formatCurrency}
+								/>
 
-												<FormRow columns={2} gap="standard">
-													<Field label="اسم الشركة" description="(اختياري)">
-														<Input
-															name="company_name"
-															value={newCustomerData.company_name}
-															onChange={handleNewCustomerChange}
-															placeholder="مثال: شركة الريّان"
-														/>
-													</Field>
-													<Field label="الرقم الضريبي" description="(اختياري)">
-														<Input
-															name="tax_number"
-															value={newCustomerData.tax_number}
-															onChange={handleNewCustomerChange}
-															placeholder="مثال: 310xxxxxxx"
-															dir="ltr"
-														/>
-													</Field>
-												</FormRow>
-
-												<div className="flex justify-end pt-2">
-													<Button
-														type="button"
-														variant="primary"
-														size="md"
-														onClick={handleCreateNewCustomer}
-													>
-														حفظ العميل
-													</Button>
-												</div>
-											</Card>
-										</motion.div>
-									)}
-								</Card>
-
-								{/* Invoice Details Section */}
-								<FormRow columns={3} gap="large">
-									<Field label="نوع الفاتورة" required>
-										<Select
-											name="invoice_type"
-											value={invoiceFormData.invoice_type || "standard_tax"}
-											onChange={(e) => {
-												const newType = e.target.value as InvoiceType;
-												setInvoiceFormData((prev) => ({
-													...prev,
-													invoice_type: newType,
-													tax_rate: newType === "non_tax" ? 0 : prev.tax_rate || 15,
-												}));
-											}}
-											required
-										>
-											<option value="standard_tax">{labelByInvoiceType.standard_tax}</option>
-											<option value="simplified_tax">{labelByInvoiceType.simplified_tax}</option>
-											<option value="non_tax">{labelByInvoiceType.non_tax}</option>
-										</Select>
-									</Field>
-
-									<Field label="تاريخ الإصدار" required>
-										<Input
-											name="issue_date"
-											type="date"
-											value={invoiceFormData.issue_date}
-											onChange={handleInvoiceInputChange}
-											required
-										/>
-									</Field>
-
-									<Field label="تاريخ الاستحقاق" required>
-										<Input
-											name="due_date"
-											type="date"
-											value={invoiceFormData.due_date}
-											onChange={handleInvoiceInputChange}
-											required
-										/>
-									</Field>
-
-									<Field label="الحالة">
-										<Select
-											name="status"
-											value={invoiceFormData.status}
-											onChange={handleInvoiceInputChange}
-										>
-											<option value="draft">مسودة</option>
-											<option value="sent">مرسلة</option>
-											<option value="paid">مدفوعة</option>
-											<option value="cancelled">ملغية</option>
-										</Select>
-									</Field>
-
-									<Field label="معدل الضريبة (%)">
-										<Input
-											name="tax_rate"
-											type="number"
-											min="0"
-											max="100"
-											step="0.01"
-											value={
-												invoiceFormData.invoice_type === "non_tax"
-													? 0
-													: invoiceFormData.tax_rate ?? 15
-											}
-											onChange={handleInvoiceInputChange}
-											disabled={invoiceFormData.invoice_type === "non_tax"}
-										/>
-									</Field>
-
-									<Field label="ملاحظات" className="md:col-span-2">
-										<Input
-											name="notes"
-											value={invoiceFormData.notes ?? ""}
-											onChange={handleInvoiceInputChange}
-											placeholder="أي ملاحظات إضافية للفاتورة..."
-										/>
-									</Field>
-								</FormRow>
-
-								{/* Items Section */}
-								<div className={layout.stack.standard}>
-									<div className="flex items-center justify-between">
-										<Heading variant="h3-subsection">عناصر الفاتورة</Heading>
-										<Button
-											type="button"
-											variant="ghost"
-											size="sm"
-											onClick={addInvoiceItem}
-											className="text-[#7f2dfb] hover:bg-purple-50"
-										>
-											<Plus size={16} />
-											إضافة عنصر
-										</Button>
-									</div>
-
-									<div className={layout.stack.standard}>
-										{invoiceFormData.items.map((item, index) => (
-											<motion.div
-												key={index}
-												initial={{ opacity: 0, y: 10 }}
-												animate={{ opacity: 1, y: 0 }}
-												className="grid grid-cols-12 gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 group relative"
-											>
-												<button
-													type="button"
-													onClick={() => removeInvoiceItem(index)}
-													className="absolute -left-2 -top-2 bg-white text-red-500 p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity border border-gray-100"
-													disabled={invoiceFormData.items.length === 1}
-													title="حذف العنصر"
-												>
-													<Trash2 size={14} />
-												</button>
-
-												<div className="col-span-12 md:col-span-5 space-y-1">
-													<label className="text-xs font-medium text-gray-500">
-														المنتج / الوصف
-													</label>
-													<div className={layout.stack.tight}>
-														<Select
-															onChange={(e) => {
-																const p = products.find((pr) => pr.id === e.target.value);
-																if (p) {
-																	handleInvoiceItemChange(index, "description", p.name);
-																	handleInvoiceItemChange(index, "unit_price", p.unit_price);
-																}
-															}}
-															className="text-xs"
-														>
-															<option value="">اختر منتجاً (اختياري)</option>
-															{products.map((p) => (
-																<option key={p.id} value={p.id}>
-																	{p.name} ({p.unit_price} ريال)
-																</option>
-															))}
-														</Select>
-														<Input
-															value={item.description}
-															onChange={(e) =>
-																handleInvoiceItemChange(index, "description", e.target.value)
-															}
-															placeholder="وصف العنصر"
-															required
-														/>
-													</div>
-												</div>
-
-												<div className="col-span-4 md:col-span-2 space-y-1">
-													<label className="text-xs font-medium text-gray-500">الكمية</label>
-													<Input
-														type="number"
-														min="1"
-														value={item.quantity}
-														onChange={(e) =>
-															handleInvoiceItemChange(
-																index,
-																"quantity",
-																parseInt(e.target.value) || 1,
-															)
-														}
-														className="text-center"
-														required
-													/>
-												</div>
-
-												<div className="col-span-4 md:col-span-2 space-y-1">
-													<label className="text-xs font-medium text-gray-500">سعر الوحدة</label>
-													<Input
-														type="number"
-														min="0"
-														step="0.01"
-														value={item.unit_price}
-														onChange={(e) =>
-															handleInvoiceItemChange(
-																index,
-																"unit_price",
-																parseFloat(e.target.value) || 0,
-															)
-														}
-														required
-													/>
-												</div>
-
-												<div className="col-span-4 md:col-span-3 space-y-1">
-													<label className="text-xs font-medium text-gray-500">الإجمالي</label>
-													<div className="w-full h-[38px] flex items-center px-3 bg-gray-100 rounded-xl text-sm font-semibold text-gray-700">
-														{formatCurrency(
-															(Number(item.quantity) || 0) * (Number(item.unit_price) || 0),
-														)}
-													</div>
-												</div>
-											</motion.div>
-										))}
-									</div>
-								</div>
-
-								{/* Totals Summary */}
-								<div className="flex flex-col md:flex-row justify-end gap-6 pt-6 border-t border-gray-100">
-									<div className="w-full md:w-80 space-y-3 bg-gray-50 p-6 rounded-2xl border border-gray-100">
-										{(() => {
-											const subtotal = calcSubtotal();
-											const vat = calcVat(subtotal);
-											const total = calcTotal(subtotal, vat);
-											return (
-												<>
-													<div className="flex justify-between text-sm">
-														<span className="text-gray-600">المجموع الفرعي</span>
-														<span className="font-medium text-gray-900">
-															{formatCurrency(subtotal)}
-														</span>
-													</div>
-													{invoiceFormData.invoice_type !== "non_tax" && (
-														<div className="flex justify-between text-sm">
-															<span className="text-gray-600">
-																الضريبة ({invoiceFormData.tax_rate}%)
-															</span>
-															<span className="font-medium text-gray-900">
-																{formatCurrency(vat)}
-															</span>
-														</div>
-													)}
-													<div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-														<span className="text-base font-bold text-gray-900">الإجمالي</span>
-														<span className="text-xl font-bold text-[#7f2dfb]">
-															{formatCurrency(total)}
-														</span>
-													</div>
-												</>
-											);
-										})()}
-									</div>
-								</div>
+								<InvoiceSummary
+									items={invoiceFormData.items}
+									taxRate={invoiceFormData.tax_rate || 0}
+									invoiceType={invoiceFormData.invoice_type}
+									formatCurrency={formatCurrency}
+								/>
 							</form>
 						</div>
 

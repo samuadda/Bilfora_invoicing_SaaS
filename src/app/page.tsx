@@ -21,64 +21,11 @@ import { Logos } from "@/components/landing-page/Logos";
 import { useState, useEffect, useRef } from "react";
 import { Section, Container, Heading, Text, Card, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import { StatNumber } from "@/components/landing-page/StatNumber";
+import { ReviewCard } from "@/components/landing-page/ReviewCard";
+import { heroWords, content, reviews } from "@/data/landing-page";
 
-function StatNumber({
-	value,
-	prefix = "",
-	suffix = "",
-	duration = 1200,
-}: {
-	value: number;
-	prefix?: string;
-	suffix?: string;
-	duration?: number;
-}) {
-	const ref = useRef<HTMLSpanElement | null>(null);
-	const [display, setDisplay] = useState(0);
-	const [hasAnimated, setHasAnimated] = useState(false);
 
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const entry = entries[0];
-				if (entry.isIntersecting && !hasAnimated) {
-					setHasAnimated(true);
-					const start = performance.now();
-					const startValue = 0;
-
-					const animate = (time: number) => {
-						const progress = Math.min((time - start) / duration, 1);
-						const current =
-							startValue + (value - startValue) * progress;
-						setDisplay(current);
-						if (progress < 1) {
-							requestAnimationFrame(animate);
-						}
-					};
-
-					requestAnimationFrame(animate);
-				}
-			},
-			{ threshold: 0.5 }
-		);
-
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, [value, duration, hasAnimated]);
-
-	const formatted = Math.round(display).toLocaleString("en-US");
-
-	return (
-		<span ref={ref}>
-			{prefix}
-			{formatted}
-			{suffix}
-		</span>
-	);
-}
 
 export default function Home() {
 	const [showScrollButton, setShowScrollButton] = useState(false);
@@ -96,142 +43,12 @@ export default function Home() {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
-	const heroWords = [
-		{ text: "أنشئ", className: "text-[#012d46]" },
-		{ text: " فواتيرك", className: "text-[#012d46]" },
-		{ text: "في", className: "text-[#012d46]" },
-		{ text: "ثوانٍ", className: "text-[#012d46]" },
-		{ text: "بسهولة", className: "text-[#012d46]" },
-		{ text: "واحترافية", className: "text-[#7f2dfb]" },
-	];
 
-	const content = [
-		{
-			title: "أنشئ فاتورة خلال ثوانٍ",
-			description:
-				"ابدأ بإدخال بيانات العميل والخدمة وحدد الأسعار والضرائب، وسيولد بيلفورا فاتورة احترافية متوافقة مع الزكاة والضريبة جاهزة للطباعة أو الإرسال بنقرة واحدة.",
-			content: (
-				<div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white text-2xl font-bold p-8 text-center rounded-xl">
-					أنشئ فاتورة خلال ثوانٍ
-				</div>
-			),
-		},
-		{
-			title: "احفظ عملائك وخدماتك مرة واحدة",
-			description:
-				"احفظ قائمة عملائك وخدماتك مع الأسعار والضرائب المفضلة، واخترها بسرعة في كل فاتورة بدون إعادة إدخال البيانات. وفر الوقت وركز على عملك.",
-			content: (
-				<div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] text-white text-2xl font-bold p-8 text-center rounded-xl">
-					قاعدة بيانات ذكية
-				</div>
-			),
-		},
-		{
-			title: "اعرف من دفع ومن لم يدفع بنظرة واحدة",
-			description:
-				"اعرف الفواتير المدفوعة والمتأخرة بنظرة واحدة، وأرسل تذكيرات تلقائية لعملائك المتأخرين برابط دفع أو نسخة PDF.",
-			content: (
-				<div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--blue-500),var(--indigo-500))] text-white text-2xl font-bold p-8 text-center rounded-xl">
-					تتبّع المدفوعات
-				</div>
-			),
-		},
-		{
-			title: "فواتير عربية احترافية مع شعارك",
-			description:
-				"اختر من قوالب عربية جميلة وشارك فاتورتك برابط مباشر أو حمّلها PDF مع شعارك وبيانات منشأتك. فواتير تجعل عملك يبدو احترافياً.",
-			content: (
-				<div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--pink-500),var(--rose-500))] text-white text-2xl font-bold p-8 text-center rounded-xl">
-					قوالب عربية جاهزة
-				</div>
-			),
-		},
-	];
-
-	const reviews = [
-		{
-			name: "رؤى",
-			username: "@ٌruwwa",
-			body: "تصاميمهم حلوة واحترافية، وسهلة الاستخدام. أنصحكم تجربونها.",
-			img: "https://avatar.vercel.sh/jack",
-		},
-		{
-			name: "عبدالعزيز الصلي",
-			username: "@azzozSelli",
-			body: "سهولة وسرعة مسجل الخدمات بأسعارها اختار وامشي",
-			img: "https://avatar.vercel.sh/jill",
-		},
-		{
-			name: "الإبداع البصري",
-			username: "@visualcreate",
-			body: "ابدااااع وتراني صعبة الإرضاء (;",
-			img: "https://avatar.vercel.sh/john",
-		},
-		{
-			name: "عمران",
-			username: "@umran",
-			body: "كل ذا ومجاني والله مب مصدق",
-			img: "https://avatar.vercel.sh/jane",
-		},
-		{
-			name: "العليمي",
-			username: "@ulaimi",
-			body: "بسيط وسريع ومن الجوال",
-			img: "https://avatar.vercel.sh/jenny",
-		},
-		{
-			name: "ذرب",
-			username: "@tharb",
-			body: "والله انه فزعة توهت وفي ثواني ضبطني",
-			img: "https://avatar.vercel.sh/james",
-		},
-	];
 
 	const firstRow = reviews.slice(0, reviews.length / 2);
 	const secondRow = reviews.slice(reviews.length / 2);
 
-	const ReviewCard = ({
-		img,
-		name,
-		username,
-		body,
-	}: {
-		img: string;
-		name: string;
-		username: string;
-		body: string;
-	}) => {
-		return (
-			<figure
-				className={cn(
-					"relative h-full w-64 cursor-pointer overflow-hidden rounded-xl border p-4",
-					// light styles
-					"border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-					// dark styles
-					"dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
-				)}
-			>
-				<div className="flex flex-row items-center gap-2">
-					<Image
-						className="rounded-full"
-						width={32}
-						height={32}
-						alt=""
-						src={img}
-					/>
-					<div className="flex flex-col">
-						<figcaption className="text-sm font-medium dark:text-white">
-							{name}
-						</figcaption>
-						<p className="text-xs font-medium dark:text-white/40">
-							{username}
-						</p>
-					</div>
-				</div>
-				<blockquote className="mt-2 text-sm">{body}</blockquote>
-			</figure>
-		);
-	};
+
 
 	const scrollToTop = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -663,13 +480,13 @@ export default function Home() {
 							numCircles={12}
 							className="absolute inset-0 z-0 text-white"
 						/>
-						<h1 className="relative z-10 text-3xl md:text-5xl text-white font-bold max-w-4xl leading-tight">
+						<h2 className="relative z-10 text-3xl md:text-5xl text-white font-bold max-w-4xl leading-tight">
 							وفر 10 ساعات شهرياً - ركز على ما تحب بدلاً من الفواتير
 							<br />
 							<span className="text-purple-200">
 								أنشئ فاتورتك الأولى في دقيقتين - بدون خبرة محاسبية
 							</span>
-						</h1>
+						</h2>
 						<p className="relative z-10 text-lg text-purple-100 max-w-2xl">
 							انضم لـ <span className="font-semibold text-white">500+ مستقل سعودي</span> يستخدمون بيلفورا يومياً.
 							<br />

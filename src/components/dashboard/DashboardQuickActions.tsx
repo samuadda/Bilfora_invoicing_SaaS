@@ -20,7 +20,7 @@ export default function DashboardQuickActions({
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={onCreateInvoice}
-				className="inline-flex items-center gap-2 rounded-xl bg-[#7f2dfb] text-white px-5 py-2.5 text-sm font-bold shadow-lg shadow-purple-200 hover:shadow-xl hover:bg-[#6a1fd8] transition-all"
+				className="inline-flex items-center gap-2 rounded-xl bg-brand-primary text-white px-5 py-2.5 text-sm font-bold shadow-lg shadow-purple-200 hover:shadow-xl hover:bg-brand-primaryHover transition-all"
 			>
 				<Plus size={18} strokeWidth={2.5} />
 				<span>إنشاء فاتورة جديدة</span>

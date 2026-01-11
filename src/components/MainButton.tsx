@@ -31,7 +31,7 @@ const MainButton: React.FC<MainButtonProps> = ({
         </svg>
     ),
     bgColor = "bg-zinc-900",
-    hoverBgColor = "hover:bg-[#012d46]", // <-- Default hover color
+    hoverBgColor = "hover:bg-brand-dark", // <-- Default hover color
     textColor = "text-amber-300",
     shadowColor = "rgba(251,191,36",
     className,

@@ -150,7 +150,7 @@ export default function QuickClientModal({
 									type="text"
 									value={form.name}
 									onChange={(e) => setForm({ ...form, name: e.target.value })}
-									className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
+									className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm"
 									required
 									placeholder="مثال: محمد السعدي"
 								/>
@@ -167,7 +167,7 @@ export default function QuickClientModal({
 										type="tel"
 										value={form.phone}
 										onChange={(e) => setForm({ ...form, phone: e.target.value })}
-										className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
+										className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm"
 										required
 										placeholder="05xxxxxxxx"
 										dir="ltr"
@@ -186,7 +186,7 @@ export default function QuickClientModal({
 										type="email"
 										value={form.email}
 										onChange={(e) => setForm({ ...form, email: e.target.value })}
-										className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
+										className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm"
 										placeholder="example@domain.com"
 										dir="ltr"
 									/>
@@ -203,7 +203,7 @@ export default function QuickClientModal({
 										type="text"
 										value={form.company_name}
 										onChange={(e) => setForm({ ...form, company_name: e.target.value })}
-										className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
+										className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm"
 										placeholder="مثال: شركة الريّان"
 									/>
 								</div>
@@ -217,7 +217,7 @@ export default function QuickClientModal({
 										type="text"
 										value={form.tax_number}
 										onChange={(e) => setForm({ ...form, tax_number: e.target.value })}
-										className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
+										className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-brand-primary text-sm"
 										placeholder="مثال: 310xxxxxxx"
 										dir="ltr"
 									/>
@@ -236,7 +236,7 @@ export default function QuickClientModal({
 								<button
 									type="submit"
 									disabled={saving}
-									className="flex-1 px-4 py-2.5 rounded-xl bg-[#7f2dfb] text-white font-medium hover:bg-[#6a25d1] shadow-lg shadow-purple-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+									className="flex-1 px-4 py-2.5 rounded-xl bg-brand-primary text-white font-medium hover:bg-brand-primaryHover shadow-lg shadow-purple-200 transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 								>
 									{saving ? (
 										<>

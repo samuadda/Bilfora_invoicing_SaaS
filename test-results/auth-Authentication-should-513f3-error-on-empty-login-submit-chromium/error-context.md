@@ -1,0 +1,46 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - link "العودة للرئيسية" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e5]
+        - generic [ref=e7]: العودة للرئيسية
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - img "Bilfora" [ref=e10]
+          - heading "مرحباً بعودتك 👋" [level=2] [ref=e11]
+          - paragraph [ref=e12]: أدخل بياناتك للدخول إلى لوحة التحكم
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - generic [ref=e15]: البريد الإلكتروني
+            - textbox "البريد الإلكتروني" [active] [ref=e17]
+          - generic [ref=e18]:
+            - generic [ref=e19]: كلمة المرور
+            - generic [ref=e20]:
+              - textbox "كلمة المرور" [ref=e21]
+              - button [ref=e22]:
+                - img [ref=e23]
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - checkbox "تذكرني" [ref=e28]
+              - generic [ref=e29]: تذكرني
+            - button "نسيت كلمة المرور؟" [ref=e31]
+          - button "تسجيل الدخول" [ref=e33]
+        - paragraph [ref=e34]:
+          - text: ليس لديك حساب؟
+          - link "ابدأ تجربتك المجانية" [ref=e35] [cursor=pointer]:
+            - /url: /register
+    - generic [ref=e36]:
+      - img
+      - generic [ref=e39]:
+        - blockquote [ref=e40]: "\"بيلفورا غيّر طريقة تعاملي مع الفواتير تماماً. كنت أقضي ساعات كل شهر في إعدادها، الآن تأخذ مني دقائق معدودة.\""
+        - generic [ref=e41]:
+          - img "Abdullah Al-Otaibi" [ref=e42]
+          - generic [ref=e43]:
+            - generic [ref=e44]: عبدالله العتيبي
+            - generic [ref=e45]: مصمم جرافيك مستقل
+  - region "Notifications alt+T"
+```

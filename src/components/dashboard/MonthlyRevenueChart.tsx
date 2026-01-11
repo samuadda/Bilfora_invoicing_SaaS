@@ -10,6 +10,7 @@ import {
 	ResponsiveContainer,
 } from "recharts";
 import { DailyRevenue } from "@/hooks/useInvoiceStats";
+import { colors } from "@/lib/ui/tokens";
 
 interface MonthlyRevenueChartProps {
 	data: DailyRevenue[];
@@ -30,7 +31,7 @@ export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) 
 					<p className="font-bold mb-2">اليوم {payload[0].payload.day}</p>
 					<div className="space-y-1">
 						<div className="flex items-center gap-2">
-							<div className="w-2 h-2 rounded-full bg-[#7f2dfb]" />
+							<div className="w-2 h-2 rounded-full bg-brand-primary" />
 							<span className="font-medium">
 								الإجمالي: {formatCurrency(payload[0].value)}
 							</span>
@@ -79,9 +80,9 @@ export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) 
 					<Line
 						type="monotone"
 						dataKey="revenue"
-						stroke="#7f2dfb"
+						stroke={colors.brand.primary}
 						strokeWidth={3}
-						dot={{ r: 3, fill: "#7f2dfb" }}
+						dot={{ r: 3, fill: colors.brand.primary }}
 						activeDot={{ r: 5 }}
 					/>
 					<Line

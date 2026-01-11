@@ -33,6 +33,15 @@ DECLARE
     v_tax_rate numeric := 0;
     v_invoice_type invoice_type;
 BEGIN
+    -- Verify ownership securely
+    IF NOT EXISTS (
+        SELECT 1 FROM invoices 
+        WHERE id = inv_id 
+        AND user_id = auth.uid()
+    ) THEN
+        RAISE EXCEPTION 'Access denied: User does not own this invoice';
+    END IF;
+
     SELECT COALESCE(SUM(ii.quantity * ii.unit_price), 0)
     INTO v_subtotal
     FROM invoice_items ii

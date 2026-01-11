@@ -61,7 +61,7 @@ const Navbar = () => {
 				<div className="navbar-end flex items-center gap-4">
 					<Link
 						href="/login"
-						className="hidden items-center gap-1 text-sm font-medium text-gray-600 hover:text-[#7f2dfb] transition-colors lg:flex"
+						className="hidden items-center gap-1 text-sm font-medium text-gray-600 hover:text-brand-primary transition-colors lg:flex"
 					>
 						<span>تسجيل الدخول</span>
 						<ChevronLeft size={16} />
@@ -69,7 +69,7 @@ const Navbar = () => {
 					<Link href="/register">
 						<MainButton
 							text="جرب مجاناً"
-							bgColor="bg-[#7f2dfb]"
+							bgColor="bg-brand-primary"
 							textColor="text-white"
 							className="hidden md:flex px-6 py-2 h-auto text-sm shadow-purple-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
 						/>

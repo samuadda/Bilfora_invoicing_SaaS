@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, ReactNode } from "react";
-import { SidebarContext } from "./sideBar";
+import { SidebarContext } from "./sidebar/SidebarContext";
 
 interface SidebarProviderProps {
 	children: ReactNode;

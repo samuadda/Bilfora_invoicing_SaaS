@@ -43,7 +43,7 @@ export default function RecentInvoicesList({
 	return (
 		<div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 			<div className="p-5 border-b border-gray-100">
-				<h3 className="text-lg font-bold text-[#012d46]">الفواتير الأخيرة</h3>
+				<h3 className="text-lg font-bold text-brand-dark">الفواتير الأخيرة</h3>
 				<p className="text-xs text-gray-500 mt-1">آخر الفواتير في هذا الشهر</p>
 			</div>
 			<div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
@@ -89,7 +89,7 @@ export default function RecentInvoicesList({
 									</span>
 									<ArrowLeft
 										size={16}
-										className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors"
+										className="text-gray-400 group-hover:text-brand-primary transition-colors"
 									/>
 								</div>
 							</div>

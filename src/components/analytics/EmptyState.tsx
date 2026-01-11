@@ -27,7 +27,7 @@ export default function AnalyticsEmptyState() {
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={() => router.push("/dashboard/invoices")}
-				className="inline-flex items-center gap-2 px-6 py-3 bg-[#7f2dfb] text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:shadow-xl hover:bg-[#6a1fd8] transition-all"
+				className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:shadow-xl hover:bg-brand-primaryHover transition-all"
 			>
 				<Plus size={20} strokeWidth={2.5} />
 				<span>إنشاء فاتورة جديدة</span>

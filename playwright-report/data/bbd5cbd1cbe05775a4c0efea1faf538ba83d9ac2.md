@@ -1,0 +1,620 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - link "Bilfora" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Bilfora" [ref=e6]
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "الرئيسية" [ref=e10] [cursor=pointer]:
+            - /url: /#home
+        - listitem [ref=e11]:
+          - link "المميزات" [ref=e12] [cursor=pointer]:
+            - /url: /#features
+        - listitem [ref=e13]:
+          - link "كيف يعمل" [ref=e14] [cursor=pointer]:
+            - /url: /#how-to
+        - listitem [ref=e15]:
+          - link "الأسعار" [ref=e16] [cursor=pointer]:
+            - /url: /#pricing
+        - listitem [ref=e17]:
+          - link "من نحن" [ref=e18] [cursor=pointer]:
+            - /url: /about
+        - listitem [ref=e19]:
+          - link "الأسئلة الشائعة" [ref=e20] [cursor=pointer]:
+            - /url: /#faq
+      - generic [ref=e21]:
+        - link "تسجيل الدخول" [ref=e22] [cursor=pointer]:
+          - /url: /login
+          - generic [ref=e23]: تسجيل الدخول
+          - img [ref=e24]
+        - link "جرب مجاناً" [ref=e26] [cursor=pointer]:
+          - /url: /register
+          - button "جرب مجاناً" [ref=e27]:
+            - generic [ref=e28]:
+              - text: جرب مجاناً
+              - img [ref=e29]
+    - dialog "Main navigation" [ref=e31]:
+      - generic [ref=e32]:
+        - navigation [ref=e34]:
+          - link "الرئيسية" [ref=e35] [cursor=pointer]:
+            - /url: /#home
+          - link "المميزات" [ref=e36] [cursor=pointer]:
+            - /url: /#features
+          - link "كيف يعمل" [ref=e37] [cursor=pointer]:
+            - /url: /#how-to
+          - link "الأسعار" [ref=e38] [cursor=pointer]:
+            - /url: /#pricing
+          - link "من نحن" [ref=e39] [cursor=pointer]:
+            - /url: /about
+          - link "الأسئلة الشائعة" [ref=e40] [cursor=pointer]:
+            - /url: /#faq
+        - button "جرب مجاناً" [ref=e42]:
+          - generic [ref=e43]:
+            - text: جرب مجاناً
+            - img [ref=e44]
+    - generic [ref=e50]:
+      - generic [ref=e51]: "جديد: نظام إدارة الفواتير الأذكى في المملكة 🇸🇦"
+      - heading "أنشئ فواتيرك في ثوانٍ بسهولة واحترافية" [level=1] [ref=e53]:
+        - generic [ref=e55]:
+          - generic [ref=e57]: أنشئ
+          - generic [ref=e59]: فواتيرك
+          - generic [ref=e61]: في
+          - generic [ref=e63]: ثوانٍ
+          - generic [ref=e65]: بسهولة
+          - generic [ref=e67]: واحترافية
+      - paragraph [ref=e70]:
+        - text: توقف عن إضاعة الوقت مع إكسل والفواتير اليدوية.
+        - text: أنشئ فواتير احترافية متوافقة مع هيئة الزكاة والضريبة في أقل من دقيقتين
+        - text: "- بدون خبرة محاسبية."
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - img [ref=e73]
+          - generic [ref=e75]: متوافق مع هيئة الزكاة والضريبة
+        - generic [ref=e76]:
+          - img [ref=e77]
+          - generic [ref=e80]: بياناتك مشفرة وآمنة 100%
+        - generic [ref=e81]:
+          - img [ref=e82]
+          - generic [ref=e84]: بدون بطاقة ائتمان - جرب مجاناً
+      - generic [ref=e85]:
+        - link "ابدأ مجاناً - بدون بطاقة ائتمان" [ref=e86] [cursor=pointer]:
+          - /url: /register
+          - button "ابدأ مجاناً - بدون بطاقة ائتمان" [ref=e87]:
+            - generic [ref=e88]:
+              - text: ابدأ مجاناً - بدون بطاقة ائتمان
+              - img [ref=e89]
+        - link "تسجيل الدخول" [ref=e91] [cursor=pointer]:
+          - /url: /login
+          - generic [ref=e92]: تسجيل الدخول
+          - img [ref=e93]
+        - link "شاهد كيف يعمل" [ref=e95] [cursor=pointer]:
+          - /url: /demo
+          - generic [ref=e96]: شاهد كيف يعمل
+          - img [ref=e97]
+      - generic [ref=e99]:
+        - generic [ref=e100]:
+          - img "user" [ref=e102]
+          - img "user" [ref=e104]
+          - img "user" [ref=e106]
+          - img "user" [ref=e108]
+        - generic [ref=e109]:
+          - generic [ref=e110]:
+            - img [ref=e111]
+            - img [ref=e113]
+            - img [ref=e115]
+            - img [ref=e117]
+            - img [ref=e119]
+          - generic [ref=e121]: "5.0"
+        - generic [ref=e122]: من 500+ عميل سعيد
+    - generic [ref=e125]:
+      - heading "يثق بنا أكثر من 500+ مستقل وشركة سعودية" [level=2] [ref=e126]
+      - generic [ref=e127]:
+        - generic [ref=e128]:
+          - paragraph [ref=e129]: مصممين
+          - paragraph [ref=e130]: جرافيك • UI/UX
+        - generic [ref=e131]:
+          - paragraph [ref=e132]: مطورين
+          - paragraph [ref=e133]: ويب • تطبيقات
+        - generic [ref=e134]:
+          - paragraph [ref=e135]: مستشارين
+          - paragraph [ref=e136]: إدارة • تسويق
+        - generic [ref=e137]:
+          - paragraph [ref=e138]: محاسبين
+          - paragraph [ref=e139]: مستقلين
+      - paragraph [ref=e140]: من الرياض إلى جدة - في كل أنحاء المملكة
+    - generic [ref=e144]:
+      - generic [ref=e145]:
+        - img [ref=e146]
+        - heading "متوافق مع الزكاة والضريبة" [level=3] [ref=e148]
+        - paragraph [ref=e149]: جميع الفواتير تلتزم بالمتطلبات السعودية
+      - generic [ref=e150]:
+        - img [ref=e151]
+        - heading "بياناتك آمنة 100%" [level=3] [ref=e154]
+        - paragraph [ref=e155]: تشفير SSL ونسخ احتياطية يومية
+      - generic [ref=e156]:
+        - img [ref=e157]
+        - heading "جرب مجاناً" [level=3] [ref=e159]
+        - paragraph [ref=e160]: بدون بطاقة ائتمان - ألغِ في أي وقت
+      - generic [ref=e161]:
+        - img [ref=e162]
+        - heading "دعم بالعربية" [level=3] [ref=e164]
+        - paragraph [ref=e165]: فريق دعم متاح 6 أيام في الأسبوع
+    - generic [ref=e168]:
+      - generic [ref=e169]:
+        - heading "كل ما تحتاجه لإدارة فواتيرك باحترافية" [level=2] [ref=e170]:
+          - generic [ref=e171]: كل
+          - generic [ref=e173]: ما
+          - generic [ref=e175]: تحتاجه
+          - generic [ref=e177]: لإدارة
+          - generic [ref=e179]: فواتيرك
+          - generic [ref=e181]: باحترافية
+        - paragraph [ref=e182]: أدوات قوية مصممة خصيصاً للمستقلين والشركات الصغيرة لتسهيل الأعمال المالية
+      - generic [ref=e183]:
+        - generic [ref=e184] [cursor=pointer]:
+          - generic [ref=e185]:
+            - img [ref=e186]
+            - generic [ref=e188]: معتمد
+          - heading "متوافق 100% مع هيئة الزكاة والضريبة" [level=3] [ref=e189]
+          - paragraph [ref=e190]: لا تقلق من الأخطاء. جميع الفواتير تلتزم بالمتطلبات السعودية تلقائياً.
+          - img [ref=e193]
+        - generic [ref=e195] [cursor=pointer]:
+          - heading "أنشئ فاتورة من أي مكان" [level=3] [ref=e196]
+          - paragraph [ref=e197]: مكتبك، مقهى، أو حتى من سيارتك - كل الأجهزة متاحة
+          - generic [ref=e199]:
+            - img [ref=e200]
+            - img [ref=e202]
+        - generic [ref=e204] [cursor=pointer]:
+          - heading "فواتير تجعل عملك يبدو احترافياً" [level=3] [ref=e205]
+          - paragraph [ref=e206]: أضف شعارك وألوان علامتك التجارية - قوالب عربية جاهزة
+          - img [ref=e210]
+        - generic [ref=e223] [cursor=pointer]:
+          - heading "وفر 5 ساعات أسبوعياً" [level=3] [ref=e224]
+          - paragraph [ref=e225]: ركز على عملك بدلاً من الفواتير - واجهة بسيطة وسريعة
+          - img [ref=e230]
+        - generic [ref=e248] [cursor=pointer]:
+          - heading "احفظ عملائك وخدماتك مرة واحدة" [level=3] [ref=e249]
+          - paragraph [ref=e250]: استخدمها في كل فاتورة بدون إعادة كتابة - قاعدة بيانات ذكية
+          - generic [ref=e252]:
+            - img [ref=e254]
+            - img [ref=e257]
+            - img [ref=e261]
+      - link "ابدأ مجاناً - بدون بطاقة ائتمان" [ref=e265] [cursor=pointer]:
+        - /url: /register
+        - button "ابدأ مجاناً - بدون بطاقة ائتمان" [ref=e266]
+    - generic [ref=e268]:
+      - generic [ref=e269]:
+        - heading "بلفرها من جوالك أو لابتوبك في ثوانٍ" [level=2] [ref=e270]:
+          - generic [ref=e271]: بلفرها
+          - generic [ref=e273]: من
+          - generic [ref=e275]: جوالك
+          - generic [ref=e277]: أو
+          - generic [ref=e279]: لابتوبك
+          - generic [ref=e281]: في
+          - generic [ref=e283]: ثوانٍ
+        - paragraph [ref=e284]: تجربة استخدام سلسة ومتناسقة عبر جميع أجهزتك. ابدأ الفاتورة من المكتب وأرسلها من المقهى.
+      - generic [ref=e285]:
+        - img [ref=e286]
+        - img [ref=e300]:
+          - generic [ref=e312]: bilfora.com/dashboard
+      - generic [ref=e330]:
+        - generic [ref=e331]:
+          - paragraph [ref=e332]:
+            - generic [ref=e333]: +0K
+          - paragraph [ref=e334]: فاتورة مُصدَرة
+          - paragraph [ref=e335]: من آلاف المستقلين السعداء
+        - generic [ref=e336]:
+          - paragraph [ref=e337]:
+            - generic [ref=e338]: "+0"
+          - paragraph [ref=e339]: منشأة ومستقل
+          - paragraph [ref=e340]: يعتمدون على بيلفورا يومياً
+        - generic [ref=e341]:
+          - paragraph [ref=e342]:
+            - generic [ref=e343]: +0M
+          - paragraph [ref=e344]: SAR قيمة فواتير
+          - paragraph [ref=e345]: تمت معالجتها عبر المنصة
+        - generic [ref=e346]:
+          - paragraph [ref=e347]:
+            - generic [ref=e348]: 0%
+          - paragraph [ref=e349]: توفّر في الوقت
+          - paragraph [ref=e350]: عند إنشاء وإرسال الفواتير
+    - generic [ref=e351]:
+      - generic [ref=e352]:
+        - heading "كيف تبلفرها ؟" [level=2] [ref=e353]:
+          - generic [ref=e354]: كيف
+          - generic [ref=e356]: تبلفرها
+          - generic [ref=e358]: ؟
+        - paragraph [ref=e359]: من التسجيل إلى فاتورتك الأولى - أقل من دقيقتين
+      - generic [ref=e361]:
+        - generic [ref=e362]:
+          - button "أنشئ فاتورة خلال ثوانٍ ابدأ بإدخال بيانات العميل والخدمة وحدد الأسعار والضرائب، وسيولد بيلفورا فاتورة احترافية متوافقة مع الزكاة والضريبة جاهزة للطباعة أو الإرسال بنقرة واحدة." [ref=e363]:
+            - img [ref=e365]
+            - generic [ref=e368]:
+              - heading "أنشئ فاتورة خلال ثوانٍ" [level=3] [ref=e369]
+              - paragraph [ref=e370]: ابدأ بإدخال بيانات العميل والخدمة وحدد الأسعار والضرائب، وسيولد بيلفورا فاتورة احترافية متوافقة مع الزكاة والضريبة جاهزة للطباعة أو الإرسال بنقرة واحدة.
+          - button "احفظ عملائك وخدماتك مرة واحدة احفظ قائمة عملائك وخدماتك مع الأسعار والضرائب المفضلة، واخترها بسرعة في كل فاتورة بدون إعادة إدخال البيانات. وفر الوقت وركز على عملك." [ref=e371]:
+            - img [ref=e373]
+            - generic [ref=e377]:
+              - heading "احفظ عملائك وخدماتك مرة واحدة" [level=3] [ref=e378]
+              - paragraph [ref=e379]: احفظ قائمة عملائك وخدماتك مع الأسعار والضرائب المفضلة، واخترها بسرعة في كل فاتورة بدون إعادة إدخال البيانات. وفر الوقت وركز على عملك.
+          - button "اعرف من دفع ومن لم يدفع بنظرة واحدة اعرف الفواتير المدفوعة والمتأخرة بنظرة واحدة، وأرسل تذكيرات تلقائية لعملائك المتأخرين برابط دفع أو نسخة PDF." [ref=e380]:
+            - img [ref=e382]
+            - generic [ref=e384]:
+              - heading "اعرف من دفع ومن لم يدفع بنظرة واحدة" [level=3] [ref=e385]
+              - paragraph [ref=e386]: اعرف الفواتير المدفوعة والمتأخرة بنظرة واحدة، وأرسل تذكيرات تلقائية لعملائك المتأخرين برابط دفع أو نسخة PDF.
+          - button "فواتير عربية احترافية مع شعارك اختر من قوالب عربية جميلة وشارك فاتورتك برابط مباشر أو حمّلها PDF مع شعارك وبيانات منشأتك. فواتير تجعل عملك يبدو احترافياً." [ref=e387]:
+            - img [ref=e389]
+            - generic [ref=e391]:
+              - heading "فواتير عربية احترافية مع شعارك" [level=3] [ref=e392]
+              - paragraph [ref=e393]: اختر من قوالب عربية جميلة وشارك فاتورتك برابط مباشر أو حمّلها PDF مع شعارك وبيانات منشأتك. فواتير تجعل عملك يبدو احترافياً.
+        - generic [ref=e395]:
+          - img [ref=e397]
+          - generic [ref=e400]:
+            - heading "أنشئ فاتورة خلال ثوانٍ" [level=3] [ref=e401]
+            - paragraph [ref=e402]: ابدأ بإدخال بيانات العميل والخدمة وحدد الأسعار والضرائب، وسيولد بيلفورا فاتورة احترافية متوافقة مع الزكاة والضريبة جاهزة للطباعة أو الإرسال بنقرة واحدة.
+          - generic [ref=e403]:
+            - link "ابدأ الآن" [ref=e404] [cursor=pointer]:
+              - /url: /register
+              - button "ابدأ الآن" [ref=e405]:
+                - text: ابدأ الآن
+                - img [ref=e406]
+            - generic [ref=e408]: لا تحتاج بطاقة ائتمان للتجربة
+    - generic [ref=e411]:
+      - generic [ref=e412]:
+        - paragraph [ref=e413]: الأسعار
+        - heading "اختر الخطة المناسبة لعملك" [level=2] [ref=e414]
+      - paragraph [ref=e415]: ابدأ مجاناً. ادفع فقط عندما تنمو أعمالك.
+      - paragraph [ref=e416]: معظم عملائنا يبدأون بالمجان ويرتقون بعد 3 أشهر
+      - generic [ref=e417]:
+        - generic [ref=e419]:
+          - heading "مجاني" [level=4] [ref=e421]
+          - paragraph [ref=e422]: كل ما تحتاجه للبدء في إصدار الفواتير.
+          - paragraph [ref=e423]:
+            - generic [ref=e424]: "0"
+            - paragraph [ref=e425]: ريال / شهرياً
+          - link "ابدأ مجانًا" [ref=e426] [cursor=pointer]:
+            - /url: /register
+            - button "ابدأ مجانًا" [ref=e427]
+          - list [ref=e428]:
+            - listitem [ref=e429]:
+              - img [ref=e430]
+              - paragraph [ref=e432]: عدد غير محدود من العملاء
+            - listitem [ref=e433]:
+              - img [ref=e434]
+              - paragraph [ref=e436]: 5 فواتير شهرياً
+            - listitem [ref=e437]:
+              - img [ref=e438]
+              - paragraph [ref=e440]: قوالب فواتير أساسية
+            - listitem [ref=e441]:
+              - img [ref=e442]
+              - paragraph [ref=e444]: تصدير PDF
+            - listitem [ref=e445]:
+              - img [ref=e446]
+              - paragraph [ref=e448]: لوحة تحكم بسيطة
+        - generic [ref=e450]:
+          - generic [ref=e451]: الأكثر اختياراً - 70% من العملاء
+          - heading "احترافي" [level=4] [ref=e453]
+          - paragraph [ref=e454]: للمستقلين والشركات الصغيرة التي تنمو بسرعة.
+          - paragraph [ref=e455]:
+            - generic [ref=e456]: "29"
+            - paragraph [ref=e457]: ريال / شهرياً
+          - link "اشترك الآن" [ref=e458] [cursor=pointer]:
+            - /url: /register?plan=pro
+            - button "اشترك الآن" [ref=e459]
+          - list [ref=e460]:
+            - listitem [ref=e461]:
+              - img [ref=e462]
+              - paragraph [ref=e464]: فواتير غير محدودة
+            - listitem [ref=e465]:
+              - img [ref=e466]
+              - paragraph [ref=e468]: قوالب احترافية مخصصة
+            - listitem [ref=e469]:
+              - img [ref=e470]
+              - paragraph [ref=e472]: إزالة شعار بيلفورا
+            - listitem [ref=e473]:
+              - img [ref=e474]
+              - paragraph [ref=e476]: تعدد العملات
+            - listitem [ref=e477]:
+              - img [ref=e478]
+              - paragraph [ref=e480]: تقارير متقدمة
+            - listitem [ref=e481]:
+              - img [ref=e482]
+              - paragraph [ref=e484]: دعم فني ذو أولوية
+        - generic [ref=e486]:
+          - heading "مؤسسات" [level=4] [ref=e488]
+          - paragraph [ref=e489]: حلول مخصصة للشركات الكبيرة والفرق.
+          - paragraph [ref=e490]:
+            - generic [ref=e491]: "99"
+            - paragraph [ref=e492]: ريال / شهرياً
+          - link "اشترك الآن" [ref=e493] [cursor=pointer]:
+            - /url: /contact
+            - button "اشترك الآن" [ref=e494]
+          - list [ref=e495]:
+            - listitem [ref=e496]:
+              - img [ref=e497]
+              - paragraph [ref=e499]: كل مميزات الباقة الاحترافية
+            - listitem [ref=e500]:
+              - img [ref=e501]
+              - paragraph [ref=e503]: وصول متعدد للمستخدمين (قريباً)
+            - listitem [ref=e504]:
+              - img [ref=e505]
+              - paragraph [ref=e507]: ربط API (قريباً)
+            - listitem [ref=e508]:
+              - img [ref=e509]
+              - paragraph [ref=e511]: مدير حساب مخصص
+            - listitem [ref=e512]:
+              - img [ref=e513]
+              - paragraph [ref=e515]: تخصيص كامل للهوية
+      - generic [ref=e517]:
+        - img [ref=e518]
+        - paragraph [ref=e520]: ضمان استرداد الأموال خلال 30 يوم - أو استرجع أموالك
+    - generic [ref=e521]:
+      - generic [ref=e522]:
+        - heading "تجارب أصدقائنا" [level=2] [ref=e523]
+        - paragraph [ref=e524]: قصص نجاح من أشخاص مثلك يستخدمون بيلفورا يومياً
+      - generic [ref=e525]:
+        - generic [ref=e526]:
+          - figure [ref=e527] [cursor=pointer]:
+            - generic [ref=e529]:
+              - generic [ref=e530]: رؤى
+              - paragraph [ref=e531]: "@ٌruwwa"
+            - blockquote [ref=e532]: تصاميمهم حلوة واحترافية، وسهلة الاستخدام. أنصحكم تجربونها.
+          - figure [ref=e533] [cursor=pointer]:
+            - generic [ref=e535]:
+              - generic [ref=e536]: عبدالعزيز الصلي
+              - paragraph [ref=e537]: "@azzozSelli"
+            - blockquote [ref=e538]: سهولة وسرعة مسجل الخدمات بأسعارها اختار وامشي
+          - figure [ref=e539] [cursor=pointer]:
+            - generic [ref=e541]:
+              - generic [ref=e542]: الإبداع البصري
+              - paragraph [ref=e543]: "@visualcreate"
+            - blockquote [ref=e544]: ابدااااع وتراني صعبة الإرضاء (;
+        - generic [ref=e545]:
+          - figure [ref=e546] [cursor=pointer]:
+            - generic [ref=e548]:
+              - generic [ref=e549]: رؤى
+              - paragraph [ref=e550]: "@ٌruwwa"
+            - blockquote [ref=e551]: تصاميمهم حلوة واحترافية، وسهلة الاستخدام. أنصحكم تجربونها.
+          - figure [ref=e552] [cursor=pointer]:
+            - generic [ref=e554]:
+              - generic [ref=e555]: عبدالعزيز الصلي
+              - paragraph [ref=e556]: "@azzozSelli"
+            - blockquote [ref=e557]: سهولة وسرعة مسجل الخدمات بأسعارها اختار وامشي
+          - figure [ref=e558] [cursor=pointer]:
+            - generic [ref=e560]:
+              - generic [ref=e561]: الإبداع البصري
+              - paragraph [ref=e562]: "@visualcreate"
+            - blockquote [ref=e563]: ابدااااع وتراني صعبة الإرضاء (;
+        - generic [ref=e564]:
+          - figure [ref=e565] [cursor=pointer]:
+            - generic [ref=e567]:
+              - generic [ref=e568]: رؤى
+              - paragraph [ref=e569]: "@ٌruwwa"
+            - blockquote [ref=e570]: تصاميمهم حلوة واحترافية، وسهلة الاستخدام. أنصحكم تجربونها.
+          - figure [ref=e571] [cursor=pointer]:
+            - generic [ref=e573]:
+              - generic [ref=e574]: عبدالعزيز الصلي
+              - paragraph [ref=e575]: "@azzozSelli"
+            - blockquote [ref=e576]: سهولة وسرعة مسجل الخدمات بأسعارها اختار وامشي
+          - figure [ref=e577] [cursor=pointer]:
+            - generic [ref=e579]:
+              - generic [ref=e580]: الإبداع البصري
+              - paragraph [ref=e581]: "@visualcreate"
+            - blockquote [ref=e582]: ابدااااع وتراني صعبة الإرضاء (;
+        - generic [ref=e583]:
+          - figure [ref=e584] [cursor=pointer]:
+            - generic [ref=e586]:
+              - generic [ref=e587]: رؤى
+              - paragraph [ref=e588]: "@ٌruwwa"
+            - blockquote [ref=e589]: تصاميمهم حلوة واحترافية، وسهلة الاستخدام. أنصحكم تجربونها.
+          - figure [ref=e590] [cursor=pointer]:
+            - generic [ref=e592]:
+              - generic [ref=e593]: عبدالعزيز الصلي
+              - paragraph [ref=e594]: "@azzozSelli"
+            - blockquote [ref=e595]: سهولة وسرعة مسجل الخدمات بأسعارها اختار وامشي
+          - figure [ref=e596] [cursor=pointer]:
+            - generic [ref=e598]:
+              - generic [ref=e599]: الإبداع البصري
+              - paragraph [ref=e600]: "@visualcreate"
+            - blockquote [ref=e601]: ابدااااع وتراني صعبة الإرضاء (;
+      - generic [ref=e602]:
+        - generic [ref=e603]:
+          - figure [ref=e604] [cursor=pointer]:
+            - generic [ref=e606]:
+              - generic [ref=e607]: عمران
+              - paragraph [ref=e608]: "@umran"
+            - blockquote [ref=e609]: كل ذا ومجاني والله مب مصدق
+          - figure [ref=e610] [cursor=pointer]:
+            - generic [ref=e612]:
+              - generic [ref=e613]: العليمي
+              - paragraph [ref=e614]: "@ulaimi"
+            - blockquote [ref=e615]: بسيط وسريع ومن الجوال
+          - figure [ref=e616] [cursor=pointer]:
+            - generic [ref=e618]:
+              - generic [ref=e619]: ذرب
+              - paragraph [ref=e620]: "@tharb"
+            - blockquote [ref=e621]: والله انه فزعة توهت وفي ثواني ضبطني
+        - generic [ref=e622]:
+          - figure [ref=e623] [cursor=pointer]:
+            - generic [ref=e625]:
+              - generic [ref=e626]: عمران
+              - paragraph [ref=e627]: "@umran"
+            - blockquote [ref=e628]: كل ذا ومجاني والله مب مصدق
+          - figure [ref=e629] [cursor=pointer]:
+            - generic [ref=e631]:
+              - generic [ref=e632]: العليمي
+              - paragraph [ref=e633]: "@ulaimi"
+            - blockquote [ref=e634]: بسيط وسريع ومن الجوال
+          - figure [ref=e635] [cursor=pointer]:
+            - generic [ref=e637]:
+              - generic [ref=e638]: ذرب
+              - paragraph [ref=e639]: "@tharb"
+            - blockquote [ref=e640]: والله انه فزعة توهت وفي ثواني ضبطني
+        - generic [ref=e641]:
+          - figure [ref=e642] [cursor=pointer]:
+            - generic [ref=e644]:
+              - generic [ref=e645]: عمران
+              - paragraph [ref=e646]: "@umran"
+            - blockquote [ref=e647]: كل ذا ومجاني والله مب مصدق
+          - figure [ref=e648] [cursor=pointer]:
+            - generic [ref=e650]:
+              - generic [ref=e651]: العليمي
+              - paragraph [ref=e652]: "@ulaimi"
+            - blockquote [ref=e653]: بسيط وسريع ومن الجوال
+          - figure [ref=e654] [cursor=pointer]:
+            - generic [ref=e656]:
+              - generic [ref=e657]: ذرب
+              - paragraph [ref=e658]: "@tharb"
+            - blockquote [ref=e659]: والله انه فزعة توهت وفي ثواني ضبطني
+        - generic [ref=e660]:
+          - figure [ref=e661] [cursor=pointer]:
+            - generic [ref=e663]:
+              - generic [ref=e664]: عمران
+              - paragraph [ref=e665]: "@umran"
+            - blockquote [ref=e666]: كل ذا ومجاني والله مب مصدق
+          - figure [ref=e667] [cursor=pointer]:
+            - generic [ref=e669]:
+              - generic [ref=e670]: العليمي
+              - paragraph [ref=e671]: "@ulaimi"
+            - blockquote [ref=e672]: بسيط وسريع ومن الجوال
+          - figure [ref=e673] [cursor=pointer]:
+            - generic [ref=e675]:
+              - generic [ref=e676]: ذرب
+              - paragraph [ref=e677]: "@tharb"
+            - blockquote [ref=e678]: والله انه فزعة توهت وفي ثواني ضبطني
+    - generic [ref=e681]:
+      - generic [ref=e682]:
+        - heading "الأسئلة الشائعة" [level=2] [ref=e683]:
+          - generic [ref=e684]: الأسئلة
+          - generic [ref=e686]: الشائعة
+        - paragraph [ref=e687]: إجابات على الأسئلة التي قد تدور في ذهنك
+      - generic [ref=e688]:
+        - generic [ref=e689]:
+          - button "هل بيلفورا مجاني؟" [ref=e690]:
+            - generic [ref=e691]:
+              - img [ref=e692]
+              - generic [ref=e695]: هل بيلفورا مجاني؟
+            - img [ref=e697]
+          - paragraph [ref=e700]: نعم، توجد خطة مجانية تتيح لك إنشاء 5 فواتير شهرياً، وهي مثالية للمستقلين في بداية مشوارهم. يمكنك الترقية في أي وقت عندما تحتاج إلى المزيد من الفواتير.
+        - button "هل الفواتير معتمدة من هيئة الزكاة والضريبة؟" [ref=e702]:
+          - generic [ref=e703]:
+            - img [ref=e704]
+            - generic [ref=e706]: هل الفواتير معتمدة من هيئة الزكاة والضريبة؟
+          - img [ref=e708]
+        - button "هل يمكنني تخصيص شكل الفاتورة؟" [ref=e711]:
+          - generic [ref=e712]:
+            - img [ref=e713]
+            - generic [ref=e716]: هل يمكنني تخصيص شكل الفاتورة؟
+          - img [ref=e718]
+        - button "كيف يمكنني استلام أموالي؟" [ref=e721]:
+          - generic [ref=e722]:
+            - img [ref=e723]
+            - generic [ref=e725]: كيف يمكنني استلام أموالي؟
+          - img [ref=e727]
+        - button "هل بياناتي آمنة؟" [ref=e730]:
+          - generic [ref=e731]:
+            - img [ref=e732]
+            - generic [ref=e735]: هل بياناتي آمنة؟
+          - img [ref=e737]
+        - button "ماذا لو أردت التوقف عن الاستخدام؟" [ref=e740]:
+          - generic [ref=e741]:
+            - img [ref=e742]
+            - generic [ref=e745]: ماذا لو أردت التوقف عن الاستخدام؟
+          - img [ref=e747]
+        - button "هل يمكنني استخدامه بدون إنترنت؟" [ref=e750]:
+          - generic [ref=e751]:
+            - img [ref=e752]
+            - generic [ref=e759]: هل يمكنني استخدامه بدون إنترنت؟
+          - img [ref=e761]
+      - generic [ref=e763]:
+        - paragraph [ref=e764]: لا تزال لديك أسئلة؟
+        - link "تواصل معنا - نرد خلال ساعة" [ref=e765] [cursor=pointer]:
+          - /url: /contact
+          - button "تواصل معنا - نرد خلال ساعة" [ref=e766]
+    - contentinfo [ref=e767]:
+      - generic [ref=e768]:
+        - heading "وفر 10 ساعات شهرياً - ركز على ما تحب بدلاً من الفواتير أنشئ فاتورتك الأولى في دقيقتين - بدون خبرة محاسبية" [level=2] [ref=e769]:
+          - text: وفر 10 ساعات شهرياً - ركز على ما تحب بدلاً من الفواتير
+          - text: أنشئ فاتورتك الأولى في دقيقتين - بدون خبرة محاسبية
+        - paragraph [ref=e770]:
+          - text: انضم لـ 500+ مستقل سعودي يستخدمون بيلفورا يومياً.
+          - text: بدون بطاقة ائتمان - ألغِ في أي وقت
+        - generic [ref=e771]:
+          - link "ابدأ مجاناً الآن" [ref=e772] [cursor=pointer]:
+            - /url: /register
+            - button "ابدأ مجاناً الآن" [ref=e773]
+          - link "شاهد عرض توضيحي" [ref=e774] [cursor=pointer]:
+            - /url: /demo
+            - button "شاهد عرض توضيحي" [ref=e775]
+      - generic [ref=e776]:
+        - generic [ref=e777]:
+          - generic [ref=e778]:
+            - generic [ref=e779]:
+              - link "Bilfora" [ref=e780] [cursor=pointer]:
+                - /url: /
+                - img "Bilfora" [ref=e781]
+              - paragraph [ref=e782]: منصة ذكية لإصدار الفواتير الإلكترونية للمستقلين وأصحاب الأعمال. أنشئ فواتيرك بسهولة واحترافية في ثوانٍ.
+              - generic [ref=e783]:
+                - link [ref=e784] [cursor=pointer]:
+                  - /url: https://twitter.com/bilfora
+                  - img [ref=e785]
+                - link [ref=e787] [cursor=pointer]:
+                  - /url: https://linkedin.com/company/bilfora
+                  - img [ref=e788]
+            - generic [ref=e790]:
+              - heading "المنتج" [level=3] [ref=e791]
+              - list [ref=e792]:
+                - listitem [ref=e793]:
+                  - link "لوحة التحكم" [ref=e794] [cursor=pointer]:
+                    - /url: /dashboard
+                - listitem [ref=e795]:
+                  - link "إنشاء الفواتير" [ref=e796] [cursor=pointer]:
+                    - /url: /dashboard/invoices
+                - listitem [ref=e797]:
+                  - link "الأسعار" [ref=e798] [cursor=pointer]:
+                    - /url: /#pricing
+            - generic [ref=e799]:
+              - heading "الدعم والمساعدة" [level=3] [ref=e800]
+              - list [ref=e801]:
+                - listitem [ref=e802]:
+                  - link "مركز المساعدة" [ref=e803] [cursor=pointer]:
+                    - /url: /help
+                - listitem [ref=e804]:
+                  - link "تواصل معنا" [ref=e805] [cursor=pointer]:
+                    - /url: /contact
+                - listitem [ref=e806]:
+                  - link "الأسئلة الشائعة" [ref=e807] [cursor=pointer]:
+                    - /url: /#faq
+            - generic [ref=e808]:
+              - heading "الشركة" [level=3] [ref=e809]
+              - list [ref=e810]:
+                - listitem [ref=e811]:
+                  - link "من نحن" [ref=e812] [cursor=pointer]:
+                    - /url: /about
+                - listitem [ref=e813]:
+                  - link "سياسة الخصوصية" [ref=e814] [cursor=pointer]:
+                    - /url: /privacy
+                - listitem [ref=e815]:
+                  - link "شروط الاستخدام" [ref=e816] [cursor=pointer]:
+                    - /url: /terms
+          - generic [ref=e818]:
+            - heading "ابق على اطلاع" [level=3] [ref=e819]
+            - paragraph [ref=e820]: اشترك في نشرتنا الإخبارية للحصول على آخر التحديثات والنصائح
+            - generic [ref=e821]:
+              - textbox "بريدك الإلكتروني" [ref=e822]
+              - button "اشترك" [ref=e823]
+        - generic [ref=e826]:
+          - generic [ref=e827]: © 2025 بيلفورا. جميع الحقوق محفوظة.
+          - generic [ref=e828]:
+            - link "الخصوصية" [ref=e829] [cursor=pointer]:
+              - /url: /privacy
+            - link "الشروط" [ref=e830] [cursor=pointer]:
+              - /url: /terms
+  - region "Notifications alt+T"
+  - alert [ref=e831]: أنشئ فواتيرك في ثوانٍ بسهولة واحترافية
+  - button "Open Next.js Dev Tools" [ref=e837] [cursor=pointer]:
+    - img [ref=e838]
+```
