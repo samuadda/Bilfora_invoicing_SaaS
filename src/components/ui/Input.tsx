@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { interactive, getInputClass } from "@/lib/ui/tokens";
+import { getInputClass } from "@/lib/ui/tokens";
 import { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -26,8 +26,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       size === "sm"
         ? "px-3 py-1.5 text-sm"
         : size === "lg"
-        ? "px-4 py-3 text-base"
-        : "";
+          ? "px-4 py-3 text-base"
+          : "";
 
     return (
       <input

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { interactive, getSelectClass } from "@/lib/ui/tokens";
+import { getSelectClass } from "@/lib/ui/tokens";
 import { SelectHTMLAttributes, ReactNode, forwardRef } from "react";
 import { ChevronDown } from "lucide-react";
 

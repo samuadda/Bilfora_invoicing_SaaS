@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { useInvoiceStats, MonthlyStats, DailyRevenue } from "@/hooks/useInvoiceStats";
-import { InvoiceWithClientAndItems } from "@/types/database";
+import { MonthlyStats } from "@/hooks/useInvoiceStats";
 
 export function useDashboardData(selectedYear: number, selectedMonth: number) {
     const { getMonthlyStats, getDailyRevenue, getRecentInvoices } = useInvoiceStats();

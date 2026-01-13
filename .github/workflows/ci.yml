@@ -29,9 +29,8 @@ jobs:
     - name: Lint Check
       run: npm run lint
 
-    # Assuming you have a typecheck script, otherwise run tsc direct
-    # - name: Type Check
-    #   run: npx tsc --noEmit
+    - name: Type Check
+      run: npm run type-check
 
     - name: Run Playwright tests
       run: npx playwright test
