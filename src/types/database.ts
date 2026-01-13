@@ -1,119 +1,51 @@
 // Database Types for Bilfora Application
-// These types match the Supabase database schema exactly
+// These types now alias the auto-generated Supabase types
+import { Database, Tables } from "./supabase";
 
 export type Gender = "male" | "female";
 export type AccountType = "individual" | "business";
 export type ClientStatus = "active" | "inactive";
 export type OrderStatus = "pending" | "processing" | "completed" | "cancelled";
 export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
-export type InvoiceType = "standard_tax" | "simplified_tax" | "non_tax";
-export type DocumentKind = "invoice" | "credit_note";
+// Enum from database
+export type InvoiceType = Database["public"]["Enums"]["invoice_type"];
+export type DocumentKind = Database["public"]["Enums"]["document_kind"];
 
-// Base database table interfaces
-export interface Profile {
-	id: string; // UUID, FK to auth.users
-	full_name: string;
-	phone: string;
-	dob: string; // Date as ISO string
-	gender: Gender | null;
-	account_type: AccountType;
-	avatar_url: string | null;
-	company_name: string | null;
-	tax_number: string | null;
-	address: string | null;
-	city: string | null;
-	created_at: string; // Timestamptz as ISO string
-	updated_at: string; // Timestamptz as ISO string
-}
+// Base database table interfaces aliased from generated types
+export type Profile = Tables<"profiles"> & {
+	gender: Gender | null; // Casting string to specific union type
+	account_type: AccountType; // Casting string to specific union type
+};
 
-export interface Client {
-	id: string; // UUID
-	user_id: string; // UUID, FK to profiles.id
-	name: string;
-	email: string;
-	phone: string;
-	company_name: string | null;
-	tax_number: string | null;
-	address: string | null;
-	city: string | null;
-	notes: string | null;
-	status: ClientStatus;
-	created_at: string; // Timestamptz as ISO string
-	updated_at: string; // Timestamptz as ISO string
-	deleted_at?: string | null; // Timestamptz as ISO string for soft delete
-	invoice_count?: number; // Computed field for invoice count
-}
+export type Client = Tables<"clients"> & {
+	status: ClientStatus; // Casting string to specific union type
+	invoice_count?: number; // Computed field
+};
 
-export interface Order {
-	id: string; // UUID
-	user_id: string; // UUID, FK to profiles.id
-	client_id: string; // UUID, FK to clients.id
-	order_number: string; // Unique identifier
+export type Order = Tables<"orders"> & {
 	status: OrderStatus;
-	total_amount: number; // Decimal as number
-	notes: string | null;
-	created_at: string; // Timestamptz as ISO string
-	updated_at: string; // Timestamptz as ISO string
-}
+	total_amount: number; // Numeric comes as number
+};
 
-export interface OrderItem {
-	id: string; // UUID
-	order_id: string; // UUID, FK to orders.id
-	description: string;
-	quantity: number;
-	unit_price: number; // Decimal as number
-	total: number; // Decimal as number
-}
+export type OrderItem = Tables<"order_items">;
 
-// New: Product catalog
 export type ProductStatus = "active" | "inactive";
 
-export interface Product {
-    id: string;
-    user_id: string;
-    name: string;
-    description: string | null;
-    unit: string | null;
-    unit_price: number;
-    active: boolean;
-    status?: ProductStatus; // Computed from active field
-    category?: string | null; // Optional field for UI
-    sku?: string | null; // Optional field for UI
-    created_at: string;
-    updated_at: string;
-}
+export type Product = Tables<"products"> & {
+	status?: ProductStatus; // Computed
+	sku?: string | null; // UI only
+};
 
-export interface Invoice {
-	id: string; // UUID
-	user_id: string; // UUID, FK to profiles.id
-	client_id: string; // UUID, FK to clients.id
-	order_id: string | null; // UUID, FK to orders.id
-	invoice_number: string; // Unique identifier
-	type?: InvoiceType; // Legacy field (deprecated, use invoice_type instead)
-	invoice_type: InvoiceType; // Invoice type: standard_tax, simplified_tax, or non_tax
-	document_kind?: DocumentKind; // Document kind: invoice or credit_note
-	related_invoice_id?: string | null; // UUID, FK to invoices.id (for credit notes)
-	issue_date: string; // Date as ISO string
-	due_date: string; // Date as ISO string
+export type Invoice = Tables<"invoices"> & {
+	invoice_type: InvoiceType;
+	document_kind?: DocumentKind;
 	status: InvoiceStatus;
-	subtotal: number; // Decimal as number
-	tax_rate: number; // Decimal as number (default 15.00, forced to 0 for non_tax)
-	tax_amount: number; // Decimal as number (also known as vat_amount)
-	vat_amount: number; // Decimal as number (alias for tax_amount)
-	total_amount: number; // Decimal as number
-	notes: string | null;
-	created_at: string; // Timestamptz as ISO string
-	updated_at: string; // Timestamptz as ISO string
-}
+	// Map database fields to application logic if needed, 
+	// but Tables interface should cover most:
+	// subtotal, tax_amount etc are all numbers in generated types
+};
 
-export interface InvoiceItem {
-	id: string; // UUID
-	invoice_id: string; // UUID, FK to invoices.id
-	description: string;
-	quantity: number;
-	unit_price: number; // Decimal as number
-	total: number; // Decimal as number
-}
+export type InvoiceItem = Tables<"invoice_items">;
 
 // Extended interfaces with relationships
 export interface OrderWithClient extends Order {
@@ -152,6 +84,8 @@ export interface InvoiceWithOrderAndClient extends Invoice {
 }
 
 // Form input types (for creating/updating records)
+// These generally map to TablesInsert<"tablename"> but with stricter validation types if needed
+
 export interface CreateProfileInput {
 	full_name: string;
 	phone: string;
@@ -214,7 +148,7 @@ export interface CreateInvoiceInput {
 	issue_date: string;
 	due_date: string;
 	status?: InvoiceStatus;
-	tax_rate?: number; 
+	tax_rate?: number;
 	notes?: string | null;
 	items: CreateInvoiceItemInput[];
 }
@@ -297,17 +231,9 @@ export interface DatabaseError {
 }
 
 // Utility types
-export type TableName =
-	| "profiles"
-	| "clients"
-	| "orders"
-	| "order_items"
-	| "invoices"
-	| "invoice_items";
+export type TableName = keyof Database["public"]["Tables"];
 
 export type Insertable<T> = Omit<T, "id" | "created_at" | "updated_at">;
 export type Updatable<T> = Partial<
 	Omit<T, "id" | "created_at" | "updated_at">
 > & { id: string };
-
-// Types are already exported above, no need to re-export

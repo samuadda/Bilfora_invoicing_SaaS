@@ -4,11 +4,12 @@ import { ReactNode, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { supabasePersistent, supabaseSession } from "@/lib/supabase-clients";
-import Sidebar, { useSidebar } from "@/components/dashboard/sideBar";
+import Sidebar from "@/components/dashboard/sideBar";
+import { useSidebar } from "@/components/dashboard/sidebar/SidebarContext";
 import SidebarProvider from "@/components/dashboard/SidebarProvider";
 import LoadingState from "@/components/LoadingState";
-import { Toaster } from "@/components/ui/sonner"; 
-import { motion } from "framer-motion"; 
+import { Toaster } from "@/components/ui/sonner";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutWrapperProps {
@@ -26,15 +27,15 @@ function DashboardContent({ children }: { children: ReactNode }) {
 				isCollapsed ? "md:mr-[80px]" : "md:mr-[280px]"
 			)}
 		>
-            <div className="p-4 md:p-8 pt-20 md:pt-8 max-w-[1600px] mx-auto">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                >
-                    {children}
-                </motion.div>
-            </div>
+			<div className="p-4 md:p-8 pt-20 md:pt-8 max-w-[1600px] mx-auto">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.4, ease: "easeOut" }}
+				>
+					{children}
+				</motion.div>
+			</div>
 		</main>
 	);
 }
@@ -52,7 +53,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 		try {
 			setIsLoading(true);
 			setConnectionError(false);
-			
+
 			// Check both clients to find active session (could be in localStorage or sessionStorage)
 			// Try persistent client first, then session client if no user found
 			const timeoutPromise = new Promise((_, reject) =>
@@ -62,10 +63,10 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 			// Check persistent client first
 			const persistentPromise = supabasePersistent.auth.getUser();
 			const persistentResult = await Promise.race([persistentPromise, timeoutPromise]) as any;
-			
+
 			let user = persistentResult?.data?.user;
 			let error = persistentResult?.error;
-			
+
 			// If no user in persistent client, check session client
 			if (!user && !error) {
 				const sessionPromise = supabaseSession.auth.getUser();
@@ -100,7 +101,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 			setConnectionError(false);
 		} catch (error: any) {
 			console.error("Error checking authentication:", error);
-			
+
 			// Handle timeout and network errors gracefully
 			if (
 				error?.message?.includes("timeout") ||
@@ -126,7 +127,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 		// ✅ Real-time auth listener
 		// Listen to both clients for auth state changes
 		let subscriptions: Array<{ subscription: { unsubscribe: () => void } }> = [];
-		
+
 		try {
 			// Listen to persistent client
 			const { data: sub1 } = supabasePersistent.auth.onAuthStateChange(
@@ -137,7 +138,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 				}
 			);
 			subscriptions.push(sub1);
-			
+
 			// Listen to session client
 			const { data: sub2 } = supabaseSession.auth.onAuthStateChange(
 				(event, session) => {
@@ -163,7 +164,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 	// ⏳ Loading state
 	if (isLoading && !connectionError) {
 		return (
-            <LoadingState message="جاري التحقق من الهوية..." fullScreen />
+			<LoadingState message="جاري التحقق من الهوية..." fullScreen />
 		);
 	}
 

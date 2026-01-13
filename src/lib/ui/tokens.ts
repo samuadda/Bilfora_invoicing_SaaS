@@ -121,8 +121,8 @@ export const surface = {
   // Complete card style (combines above)
   card: {
     default: "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6",
-    elevated: "bg-white rounded-2xl border border-gray-100 shadow-lg p-5 sm:p-6",
-    hover: "hover:shadow-md hover:border-gray-200 transition-all duration-300",
+    elevated: "bg-white/80 backdrop-blur-md rounded-2xl border border-white/50 shadow-xl p-5 sm:p-6",
+    hover: "hover:shadow-lg hover:border-purple-200/50 hover:-translate-y-1 transition-all duration-300",
   },
 } as const;
 
@@ -199,7 +199,7 @@ export const interactive = {
 
   // Button variants
   buttonVariant: {
-    primary: "bg-[#7f2dfb] text-white shadow-lg shadow-purple-200 hover:bg-[#6a1fd8] hover:shadow-xl",
+    primary: "bg-brand-primary text-white shadow-lg shadow-purple-200 hover:bg-brand-primary-hover hover:shadow-xl",
     secondary: "border border-gray-200 text-gray-700 hover:bg-gray-50",
     ghost: "text-gray-700 hover:bg-gray-100",
     danger: "bg-red-600 text-white hover:bg-red-700",
@@ -295,16 +295,16 @@ export const breakpoints = {
   rules: {
     // Padding: Always use responsive pattern for containers
     containerPadding: "px-4 sm:px-6 lg:px-8",
-    
+
     // Section spacing: Use responsive for major sections
     sectionSpacing: "py-16 md:py-24",
-    
+
     // Card padding: Use responsive for cards
     cardPadding: "p-5 sm:p-6",
-    
+
     // Typography: Use responsive for hero/landing headings
     headingResponsive: "text-4xl md:text-5xl",
-    
+
     // Grids: Use responsive columns
     gridResponsive: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
   },

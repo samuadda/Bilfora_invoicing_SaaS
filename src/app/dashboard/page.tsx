@@ -164,7 +164,7 @@ export default function DashboardPage() {
 				</div>
 				<div className={cn("flex items-center", layout.gap.standard)}>
 					{/* Month Selector */}
-					<Card padding="small" className="flex items-center gap-2">
+					<div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2.5">
 						<Calendar className="text-gray-400" size={18} />
 						<select
 							value={selectedMonth}
@@ -188,7 +188,7 @@ export default function DashboardPage() {
 								</option>
 							))}
 						</select>
-					</Card>
+					</div>
 					<DashboardQuickActions
 						onCreateInvoice={openInvoiceModal}
 						onCreateClient={openClientModal}

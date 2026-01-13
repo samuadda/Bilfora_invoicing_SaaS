@@ -553,9 +553,8 @@ export default function InvoicesPage() {
 		XLSX.utils.book_append_sheet(workbook, worksheet, "الفواتير");
 
 		// Generate Excel file and download
-		const fileName = `invoices-export-${
-			new Date().toISOString().split("T")[0]
-		}.xlsx`;
+		const fileName = `invoices-export-${new Date().toISOString().split("T")[0]
+			}.xlsx`;
 		XLSX.writeFile(workbook, fileName);
 	};
 
@@ -625,7 +624,7 @@ export default function InvoicesPage() {
 			</div>
 
 			{/* Stats Cards */}
-			<div className={cn("grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5", layout.gap.standard)}>
+			<div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5", layout.gap.standard)}>
 				<StatsCard
 					title="إجمالي الفواتير"
 					value={stats.total}
@@ -764,9 +763,9 @@ export default function InvoicesPage() {
 								onChange={(e) =>
 									setDocumentKindFilter(
 										e.target.value as
-											| "all"
-											| "invoice"
-											| "credit_note"
+										| "all"
+										| "invoice"
+										| "credit_note"
 									)
 								}
 							>
@@ -976,10 +975,10 @@ export default function InvoicesPage() {
 												<div className="flex gap-1 flex-wrap">
 													{invoice.document_kind ===
 														"credit_note" && (
-														<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
-															إشعار دائن
-														</span>
-													)}
+															<span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
+																إشعار دائن
+															</span>
+														)}
 													{(() => {
 														// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
 														const invoiceType: InvoiceType =
@@ -1026,8 +1025,8 @@ export default function InvoicesPage() {
 														"inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border w-fit",
 														isOverdueInvoice
 															? statusConfig
-																	.overdue
-																	.color
+																.overdue
+																.color
 															: statusInfo.color
 													)}
 												>
@@ -1113,7 +1112,7 @@ export default function InvoicesPage() {
 												)}
 												{invoice.status !== "paid" &&
 													invoice.status !==
-														"cancelled" && (
+													"cancelled" && (
 														<>
 															<button
 																onClick={() =>
@@ -1354,16 +1353,17 @@ function StatsCard({
 	};
 
 	return (
-		<div
+		<Card
 			className={cn(
-				"bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow",
-				isWarning && "bg-orange-50/30 border-orange-100"
+				"flex flex-col justify-between h-full transition-all duration-300",
+				isWarning && "border-orange-200 shadow-orange-100/50"
 			)}
+			variant={isWarning ? "elevated" : "default"}
 		>
 			<div className="flex justify-between items-start mb-4">
 				<div
 					className={cn(
-						"p-3 rounded-2xl",
+						"p-3 rounded-2xl transition-transform group-hover:scale-105",
 						colors[color as keyof typeof colors]
 					)}
 				>
@@ -1371,13 +1371,13 @@ function StatsCard({
 				</div>
 			</div>
 			<div>
-				<p className="text-gray-500 text-sm font-medium mb-1">
+				<Text variant="body-small" color="muted" className="font-medium mb-1">
 					{title}
-				</p>
-				<h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+				</Text>
+				<Heading variant="h3" className="tracking-tight">
 					{value}
-				</h3>
+				</Heading>
 			</div>
-		</div>
+		</Card>
 	);
 }
