@@ -186,102 +186,6 @@ export default function InvoiceDetailClient({
 
 	return (
 		<>
-			<style
-				dangerouslySetInnerHTML={{
-					__html: `
-        @media print {
-          body {
-            background: white !important;
-          }
-          
-          a[href="/dashboard/invoices"],
-          button,
-          .no-print {
-            display: none !important;
-          }
-          
-          .print-invoice {
-            background: white !important;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 20px !important;
-            margin: 0 !important;
-          }
-          
-          .print-invoice {
-            page-break-inside: avoid;
-          }
-          
-          .print-invoice table {
-            border-collapse: collapse !important;
-            width: 100% !important;
-          }
-          
-          .print-invoice table thead {
-            background: #7f2dfb !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            color-adjust: exact;
-          }
-          
-          .print-invoice table th {
-            background: #7f2dfb !important;
-            color: white !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            color-adjust: exact;
-            padding: 12px !important;
-            border: 1px solid #6a1fd8 !important;
-          }
-          
-          .print-invoice table td {
-            padding: 10px !important;
-            border: 1px solid #e5e7eb !important;
-          }
-          
-          .print-invoice table tbody tr {
-            border-bottom: 1px solid #e5e7eb !important;
-          }
-          
-          .print-invoice h1,
-          .print-invoice h2,
-          .print-invoice h3 {
-            color: #012d46 !important;
-          }
-          
-          .print-invoice .totals-section {
-            background: white !important;
-            border: 1px solid #e5e7eb !important;
-          }
-          
-          * {
-            animation: none !important;
-            transition: none !important;
-          }
-          
-          @page {
-            margin: 1cm;
-            size: A4;
-          }
-          
-          .print-invoice {
-            max-width: 100% !important;
-            width: 100% !important;
-          }
-          
-          .print-header {
-            display: block !important;
-            text-align: center;
-            margin-bottom: 20px;
-          }
-        }
-        
-        .print-header {
-          display: none;
-        }
-      `,
-				}}
-			/>
 			<div className="min-h-screen bg-gray-50 p-4 md:p-8">
 				<div className="max-w-6xl mx-auto">
 					{/* Header */}
@@ -546,4 +450,3 @@ export default function InvoiceDetailClient({
 		</>
 	);
 }
-

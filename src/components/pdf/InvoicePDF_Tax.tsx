@@ -47,27 +47,27 @@ export function InvoicePDF_Tax({
 				{/* Header with QR Code */}
 				<View style={s.header}>
 					<View style={s.headerLeft}>
-						<Text style={s.invoiceTitle}>فاتورة ضريبية</Text>
+						<Text style={s.invoiceTitle}>Tax Invoice / فاتورة ضريبية</Text>
 						<Text style={s.invoiceMeta}>
-							رقم الفاتورة: {safeText(invoice.invoice_number || invoice.id)}
+							Invoice No / رقم الفاتورة: {safeText(invoice.invoice_number || invoice.id)}
 						</Text>
 						<View style={{ marginBottom: 2 }}>
 							<Text style={s.invoiceMeta}>
-								تاريخ الإصدار: {formatDate(invoice.issue_date)}
+								Issue Date / تاريخ الإصدار: {formatDate(invoice.issue_date)}
 							</Text>
 							{invoice.issue_date && (
 								<Text style={{ fontSize: 9, color: "#6B7280", marginTop: 1 }}>
-									الموافق: {convertToHijri(invoice.issue_date).formattedHijri}
+									{convertToHijri(invoice.issue_date).formattedHijri}
 								</Text>
 							)}
 						</View>
 						<View style={{ marginBottom: 2 }}>
 							<Text style={s.invoiceMeta}>
-								تاريخ الاستحقاق: {formatDate(invoice.due_date)}
+								Due Date / تاريخ الاستحقاق: {formatDate(invoice.due_date)}
 							</Text>
 							{invoice.due_date && (
 								<Text style={{ fontSize: 9, color: "#6B7280", marginTop: 1 }}>
-									الموافق: {convertToHijri(invoice.due_date).formattedHijri}
+									{convertToHijri(invoice.due_date).formattedHijri}
 								</Text>
 							)}
 						</View>
@@ -77,7 +77,7 @@ export function InvoicePDF_Tax({
 							<View style={s.qrContainer}>
 								{/* eslint-disable-next-line jsx-a11y/alt-text */}
 								<Image src={qrDataUrl} style={s.qrImage} />
-								<Text style={s.qrLabel}>رمز الاستجابة السريعة</Text>
+								<Text style={s.qrLabel}>QR Code / رمز الاستجابة السريعة</Text>
 							</View>
 						)}
 					</View>
@@ -85,35 +85,35 @@ export function InvoicePDF_Tax({
 
 				{/* Seller Information */}
 				<View style={s.infoSection}>
-					<Text style={s.infoSectionTitle}>معلومات البائع</Text>
+					<Text style={s.infoSectionTitle}>Seller Information / معلومات البائع</Text>
 					<View style={s.infoBox}>
 						{sellerName && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الاسم:</Text>
+								<Text style={s.infoLabel}>Name / الاسم:</Text>
 								<Text style={s.infoValue}>{safeText(sellerName)}</Text>
 							</View>
 						)}
 						{crNumber && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الرقم التجاري:</Text>
+								<Text style={s.infoLabel}>CR No / الرقم التجاري:</Text>
 								<Text style={s.infoValue}>{safeText(crNumber)}</Text>
 							</View>
 						)}
 						{vatNumber && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الرقم الضريبي:</Text>
+								<Text style={s.infoLabel}>VAT No / الرقم الضريبي:</Text>
 								<Text style={s.infoValue}>{safeText(vatNumber)}</Text>
 							</View>
 						)}
 						{address && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>العنوان:</Text>
+								<Text style={s.infoLabel}>Address / العنوان:</Text>
 								<Text style={s.infoValue}>{safeText(address)}</Text>
 							</View>
 						)}
 						{iban && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الآيبان:</Text>
+								<Text style={s.infoLabel}>IBAN / الآيبان:</Text>
 								<Text style={s.infoValue}>{safeText(iban)}</Text>
 							</View>
 						)}
@@ -122,27 +122,27 @@ export function InvoicePDF_Tax({
 
 				{/* Buyer Information */}
 				<View style={s.infoSection}>
-					<Text style={s.infoSectionTitle}>معلومات المشتري</Text>
+					<Text style={s.infoSectionTitle}>Buyer Information / معلومات المشتري</Text>
 					<View style={s.infoBox}>
 						<View style={s.infoRow}>
-							<Text style={s.infoLabel}>الاسم:</Text>
+							<Text style={s.infoLabel}>Name / الاسم:</Text>
 							<Text style={s.infoValue}>{safeText(client?.name || "—")}</Text>
 						</View>
 						{client?.company_name && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>اسم الشركة:</Text>
+								<Text style={s.infoLabel}>Company / اسم الشركة:</Text>
 								<Text style={s.infoValue}>{safeText(client.company_name)}</Text>
 							</View>
 						)}
 						{client?.tax_number && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الرقم الضريبي:</Text>
+								<Text style={s.infoLabel}>VAT No / الرقم الضريبي:</Text>
 								<Text style={s.infoValue}>{safeText(client.tax_number)}</Text>
 							</View>
 						)}
 						{client?.address && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>العنوان:</Text>
+								<Text style={s.infoLabel}>Address / العنوان:</Text>
 								<Text style={s.infoValue}>
 									{safeText(client.address)}
 									{client?.city ? `، ${safeText(client.city)}` : null}
@@ -151,13 +151,13 @@ export function InvoicePDF_Tax({
 						)}
 						{client?.email && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>البريد الإلكتروني:</Text>
+								<Text style={s.infoLabel}>Email / البريد الإلكتروني:</Text>
 								<Text style={s.infoValue}>{safeText(client.email)}</Text>
 							</View>
 						)}
 						{client?.phone && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الهاتف:</Text>
+								<Text style={s.infoLabel}>Phone / الهاتف:</Text>
 								<Text style={s.infoValue}>{safeText(client.phone)}</Text>
 							</View>
 						)}
@@ -171,29 +171,29 @@ export function InvoicePDF_Tax({
 							<Text style={s.tableHeaderCell}>#</Text>
 						</View>
 						<View style={s.colDescription}>
-							<Text style={s.tableHeaderCell}>الوصف</Text>
+							<Text style={s.tableHeaderCell}>Description / الوصف</Text>
 						</View>
 						<View style={s.colQuantity}>
-							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>الكمية</Text>
+							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>Qty / الكمية</Text>
 						</View>
 						<View style={s.colUnitPrice}>
 							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>
-								سعر الوحدة (بدون ضريبة)
+								Unit Price / سعر الوحدة
 							</Text>
 						</View>
 						<View style={s.colTaxRate}>
 							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>
-								نسبة الضريبة
+								VAT % / الضريبة
 							</Text>
 						</View>
 						<View style={s.colTaxAmount}>
 							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>
-								مبلغ الضريبة
+								VAT Amount / مبلغ الضريبة
 							</Text>
 						</View>
 						<View style={s.colTotal}>
 							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>
-								الإجمالي (شامل الضريبة)
+								Total / الإجمالي
 							</Text>
 						</View>
 					</View>
@@ -252,18 +252,18 @@ export function InvoicePDF_Tax({
 				<View style={s.totalsSection}>
 					<View style={s.totalsBox}>
 						<View style={s.totalRow}>
-							<Text style={s.totalLabel}>المجموع الفرعي (بدون ضريبة):</Text>
+							<Text style={s.totalLabel}>Subtotal / المجموع الفرعي:</Text>
 							<Text style={s.totalValue}>{formatCurrency(subtotal)}</Text>
 						</View>
 						<View style={s.totalRow}>
 							<Text style={s.totalLabel}>
-								ضريبة القيمة المضافة ({taxRate}%):
+								VAT ({taxRate}%) / ضريبة القيمة المضافة:
 							</Text>
 							<Text style={s.totalValue}>{formatCurrency(vatAmount)}</Text>
 						</View>
 						<View style={s.totalDivider} />
 						<View style={s.finalTotalRow}>
-							<Text style={s.finalTotalLabel}>الإجمالي المستحق:</Text>
+							<Text style={s.finalTotalLabel}>Grand Total / الإجمالي المستحق:</Text>
 							<Text style={s.finalTotalValue}>{formatCurrency(totalAmount)}</Text>
 						</View>
 					</View>
@@ -272,7 +272,7 @@ export function InvoicePDF_Tax({
 				{/* Notes */}
 				{invoice.notes && (
 					<View style={s.notesSection}>
-						<Text style={s.notesLabel}>ملاحظات:</Text>
+						<Text style={s.notesLabel}>Notes / ملاحظات:</Text>
 						<Text style={s.notesText}>{safeText(invoice.notes)}</Text>
 					</View>
 				)}
@@ -280,7 +280,7 @@ export function InvoicePDF_Tax({
 				{/* Footer */}
 				<View style={s.footer}>
 					<Text style={s.footerText}>
-						صُنعت هذه الفاتورة بواسطة منصة بيلفورة
+						Generated by Bilfora / صُنعت هذه الفاتورة بواسطة منصة بيلفورة
 					</Text>
 				</View>
 			</Page>

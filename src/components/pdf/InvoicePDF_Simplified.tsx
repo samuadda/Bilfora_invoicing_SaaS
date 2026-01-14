@@ -46,19 +46,19 @@ export function InvoicePDF_Simplified({
 			<Page size="A4" style={s.page}>
 				{/* Header */}
 				<View style={{ marginBottom: 20, alignItems: "center" }}>
-					<Text style={{ fontSize: 22, fontWeight: "bold", color: "#1F2937", marginBottom: 8 }}>
-						فاتورة ضريبية مبسطة
+					<Text style={{ fontSize: 18, fontWeight: "bold", color: "#1F2937", marginBottom: 8, textAlign: 'center' }}>
+						Simplified Tax Invoice / فاتورة ضريبية مبسطة
 					</Text>
-					<Text style={{ fontSize: 11, color: "#6B7280", marginBottom: 4 }}>
-						رقم الفاتورة: {safeText(invoice.invoice_number || invoice.id)}
+					<Text style={{ fontSize: 10, color: "#6B7280", marginBottom: 4 }}>
+						Invoice No / رقم الفاتورة: {safeText(invoice.invoice_number || invoice.id)}
 					</Text>
-					<View style={{ marginBottom: 2 }}>
+					<View style={{ marginBottom: 2, alignItems: 'center' }}>
 						<Text style={{ fontSize: 10, color: "#6B7280" }}>
-							تاريخ الإصدار: {formatDateTime(invoice.issue_date)}
+							Issue Date / تاريخ الإصدار: {formatDateTime(invoice.issue_date)}
 						</Text>
 						{invoice.issue_date && (
 							<Text style={{ fontSize: 9, color: "#6B7280", marginTop: 1 }}>
-								الموافق: {convertToHijri(invoice.issue_date).formattedHijri}
+								{convertToHijri(invoice.issue_date).formattedHijri}
 							</Text>
 						)}
 					</View>
@@ -66,35 +66,35 @@ export function InvoicePDF_Simplified({
 
 				{/* Seller Information */}
 				<View style={s.infoSection}>
-					<Text style={s.infoSectionTitle}>معلومات البائع</Text>
+					<Text style={s.infoSectionTitle}>Seller Information / معلومات البائع</Text>
 					<View style={s.infoBox}>
 						{sellerName && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الاسم:</Text>
+								<Text style={s.infoLabel}>Name / الاسم:</Text>
 								<Text style={s.infoValue}>{safeText(sellerName)}</Text>
 							</View>
 						)}
 						{crNumber && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الرقم التجاري:</Text>
+								<Text style={s.infoLabel}>CR No / الرقم التجاري:</Text>
 								<Text style={s.infoValue}>{safeText(crNumber)}</Text>
 							</View>
 						)}
 						{vatNumber && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الرقم الضريبي:</Text>
+								<Text style={s.infoLabel}>VAT No / الرقم الضريبي:</Text>
 								<Text style={s.infoValue}>{safeText(vatNumber)}</Text>
 							</View>
 						)}
 						{address && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>العنوان:</Text>
+								<Text style={s.infoLabel}>Address / العنوان:</Text>
 								<Text style={s.infoValue}>{safeText(address)}</Text>
 							</View>
 						)}
 						{iban && (
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الآيبان:</Text>
+								<Text style={s.infoLabel}>IBAN / الآيبان:</Text>
 								<Text style={s.infoValue}>{safeText(iban)}</Text>
 							</View>
 						)}
@@ -104,15 +104,15 @@ export function InvoicePDF_Simplified({
 				{/* Buyer Information */}
 				{client && (
 					<View style={s.infoSection}>
-						<Text style={s.infoSectionTitle}>معلومات المشتري</Text>
+						<Text style={s.infoSectionTitle}>Buyer Information / معلومات المشتري</Text>
 						<View style={s.infoBox}>
 							<View style={s.infoRow}>
-								<Text style={s.infoLabel}>الاسم:</Text>
+								<Text style={s.infoLabel}>Name / الاسم:</Text>
 								<Text style={s.infoValue}>{safeText(client.name)}</Text>
 							</View>
 							{client.email && (
 								<View style={s.infoRow}>
-									<Text style={s.infoLabel}>البريد:</Text>
+									<Text style={s.infoLabel}>Email / البريد:</Text>
 									<Text style={s.infoValue}>{safeText(client.email)}</Text>
 								</View>
 							)}
@@ -124,14 +124,14 @@ export function InvoicePDF_Simplified({
 				<View style={s.table}>
 					<View style={s.tableHeader}>
 						<View style={s.colDescSimple}>
-							<Text style={s.tableHeaderCell}>الوصف</Text>
+							<Text style={s.tableHeaderCell}>Description / الوصف</Text>
 						</View>
 						<View style={s.colQtySimple}>
-							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>الكمية</Text>
+							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>Qty / الكمية</Text>
 						</View>
 						<View style={s.colPriceSimple}>
 							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>
-								السعر (شامل الضريبة)
+								Price (Inc. VAT) / السعر (شامل الضريبة)
 							</Text>
 						</View>
 					</View>
@@ -172,19 +172,19 @@ export function InvoicePDF_Simplified({
 				<View style={s.totalsSection}>
 					<View style={s.totalsBox}>
 						<View style={s.totalRow}>
-							<Text style={s.totalLabel}>إجمالي المبلغ الخاضع للضريبة:</Text>
+							<Text style={s.totalLabel}>Total Taxable / الخاضع للضريبة:</Text>
 							<Text style={s.totalValue}>{formatCurrency(subtotal)}</Text>
 						</View>
 						<View style={s.totalRow}>
 							<Text style={s.totalLabel}>
-								ضريبة القيمة المضافة ({taxRate}%):
+								VAT ({taxRate}%) / الضريبة:
 							</Text>
 							<Text style={s.totalValue}>{formatCurrency(vatAmount)}</Text>
 						</View>
 						<View style={s.totalDivider} />
 						<View style={s.finalTotalRow}>
 							<Text style={s.finalTotalLabel}>
-								المجموع مع الضريبة ({taxRate}%):
+								Total / الإجمالي:
 							</Text>
 							<Text style={s.finalTotalValue}>{formatCurrency(totalAmount)}</Text>
 						</View>
@@ -197,7 +197,7 @@ export function InvoicePDF_Simplified({
 						{/* eslint-disable-next-line jsx-a11y/alt-text */}
 						<Image src={qrDataUrl} style={{ width: 100, height: 100 }} />
 						<Text style={{ fontSize: 8, color: "#6B7280", marginTop: 4 }}>
-							رمز الاستجابة السريعة
+							QR Code / رمز الاستجابة السريعة
 						</Text>
 					</View>
 				)}
@@ -205,7 +205,7 @@ export function InvoicePDF_Simplified({
 				{/* Footer */}
 				<View style={s.footer}>
 					<Text style={s.footerText}>
-						صُنعت هذه الفاتورة بواسطة منصة بيلفورة
+						Generated by Bilfora / صُنعت هذه الفاتورة بواسطة منصة بيلفورة
 					</Text>
 				</View>
 			</Page>

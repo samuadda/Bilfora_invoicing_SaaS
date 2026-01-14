@@ -213,7 +213,7 @@ function LoginContent() {
 			const { error } = await supabasePersistent.auth.resetPasswordForEmail(
 				resetEmail,
 				{
-					redirectTo: `${location.origin}/reset-password`,
+					redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || location.origin}/reset-password`,
 				}
 			);
 
