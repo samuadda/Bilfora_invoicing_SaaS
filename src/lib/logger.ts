@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 type LogLevel = "info" | "warn" | "error" | "debug";
 
 class Logger {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private log(level: LogLevel, message: string, meta?: any) {
         // In development, always log to console
         if (process.env.NODE_ENV === "development") {
@@ -40,14 +41,17 @@ class Logger {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info(message: string, meta?: any) {
         this.log("info", message, meta);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     warn(message: string, meta?: any) {
         this.log("warn", message, meta);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     error(message: string, meta?: any) {
         this.log("error", message, meta);
         // Also log to console in production for immediate visibility in server logs
@@ -56,6 +60,7 @@ class Logger {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     debug(message: string, meta?: any) {
         this.log("debug", message, meta);
     }

@@ -30,6 +30,11 @@ export default withSentryConfig(nextConfig, {
  // For all available options, see:
 	// https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
+	// Temporarily disable source maps to prevent build failure due to invalid Sentry token
+	sourcemaps: {
+		disable: true,
+	},
+
 	org: "bilfora",
 
  project: "javascript-nextjs",
