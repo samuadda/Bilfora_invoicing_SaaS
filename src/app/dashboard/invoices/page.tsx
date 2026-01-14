@@ -31,7 +31,6 @@ import {
 	DialogTitle,
 	DialogFooter,
 } from "@/components/dialog";
-import { supabase } from "@/lib/supabase";
 import { InvoiceWithClientAndItems, InvoiceStatus, InvoiceType } from "@/types/database";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
 import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
@@ -137,15 +136,21 @@ const getDueDateInfo = (
 	}
 };
 
+import { useInvoices, useDeleteInvoice, useUpdateInvoiceStatus } from "@/hooks/useInvoices";
+
 // export default function InvoicesPage() {
 function InvoicesContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [invoices, setInvoices] = useState<InvoiceWithClientAndItems[]>([]);
+
+	const { data: invoices = [], isLoading: loading } = useInvoices();
+	const deleteInvoiceMutation = useDeleteInvoice();
+	const updateStatusMutation = useUpdateInvoiceStatus();
+
 	const [filteredInvoices, setFilteredInvoices] = useState<
 		InvoiceWithClientAndItems[]
 	>([]);
-	const [loading, setLoading] = useState(true);
+	// const [loading, setLoading] = useState(true); // Removed manual loading state
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">(
 		"all"
@@ -243,10 +248,8 @@ function InvoicesContent() {
 		router,
 	]);
 
-	useEffect(() => {
-		loadInvoices();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	// Removed useEffect for loadInvoices since we use useInvoices hook now
+
 
 	useEffect(() => {
 		let filtered = [...invoices];
@@ -389,42 +392,12 @@ function InvoicesContent() {
 		selectedInvoiceIds.size === paginatedInvoices.length;
 	const hasSelected = selectedInvoiceIds.size > 0;
 
-	const loadInvoices = async () => {
-		try {
-			setLoading(true);
 
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (!user) {
-				router.push("/login");
-				return;
-			}
-
-			const { data, error } = await supabase
-				.from("invoices")
-				.select(
-					`
-					*,
-					client:clients(*),
-					items:invoice_items(*)
-				`
-				)
-				.eq("user_id", user.id)
-				.order("created_at", { ascending: false });
-
-			if (error) throw error;
-
-			setInvoices(data || []);
-		} catch (err) {
-			console.error("Unexpected error:", err);
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	const handleInvoiceSuccess = () => {
-		loadInvoices();
+		// Invalidate is handled automatically by mutations or we can refetch manually if needed, 
+		// but typically success callback might close modal. 
+		// New hook auto-fetches efficiently.
 	};
 
 	const handleStatusChange = async (
@@ -432,15 +405,8 @@ function InvoicesContent() {
 		newStatus: InvoiceStatus
 	) => {
 		try {
-			const ids = Array.isArray(invoiceIds) ? invoiceIds : [invoiceIds];
-			const { error } = await supabase
-				.from("invoices")
-				.update({ status: newStatus })
-				.in("id", ids);
-
-			if (error) throw error;
+			await updateStatusMutation.mutateAsync({ ids: invoiceIds, status: newStatus });
 			setSelectedInvoiceIds(new Set());
-			await loadInvoices();
 		} catch (err) {
 			console.error("Error:", err);
 		}
@@ -448,17 +414,10 @@ function InvoicesContent() {
 
 	const handleDeleteInvoice = async (invoiceIds: string | string[]) => {
 		try {
-			const ids = Array.isArray(invoiceIds) ? invoiceIds : [invoiceIds];
-			const { error } = await supabase
-				.from("invoices")
-				.delete()
-				.in("id", ids);
-
-			if (error) throw error;
+			await deleteInvoiceMutation.mutateAsync(invoiceIds);
 			setDeleteCandidate(null);
 			setShowBulkDeleteDialog(false);
 			setSelectedInvoiceIds(new Set());
-			await loadInvoices();
 		} catch (err) {
 			console.error("Error:", err);
 		}

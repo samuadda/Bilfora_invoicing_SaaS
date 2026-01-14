@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { z } from "zod";
+// import { z } from "zod"; // Unused
 import { useToast } from "@/components/ui/use-toast";
 import {
 	Loader2,
@@ -10,7 +10,10 @@ import {
 	User,
 	FileText,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { invoiceSchema } from "@/lib/schemas/invoice";
+// import { supabase } from "@/lib/supabase"; // DB logic moved to server action
+import { createInvoiceAction } from "@/actions/invoices";
+import { supabase } from "@/lib/supabase"; // Kept only for client loading logic (if needed)
 import type {
 	Client,
 	CreateInvoiceInput,
@@ -36,79 +39,16 @@ interface InvoiceCreationModalProps {
 	onSuccess?: (id?: string) => void;
 }
 
-type CreateInvoiceRpcRow = {
-	id: string;
-	invoice_number: string | null;
-};
 
-function isObject(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null;
-}
-
-function pickRpcRow(data: unknown): CreateInvoiceRpcRow | null {
-	// Postgres RETURNS TABLE => Supabase usually returns array of rows
-	// Some setups return object-like; we handle both safely.
-	if (!data) return null;
-
-	if (Array.isArray(data)) {
-		const first = data[0];
-		if (!isObject(first)) return null;
-		const id = typeof first.id === "string" ? first.id : null;
-		const invoice_number =
-			typeof first.invoice_number === "string"
-				? first.invoice_number
-				: first.invoice_number === null
-					? null
-					: null;
-
-		return id ? { id, invoice_number } : null;
-	}
-
-	if (isObject(data)) {
-		const id = typeof data.id === "string" ? data.id : null;
-		const invoice_number =
-			typeof data.invoice_number === "string"
-				? data.invoice_number
-				: data.invoice_number === null
-					? null
-					: null;
-
-		return id ? { id, invoice_number } : null;
-	}
-
-	return null;
-}
 
 export default function InvoiceCreationModal({
 	isOpen,
 	onClose,
 	onSuccess,
 }: InvoiceCreationModalProps) {
-	// Validation schemas
-	const itemSchema = z.object({
-		description: z.string().min(1, "الوصف مطلوب"),
-		quantity: z.coerce.number().min(1, "الكمية يجب أن تكون 1 على الأقل"),
-		unit_price: z.coerce.number().min(0, "السعر لا يمكن أن يكون سالبًا"),
-	});
+	// Validation schemas moved to @/lib/schemas/invoice.ts
+	// Keeping local references if needed or just using imported ones.
 
-	const invoiceSchema = z.object({
-		client_id: z.string().uuid("العميل غير صالح"),
-
-		order_id: z.string().uuid().nullable().optional().or(z.literal("")),
-
-		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"], {
-			message: "نوع الفاتورة مطلوب",
-		}),
-
-		document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),
-
-		issue_date: z.string().min(1, "تاريخ الإصدار مطلوب"),
-		due_date: z.string().min(1, "تاريخ الاستحقاق مطلوب"),
-		status: z.enum(["draft", "sent", "paid", "cancelled"]),
-		tax_rate: z.coerce.number().min(0).max(100),
-		notes: z.string().optional(),
-		items: z.array(itemSchema).min(1, "يجب إضافة عنصر واحد على الأقل"),
-	});
 
 
 	// Modal state
@@ -288,14 +228,13 @@ export default function InvoiceCreationModal({
 
 	const handleInvoiceSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-
-		// extra guard against double submits
 		if (saving) return;
 
 		try {
 			setSaving(true);
 			setError(null);
 
+			// Client-Side Validation (Fast Feedback)
 			const parsed = invoiceSchema.safeParse(invoiceFormData);
 			if (!parsed.success) {
 				const msg = parsed.error.issues[0]?.message || "البيانات غير صالحة";
@@ -307,66 +246,14 @@ export default function InvoiceCreationModal({
 				return;
 			}
 
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
+			// Call Server Action
+			const result = await createInvoiceAction(parsed.data);
 
-			if (!user) {
+			if (!result.success || !result.data) {
+				const msg = result.error || "خطأ غير معروف في الخادم";
 				toast({
-					title: "غير مسجل",
-					description: "يجب تسجيل الدخول أولاً",
-					variant: "destructive",
-				});
-				return;
-			}
-
-			// enforce VAT=0 for non_tax invoices
-			const finalTaxRate =
-				invoiceFormData.invoice_type === "non_tax"
-					? 0
-					: Number(invoiceFormData.tax_rate) || 0;
-
-			// Items payload for RPC (DB computes totals, generates invoice_number, inserts atomically)
-			const itemsPayload = invoiceFormData.items.map((item) => ({
-				description: item.description,
-				quantity: Number(item.quantity) || 0,
-				unit_price: Number(item.unit_price) || 0,
-			}));
-
-			const { data, error: invoiceError } = await supabase.rpc(
-				"create_invoice_with_items",
-				{
-					p_client_id: invoiceFormData.client_id,
-					p_order_id: null,
-					p_invoice_type: invoiceFormData.invoice_type, p_document_kind: invoiceFormData.document_kind ?? "invoice",
-					p_issue_date: invoiceFormData.issue_date,
-					p_due_date: invoiceFormData.due_date,
-					p_status: invoiceFormData.status,
-					p_tax_rate: finalTaxRate,
-					p_notes: invoiceFormData.notes ?? "",
-					p_items: itemsPayload,
-				},
-			);
-
-			if (invoiceError) {
-				console.error("Error creating invoice via RPC:", invoiceError);
-				const msg =
-					invoiceError?.message ||
-					invoiceError?.details ||
-					"فشل في إنشاء الفاتورة";
-				toast({
-					title: "خطأ",
+					title: "فشل الإنشاء",
 					description: msg,
-					variant: "destructive",
-				});
-				return;
-			}
-
-			const created = pickRpcRow(data);
-			if (!created?.id) {
-				toast({
-					title: "خطأ",
-					description: "تم تنفيذ العملية لكن لم يتم استلام بيانات الفاتورة",
 					variant: "destructive",
 				});
 				return;
@@ -374,13 +261,13 @@ export default function InvoiceCreationModal({
 
 			toast({
 				title: "تم إنشاء الفاتورة",
-				description: created.invoice_number
-					? `تم إنشاء الفاتورة بنجاح (${created.invoice_number})`
+				description: result.data.invoice_number
+					? `تم إنشاء الفاتورة بنجاح (${result.data.invoice_number})`
 					: "تم إنشاء الفاتورة بنجاح",
 			});
 
 			closeModal();
-			onSuccess?.(created.id);
+			onSuccess?.(result.data.id);
 		} catch (err) {
 			console.error("Unexpected error:", err);
 			toast({
