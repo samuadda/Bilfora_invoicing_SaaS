@@ -63,7 +63,7 @@ export default function AnalyticsLayout({
 	};
 
 	// Helper function to escape CSV values
-	const escapeCSV = (value: any): string => {
+	const escapeCSV = (value: unknown): string => {
 		if (value === null || value === undefined) return '';
 		const str = String(value);
 		// If value contains comma, quote, or newline, wrap in quotes and escape quotes
@@ -126,10 +126,10 @@ export default function AnalyticsLayout({
 					['العملاء النشطون', 'يتم حسابها من البيانات']
 				];
 
-				const csvContent = summaryData.map(row => 
+				const csvContent = summaryData.map(row =>
 					row.map(cell => escapeCSV(cell)).join(',')
 				).join('\n');
-				
+
 				// Add BOM for UTF-8 to ensure Arabic displays correctly in Excel
 				const BOM = '\uFEFF';
 				const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -146,7 +146,7 @@ export default function AnalyticsLayout({
 					throw new Error('فشل تحميل البيانات');
 				}
 				const data = await response.json();
-				
+
 				// Format headers
 				const headers = [
 					'رقم الفاتورة',
@@ -159,9 +159,10 @@ export default function AnalyticsLayout({
 					'المجموع الفرعي (ريال)',
 					'تاريخ الإنشاء'
 				];
-				
+
 				// Format data rows
-				const rows = data.map((invoice: any) => [
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				const rows = data.map((invoice: Record<string, any>) => [
 					escapeCSV(invoice.invoice_number || '-'),
 					escapeCSV(invoice.client_name || 'غير محدد'),
 					formatCurrency(invoice.total_amount),
@@ -172,7 +173,7 @@ export default function AnalyticsLayout({
 					formatCurrency(invoice.subtotal),
 					formatDate(invoice.created_at || invoice.issue_date)
 				]);
-				
+
 				// Add metadata header
 				const metadata = [
 					['تقرير الفواتير', ''],
@@ -182,19 +183,19 @@ export default function AnalyticsLayout({
 					['عدد الفواتير', data.length.toString()],
 					['']
 				];
-				
+
 				const allRows = [
 					...metadata.map(row => row.map(cell => escapeCSV(cell)).join(',')),
 					headers.map(h => escapeCSV(h)).join(','),
-					...rows.map(row => row.join(','))
+					...rows.map((row: string[]) => row.join(','))
 				];
-				
+
 				const csvContent = allRows.join('\n');
-				
+
 				// Add BOM for UTF-8 to ensure Arabic displays correctly in Excel
 				const BOM = '\uFEFF';
 				const blob = new Blob(
-					[BOM + csvContent], 
+					[BOM + csvContent],
 					{ type: format === 'csv' ? 'text/csv;charset=utf-8;' : 'application/vnd.ms-excel;charset=utf-8;' }
 				);
 				const url = URL.createObjectURL(blob);
@@ -236,10 +237,10 @@ export default function AnalyticsLayout({
 							className="w-56 rounded-xl border border-gray-200 pl-3 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
 						/>
 					</div>
-					
+
 					{/* Date Range Picker */}
 					<div className="relative" ref={datePickerRef}>
-						<button 
+						<button
 							onClick={() => setShowDatePicker(!showDatePicker)}
 							className="inline-flex items-center gap-2 rounded-xl bg-gray-100 text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-200 active:translate-y-[1px]"
 						>
@@ -247,12 +248,12 @@ export default function AnalyticsLayout({
 							<span>{currentRangeLabel}</span>
 							<ChevronDown size={16} />
 						</button>
-						
+
 						{showDatePicker && (
 							<div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50 min-w-80">
 								<div className="space-y-4">
 									<h3 className="font-semibold text-gray-900">اختر النطاق الزمني</h3>
-									
+
 									{/* Quick ranges */}
 									<div className="flex gap-2 flex-wrap">
 										<button onClick={() => setRange(7)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">7 أيام</button>
@@ -260,7 +261,7 @@ export default function AnalyticsLayout({
 										<button onClick={() => setRange(90)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">3 أشهر</button>
 										<button onClick={() => setRange(180)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">6 أشهر</button>
 									</div>
-									
+
 									{/* Custom range */}
 									<div className="border-t pt-4">
 										<h4 className="font-medium text-gray-700 mb-3">نطاق مخصص</h4>
@@ -295,10 +296,10 @@ export default function AnalyticsLayout({
 							</div>
 						)}
 					</div>
-					
+
 					{/* Export Menu */}
 					<div className="relative" ref={exportMenuRef}>
-						<button 
+						<button
 							onClick={() => setShowExportMenu(!showExportMenu)}
 							className="inline-flex items-center gap-2 rounded-xl bg-purple-600 text-white px-4 py-2 text-sm font-medium hover:bg-purple-700 active:translate-y-[1px]"
 						>
@@ -306,36 +307,36 @@ export default function AnalyticsLayout({
 							<span>تصدير</span>
 							<ChevronDown size={16} />
 						</button>
-						
+
 						{showExportMenu && (
 							<div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-2 z-50 min-w-48">
 								<div className="space-y-1">
 									<div className="px-3 py-2 text-sm font-medium text-gray-700">ملخص التحليلات</div>
-									<button 
+									<button
 										onClick={() => exportData('csv', 'summary')}
 										className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
 									>
 										<FileText size={16} />
 										تصدير CSV
 									</button>
-									<button 
+									<button
 										onClick={() => exportData('excel', 'summary')}
 										className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
 									>
 										<Table size={16} />
 										تصدير Excel
 									</button>
-									
+
 									<div className="border-t my-2"></div>
 									<div className="px-3 py-2 text-sm font-medium text-gray-700">تفاصيل الفواتير</div>
-									<button 
+									<button
 										onClick={() => exportData('csv', 'invoices')}
 										className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
 									>
 										<FileText size={16} />
 										فواتير CSV
 									</button>
-									<button 
+									<button
 										onClick={() => exportData('excel', 'invoices')}
 										className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
 									>

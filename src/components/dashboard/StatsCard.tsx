@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, LucideIcon } from "lucide-react";
 import { Card, Text, Heading } from "@/components/ui";
-import { layout } from "@/lib/ui/tokens";
 
 interface StatsCardProps {
     title: string;

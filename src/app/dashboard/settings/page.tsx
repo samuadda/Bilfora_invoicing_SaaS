@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
 	ShieldCheck,
 	Lock,
@@ -12,17 +12,13 @@ import {
 	CreditCard,
 	ArrowUpRight,
 	ArrowDownRight,
-	Users,
-	UserPlus,
 	Trash2,
 	Download,
-    Settings,
-    ChevronDown
+	Settings,
+	ChevronDown
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Heading, Text, Card, Button } from "@/components/ui";
-import { layout } from "@/lib/ui/tokens";
+import { Heading } from "@/components/ui";
 
 interface InvoiceItem {
 	id: string;
@@ -32,12 +28,7 @@ interface InvoiceItem {
 	link: string;
 }
 
-interface TeamMember {
-	id: string;
-	name: string;
-	email: string;
-	role: "Admin" | "Accountant" | "Viewer";
-}
+
 
 export default function SettingsPage() {
 	// Security
@@ -84,27 +75,12 @@ export default function SettingsPage() {
 	];
 
 	// Team (visible only for Team plan)
-	const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-		{
-			id: "1",
-			name: "أحمد محمد",
-			email: "ahmed@example.com",
-			role: "Admin",
-		},
-		{
-			id: "2",
-			name: "فاطمة علي",
-			email: "fatima@example.com",
-			role: "Accountant",
-		},
-	]);
-	const isTeamPlan = useMemo(() => currentPlan === "Team", [currentPlan]);
 
 	const formatSar = (n: number) =>
 		new Intl.NumberFormat("en-US", {
 			style: "currency",
 			currency: "SAR",
-            maximumFractionDigits: 0,
+			maximumFractionDigits: 0,
 		}).format(n);
 
 	const onChangePassword = (e: React.FormEvent) => {
@@ -115,26 +91,26 @@ export default function SettingsPage() {
 	return (
 		<div className="space-y-8 pb-10">
 			{/* Header */}
-            <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col gap-2"
-            >
-                <Heading variant="h1">الإعدادات</Heading>
-                <p className="text-gray-500">تحكم في إعدادات حسابك، الأمان، والفوترة</p>
-            </motion.div>
+			<motion.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				className="flex flex-col gap-2"
+			>
+				<Heading variant="h1">الإعدادات</Heading>
+				<p className="text-gray-500">تحكم في إعدادات حسابك، الأمان، والفوترة</p>
+			</motion.div>
 
 			{/* Security */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <ShieldCheck className="text-[#7f2dfb]" size={24} />
-                    الأمان والحماية
-                </h2>
+					<ShieldCheck className="text-[#7f2dfb]" size={24} />
+					الأمان والحماية
+				</h2>
 				<form
 					onSubmit={onChangePassword}
 					className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
@@ -197,64 +173,64 @@ export default function SettingsPage() {
 					</div>
 				</form>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-50 pt-6">
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-green-100 text-green-600 rounded-lg">
-                                <ShieldCheck size={20} />
-                            </div>
-                            <div>
-                                <p className="text-sm font-bold text-gray-900">التحقق بخطوتين (2FA)</p>
-                                <p className="text-xs text-gray-500">حماية إضافية لحسابك</p>
-                            </div>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={twoFA} onChange={(e) => setTwoFA(e.target.checked)} className="sr-only peer" />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-                        </label>
-                    </div>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-50 pt-6">
+					<div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<div className="flex items-center gap-3">
+							<div className="p-2 bg-green-100 text-green-600 rounded-lg">
+								<ShieldCheck size={20} />
+							</div>
+							<div>
+								<p className="text-sm font-bold text-gray-900">التحقق بخطوتين (2FA)</p>
+								<p className="text-xs text-gray-500">حماية إضافية لحسابك</p>
+							</div>
+						</div>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={twoFA} onChange={(e) => setTwoFA(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</label>
+					</div>
 
-                    <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                                <Lock size={20} />
-                            </div>
-                            <div>
-                                <p className="text-sm font-bold text-gray-900">تنبيهات الدخول</p>
-                                <p className="text-xs text-gray-500">تنبيه عند تسجيل الدخول من جهاز جديد</p>
-                            </div>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={alertLogins} onChange={(e) => setAlertLogins(e.target.checked)} className="sr-only peer" />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-                        </label>
-                    </div>
-                </div>
+					<div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 border border-gray-100">
+						<div className="flex items-center gap-3">
+							<div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+								<Lock size={20} />
+							</div>
+							<div>
+								<p className="text-sm font-bold text-gray-900">تنبيهات الدخول</p>
+								<p className="text-xs text-gray-500">تنبيه عند تسجيل الدخول من جهاز جديد</p>
+							</div>
+						</div>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={alertLogins} onChange={(e) => setAlertLogins(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</label>
+					</div>
+				</div>
 
-                <div className="flex justify-end mt-6">
-                    <button className="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-2 px-4 py-2 hover:bg-red-50 rounded-xl transition-colors">
-                        <LogOut size={16} /> تسجيل الخروج من جميع الأجهزة
-                    </button>
-                </div>
+				<div className="flex justify-end mt-6">
+					<button className="text-red-600 hover:text-red-700 text-sm font-medium flex items-center gap-2 px-4 py-2 hover:bg-red-50 rounded-xl transition-colors">
+						<LogOut size={16} /> تسجيل الخروج من جميع الأجهزة
+					</button>
+				</div>
 			</motion.div>
 
 			{/* Notifications */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.2 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Mail className="text-[#7f2dfb]" size={24} />
-                    الإشعارات
-                </h2>
+					<Mail className="text-[#7f2dfb]" size={24} />
+					الإشعارات
+				</h2>
 				<div className="space-y-4">
 					<label className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
 						<span className="flex items-center gap-3 text-sm font-medium text-gray-700">
-                            <div className="p-2 bg-purple-100 text-[#7f2dfb] rounded-lg">
-							    <Mail size={18} />
-                            </div>
+							<div className="p-2 bg-purple-100 text-[#7f2dfb] rounded-lg">
+								<Mail size={18} />
+							</div>
 							إشعارات البريد الإلكتروني
 						</span>
 						<input
@@ -266,9 +242,9 @@ export default function SettingsPage() {
 					</label>
 					<label className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
 						<span className="flex items-center gap-3 text-sm font-medium text-gray-700">
-                            <div className="p-2 bg-purple-100 text-[#7f2dfb] rounded-lg">
-							    <MessageSquare size={18} />
-                            </div>
+							<div className="p-2 bg-purple-100 text-[#7f2dfb] rounded-lg">
+								<MessageSquare size={18} />
+							</div>
 							إشعارات الرسائل القصيرة (SMS)
 						</span>
 						<input
@@ -289,9 +265,9 @@ export default function SettingsPage() {
 							onChange={(e) =>
 								setFrequency(
 									e.target.value as
-										| "immediate"
-										| "daily"
-										| "weekly"
+									| "immediate"
+									| "daily"
+									| "weekly"
 								)
 							}
 							className="w-full appearance-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
@@ -300,22 +276,22 @@ export default function SettingsPage() {
 							<option value="daily">ملخص يومي</option>
 							<option value="weekly">ملخص أسبوعي</option>
 						</select>
-                        <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+						<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 					</div>
 				</div>
 			</motion.div>
 
 			{/* System Preferences */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.3 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Settings className="text-[#7f2dfb]" size={24} />
-                    تفضيلات النظام
-                </h2>
+					<Settings className="text-[#7f2dfb]" size={24} />
+					تفضيلات النظام
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
 						<label className="block text-sm font-medium text-gray-700">
@@ -334,7 +310,7 @@ export default function SettingsPage() {
 								<option value="ar">العربية</option>
 								<option value="en">English</option>
 							</select>
-                            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -355,7 +331,7 @@ export default function SettingsPage() {
 								<option value="USD">USD</option>
 								<option value="EUR">EUR</option>
 							</select>
-                            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -376,23 +352,23 @@ export default function SettingsPage() {
 								<option value="Asia/Riyadh">Asia/Riyadh</option>
 								<option value="UTC">UTC</option>
 							</select>
-                            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 						</div>
 					</div>
 				</div>
 			</motion.div>
 
 			{/* Billing & Subscription */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.4 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <CreditCard className="text-[#7f2dfb]" size={24} />
-                    الفوترة والاشتراك
-                </h2>
+					<CreditCard className="text-[#7f2dfb]" size={24} />
+					الفوترة والاشتراك
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="border border-gray-100 rounded-2xl p-6 bg-gray-50/50">
 						<div className="text-sm text-gray-500 font-medium mb-1">
@@ -432,32 +408,32 @@ export default function SettingsPage() {
 							آخر الفواتير
 						</div>
 						<div className="space-y-2">
-                            {invoices.map((inv) => (
-                                <div key={inv.id} className="flex items-center justify-between p-2 rounded-lg bg-white border border-gray-100">
-                                    <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-gray-900">{inv.id}</span>
-                                        <span className="text-[10px] text-gray-400">{new Date(inv.date).toLocaleDateString("en-GB")}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold">{formatSar(inv.amount)}</span>
-                                        <button className="text-gray-400 hover:text-[#7f2dfb] transition-colors">
-                                            <Download size={14} />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+							{invoices.map((inv) => (
+								<div key={inv.id} className="flex items-center justify-between p-2 rounded-lg bg-white border border-gray-100">
+									<div className="flex flex-col">
+										<span className="text-xs font-bold text-gray-900">{inv.id}</span>
+										<span className="text-[10px] text-gray-400">{new Date(inv.date).toLocaleDateString("en-GB")}</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<span className="text-xs font-bold">{formatSar(inv.amount)}</span>
+										<button className="text-gray-400 hover:text-[#7f2dfb] transition-colors">
+											<Download size={14} />
+										</button>
+									</div>
+								</div>
+							))}
 						</div>
 					</div>
 				</div>
 			</motion.div>
 
 			{/* Danger Zone */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="bg-white rounded-3xl border border-red-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.5 }}
+				className="bg-white rounded-3xl border border-red-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-red-600 mb-2">
 					منطقة الخطر
 				</h2>
@@ -469,7 +445,7 @@ export default function SettingsPage() {
 						<Trash2 size={18} />
 						حذف الحساب نهائياً
 					</button>
-                    <button className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+					<button className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
 						<Download size={18} />
 						تصدير كل البيانات
 					</button>

@@ -2,7 +2,6 @@
 import { Check, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import MainButton from "@/components/MainButton";
 import Link from "next/link";
 import { Section, Container, Heading, Text, Card, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";

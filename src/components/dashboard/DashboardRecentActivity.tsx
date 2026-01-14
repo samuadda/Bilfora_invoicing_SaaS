@@ -1,7 +1,6 @@
 "use client";
 
-import { FileText, Users, ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { FileText, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 

@@ -4,10 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Search, ChevronDown, ChevronUp, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { InvoiceWithClientAndItems } from "@/types/database";
 import LoadingState from "@/components/LoadingState";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+
 
 type SortField = "revenue" | "invoices" | "overdue";
 type SortDirection = "asc" | "desc";
@@ -59,9 +57,10 @@ export default function TopCustomersPage() {
 			// Group by client
 			const customerMap = new Map<string, CustomerStats>();
 
-			invoices?.forEach((invoice: any) => {
+			invoices?.forEach((invoice) => {
 				const clientId = invoice.client_id;
-				const clientName = invoice.client?.name || "عميل غير معروف";
+				const client = Array.isArray(invoice.client) ? invoice.client[0] : invoice.client;
+				const clientName = client?.name || "عميل غير معروف";
 
 				if (!customerMap.has(clientId)) {
 					customerMap.set(clientId, {

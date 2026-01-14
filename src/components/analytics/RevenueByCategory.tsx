@@ -2,7 +2,6 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 interface CategoryData {
 	name: string;
@@ -24,9 +23,10 @@ export default function RevenueByCategory({ categories }: RevenueByCategoryProps
 			maximumFractionDigits: 0,
 		}).format(amount);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const CustomTooltip = ({ active, payload }: any) => {
 		if (active && payload && payload.length) {
-			const data = payload[0];
+			const data = payload[0].payload;
 			const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
 			return (
 				<div className="bg-gray-900 text-white p-4 rounded-2xl shadow-xl border border-gray-800 text-sm">

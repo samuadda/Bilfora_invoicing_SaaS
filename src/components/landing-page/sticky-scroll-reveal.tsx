@@ -4,19 +4,30 @@ import { useMotionValueEvent, useScroll } from "motion/react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export const  StickyScroll = ({
+const backgroundColors = [
+  "#0f172a0", // slate-900
+  "#0000000", // black
+  "#1717170", // neutral-900
+];
+const linearGradients = [
+  "linear-gradient(to bottom right, #06b6d4, #10b981)", // cyan-500 to emerald-500
+  "linear-gradient(to bottom right, #ec4899, #6366f1)", // pink-500 to indigo-500
+  "linear-gradient(to bottom right, #f97316, #eab308)", // orange-500 to yellow-500
+];
+
+export const StickyScroll = ({
   content,
   contentClassName,
 }: {
   content: {
     title: string;
     description: string;
-    content?: React.ReactNode | any;
+    content?: React.ReactNode;
   }[];
   contentClassName?: string;
 }) => {
   const [activeCard, setActiveCard] = React.useState(0);
-  const ref = useRef<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     // uncomment line 22 and comment line 23 if you DONT want the overflow container and want to have it change on the entire page scroll
     // target: ref
@@ -39,17 +50,6 @@ export const  StickyScroll = ({
     );
     setActiveCard(closestBreakpointIndex);
   });
-
-  const backgroundColors = [
-    "#0f172a0", // slate-900
-    "#0000000", // black
-    "#1717170", // neutral-900
-  ];
-  const linearGradients = [
-    "linear-gradient(to bottom right, #06b6d4, #10b981)", // cyan-500 to emerald-500
-    "linear-gradient(to bottom right, #ec4899, #6366f1)", // pink-500 to indigo-500
-    "linear-gradient(to bottom right, #f97316, #eab308)", // orange-500 to yellow-500
-  ];
 
   const [backgroundGradient, setBackgroundGradient] = useState(
     linearGradients[0],

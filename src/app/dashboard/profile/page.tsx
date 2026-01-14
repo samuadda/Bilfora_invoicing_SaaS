@@ -25,9 +25,8 @@ import {
 } from "@/types/database";
 import { motion } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text, Card, Button, Input, Field, FormRow } from "@/components/ui";
-import { layout } from "@/lib/ui/tokens";
-import { cn } from "@/lib/utils";
+import { Heading, Text } from "@/components/ui";
+
 
 export default function ProfilePage() {
 	const [profile, setProfile] = useState<Profile | null>(null);
@@ -152,12 +151,13 @@ export default function ProfilePage() {
 
 			await loadProfile();
 			setSuccess("تم تحديث الصورة الشخصية");
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Avatar upload error:", err);
-			if (err?.message?.includes("Bucket not found")) {
+			const error = err as Error;
+			if (error?.message?.includes("Bucket not found")) {
 				setError("خطأ في الإعدادات: لم يتم العثور على مجلد الصور (avatars). يرجى التواصل مع الدعم الفني.");
 			} else {
-				setError(err?.message || "فشل رفع الصورة");
+				setError(error?.message || "فشل رفع الصورة");
 			}
 		} finally {
 			setSaving(false);
@@ -293,9 +293,9 @@ export default function ProfilePage() {
 			} else {
 				setError("حدث خطأ أثناء تحديث البريد الإلكتروني");
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Email update error:", err);
-			setError(err?.message || "فشل تحديث البريد الإلكتروني");
+			setError((err as Error)?.message || "فشل تحديث البريد الإلكتروني");
 		} finally {
 			setEmailSaving(false);
 		}
@@ -370,9 +370,9 @@ export default function ProfilePage() {
 
 			setSuccess("تم تغيير كلمة المرور بنجاح");
 			setPasswords({ current: "", newPass: "", confirm: "" });
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Password change error:", err);
-			setError(err?.message || "فشل تغيير كلمة المرور");
+			setError((err as Error)?.message || "فشل تغيير كلمة المرور");
 		} finally {
 			setPasswordSaving(false);
 		}

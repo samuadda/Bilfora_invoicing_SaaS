@@ -44,17 +44,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform data for export
-    const exportData = data?.map(invoice => ({
-      invoice_number: invoice.invoice_number,
-      client_name: invoice.clients?.name || 'غير محدد',
-      total_amount: invoice.total_amount || 0,
-      status: invoice.status,
-      issue_date: invoice.issue_date,
-      due_date: invoice.due_date,
-      tax_amount: invoice.tax_amount || 0,
-      subtotal: invoice.subtotal || 0,
-      created_at: invoice.created_at || invoice.issue_date
-    })) || [];
+    const exportData = data?.map(invoice => {
+      // clients is returned as object with inner join - cast through unknown for safety
+      const clientData = invoice.clients as unknown as { name: string } | null;
+      return {
+        invoice_number: invoice.invoice_number,
+        client_name: clientData?.name || 'غير محدد',
+        total_amount: invoice.total_amount || 0,
+        status: invoice.status,
+        issue_date: invoice.issue_date,
+        due_date: invoice.due_date,
+        tax_amount: invoice.tax_amount || 0,
+        subtotal: invoice.subtotal || 0,
+        created_at: invoice.created_at || invoice.issue_date
+      };
+    }) || [];
 
     return NextResponse.json(exportData);
   } catch (error) {

@@ -75,6 +75,7 @@ export function InvoicePDF_Tax({
 					<View style={s.headerRight}>
 						{qrDataUrl && (
 							<View style={s.qrContainer}>
+								{/* eslint-disable-next-line jsx-a11y/alt-text */}
 								<Image src={qrDataUrl} style={s.qrImage} />
 								<Text style={s.qrLabel}>رمز الاستجابة السريعة</Text>
 							</View>

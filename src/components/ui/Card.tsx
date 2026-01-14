@@ -18,7 +18,7 @@ interface CardProps {
   /**
    * Padding size override
    */
-  padding?: "small" | "standard" | "large" | "xlarge";
+  padding?: "none" | "small" | "standard" | "large" | "xlarge";
   /**
    * Background variant
    */
@@ -45,15 +45,15 @@ export function Card({
   background = "default",
 }: CardProps) {
   const baseClass = getCardClass(variant, hover);
-  const paddingClass = padding ? surface.padding[padding] : "";
+  const paddingClass = padding === "none" ? "p-0" : padding ? surface.padding[padding] : "";
   const backgroundClass =
     background === "default"
       ? ""
       : background === "subtle"
-      ? surface.background.subtle
-      : background === "muted"
-      ? surface.background.muted
-      : surface.background[background];
+        ? surface.background.subtle
+        : background === "muted"
+          ? surface.background.muted
+          : surface.background[background];
 
   return (
     <div

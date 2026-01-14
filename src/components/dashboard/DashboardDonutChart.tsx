@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
 interface StatusData {
 	name: string;
@@ -17,31 +17,32 @@ export default function DashboardDonutChart({
 	data,
 	total,
 }: DashboardDonutChartProps) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const CustomTooltip = ({ active, payload, coordinate }: any) => {
 		if (active && payload && payload.length) {
-			const data = payload[0];
+			const data = payload[0].payload as StatusData;
 			const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
-			
+
 			// Chart dimensions (280px container)
 			const chartWidth = 280;
 			const chartHeight = 280;
 			const centerX = chartWidth / 2;
 			const centerY = chartHeight / 2;
 			const innerRadius = 70;
-			
+
 			// Get mouse coordinates
 			const mouseX = coordinate?.x ?? centerX;
 			const mouseY = coordinate?.y ?? centerY;
-			
+
 			// Calculate distance from center
 			const dx = mouseX - centerX;
 			const dy = mouseY - centerY;
 			const distance = Math.sqrt(dx * dx + dy * dy);
-			
+
 			// If tooltip is too close to center, position it outside the donut ring
 			let tooltipX = mouseX;
 			let tooltipY = mouseY;
-			
+
 			if (distance < innerRadius + 30) {
 				// Calculate angle and position tooltip outside the ring
 				const angle = Math.atan2(dy, dx);
@@ -49,9 +50,9 @@ export default function DashboardDonutChart({
 				tooltipX = centerX + Math.cos(angle) * (outerRadius + 50);
 				tooltipY = centerY + Math.sin(angle) * (outerRadius + 50);
 			}
-			
+
 			return (
-				<div 
+				<div
 					className="bg-gray-900 text-white p-3 rounded-xl shadow-xl border border-gray-800 text-sm pointer-events-none"
 					style={{
 						position: 'absolute',
@@ -91,7 +92,7 @@ export default function DashboardDonutChart({
 								<Cell key={`cell-${index}`} fill={entry.color} strokeWidth={2} stroke="#fff" />
 							))}
 						</Pie>
-						<Tooltip 
+						<Tooltip
 							content={<CustomTooltip />}
 							cursor={{ fill: 'transparent' }}
 							allowEscapeViewBox={{ x: true, y: true }}
@@ -112,8 +113,8 @@ export default function DashboardDonutChart({
 						const percentage = total > 0 ? ((item.value / total) * 100).toFixed(1) : 0;
 						return (
 							<div key={index} className="flex items-center gap-2">
-								<div 
-									className="w-3 h-3 rounded-full flex-shrink-0" 
+								<div
+									className="w-3 h-3 rounded-full flex-shrink-0"
 									style={{ backgroundColor: item.color }}
 								/>
 								<div className="flex-1 min-w-0">

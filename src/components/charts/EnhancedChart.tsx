@@ -18,12 +18,14 @@ import ChartSwitcher from "./ChartSwitcher";
 import { useState } from "react";
 
 interface EnhancedChartProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	data: any[];
 	dataKey: string;
 	name: string;
 	color?: string;
 	gradientId?: string;
 	showForecast?: boolean;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	forecastData?: any[];
 	height?: number;
 	currency?: boolean;
@@ -53,11 +55,13 @@ export default function EnhancedChart({
 		return value.toString();
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const CustomTooltip = ({ active, payload, label }: any) => {
 		if (active && payload && payload.length) {
 			return (
 				<div className="bg-gray-900 text-white p-4 rounded-2xl shadow-xl border border-gray-800 text-sm">
 					<p className="font-bold mb-2 opacity-50">{label}</p>
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 					{payload.map((entry: any, index: number) => (
 						<div
 							key={index}

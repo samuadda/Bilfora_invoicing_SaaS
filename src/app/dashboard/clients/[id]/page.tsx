@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { 
-	ArrowRight, Building2, Mail, Phone, MapPin, Calendar, FileText, 
-	CheckCircle, Clock, XCircle, AlertCircle, Loader2 
+import {
+	ArrowRight, Building2, Mail,
+	Phone, MapPin, Calendar, FileText,
+	CheckCircle, Clock, XCircle, AlertCircle
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Client, Invoice, InvoiceStatus } from "@/types/database";
@@ -61,13 +62,7 @@ export default function ClientDetailPage() {
 	const [invoices, setInvoices] = useState<Invoice[]>([]);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		if (clientId) {
-			loadClientData();
-		}
-	}, [clientId]);
-
-	const loadClientData = async () => {
+	const loadClientData = useCallback(async () => {
 		try {
 			setLoading(true);
 			const {
@@ -99,16 +94,22 @@ export default function ClientDetailPage() {
 
 			if (invoicesError) throw invoicesError;
 			setInvoices(invoicesData || []);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Error loading client:", err);
-			if (err?.code === "PGRST116") {
+			if ((err as { code?: string })?.code === "PGRST116") {
 				// Not found
 				router.push("/dashboard/clients");
 			}
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [clientId, router]);
+
+	useEffect(() => {
+		if (clientId) {
+			loadClientData();
+		}
+	}, [clientId, loadClientData]);
 
 	if (loading) {
 		return <LoadingState message="جاري تحميل بيانات العميل..." />;

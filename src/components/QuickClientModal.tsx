@@ -87,8 +87,8 @@ export default function QuickClientModal({
 
 			handleClose();
 			if (onSuccess) onSuccess();
-		} catch (e: any) {
-			setError(e.message || "حدث خطأ غير متوقع");
+		} catch (e: unknown) {
+			setError((e as Error).message || "حدث خطأ غير متوقع");
 		} finally {
 			setSaving(false);
 		}

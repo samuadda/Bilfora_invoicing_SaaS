@@ -2,7 +2,7 @@
 
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import { InvoiceWithClientAndItems, Client, InvoiceItem } from "@/types/database";
-import { baseStyles as s, s as safeString, formatCurrency, formatDate } from "./sharedStyles";
+import { baseStyles as s, safeText as safeString, formatCurrency, formatDate } from "./sharedStyles";
 import { convertToHijri } from "@/lib/dateConvert";
 
 interface SellerInfo {

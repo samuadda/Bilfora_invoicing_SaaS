@@ -219,7 +219,7 @@ export interface SupabaseQueryOptions {
 	pageSize?: number;
 	orderBy?: string;
 	orderDirection?: "asc" | "desc";
-	filters?: Record<string, any>;
+	filters?: Record<string, unknown>;
 }
 
 // Error types

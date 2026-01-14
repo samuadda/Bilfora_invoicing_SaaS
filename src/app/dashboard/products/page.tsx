@@ -37,7 +37,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
-import { Heading, Text, Card, Button as UIButton, Input, Select } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
 type SortOption = "newest" | "oldest" | "price-high" | "price-low";
@@ -171,17 +171,13 @@ export default function ProductsPage() {
 		const avgPrice =
 			products.length > 0
 				? products.reduce((sum, p) => sum + Number(p.unit_price), 0) /
-				  products.length
+				products.length
 				: 0;
 
 		return { total, active, inactive, avgPrice };
 	}, [products]);
 
-	useEffect(() => {
-		load();
-	}, []);
-
-	const load = async () => {
+	const load = useCallback(async () => {
 		try {
 			setLoading(true);
 			const { data: { user } } = await supabase.auth.getUser();
@@ -193,16 +189,20 @@ export default function ProductsPage() {
 				.order("created_at", { ascending: false });
 			if (error) throw error;
 			setProducts(data || []);
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [toast]);
+
+	useEffect(() => {
+		load();
+	}, [load]);
 
 	const closeModal = useCallback(() => {
 		setForm({
@@ -261,10 +261,10 @@ export default function ProductsPage() {
 				title: "تم النسخ",
 				description: "تم نسخ المنتج بنجاح",
 			});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		}
@@ -286,7 +286,7 @@ export default function ProductsPage() {
 				return;
 			}
 
-			const payload: any = {
+			const payload = {
 				user_id: user.id,
 				name: form.name.trim(),
 				description: form.description?.trim() || null,
@@ -298,9 +298,9 @@ export default function ProductsPage() {
 
 			const { error } = editing
 				? await supabase
-						.from("products")
-						.update(payload)
-						.eq("id", editing.id)
+					.from("products")
+					.update(payload)
+					.eq("id", editing.id)
 				: await supabase.from("products").insert(payload);
 
 			if (error) throw error;
@@ -311,8 +311,8 @@ export default function ProductsPage() {
 				title: editing ? "تم التحديث" : "تمت الإضافة",
 				description: "تم حفظ بيانات المنتج بنجاح",
 			});
-		} catch (e: any) {
-			setError(e.message || "حدث خطأ غير متوقع");
+		} catch (e: unknown) {
+			setError((e as Error).message || "حدث خطأ غير متوقع");
 		} finally {
 			setSaving(false);
 		}
@@ -330,10 +330,10 @@ export default function ProductsPage() {
 				title: !currentStatus ? "تم التفعيل" : "تم التعطيل",
 				description: "تم تحديث حالة المنتج بنجاح",
 			});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		}
@@ -351,10 +351,10 @@ export default function ProductsPage() {
 				title: "تم الحذف",
 				description: "تم حذف المنتج بنجاح",
 			});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		}
@@ -398,10 +398,10 @@ export default function ProductsPage() {
 				title: activate ? "تم التفعيل" : "تم التعطيل",
 				description: `تم تحديث ${selectedIds.size} منتج`,
 			});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		} finally {
@@ -427,10 +427,10 @@ export default function ProductsPage() {
 				title: "تم الحذف",
 				description: `تم حذف ${selectedIds.size} منتج`,
 			});
-		} catch (e: any) {
+		} catch (e: unknown) {
 			toast({
 				title: "خطأ",
-				description: e.message,
+				description: (e as Error).message,
 				variant: "destructive",
 			});
 		} finally {
@@ -1082,8 +1082,8 @@ export default function ProductsPage() {
 									{saving
 										? "جاري الحفظ..."
 										: editing
-										? "تحديث المنتج"
-										: "إضافة المنتج"}
+											? "تحديث المنتج"
+											: "إضافة المنتج"}
 								</button>
 							</div>
 						</motion.div>

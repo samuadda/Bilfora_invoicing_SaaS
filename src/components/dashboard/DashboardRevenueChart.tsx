@@ -29,11 +29,13 @@ export default function DashboardRevenueChart({
 			maximumFractionDigits: 0,
 		}).format(amount);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const CustomTooltip = ({ active, payload, label }: any) => {
 		if (active && payload && payload.length) {
 			return (
 				<div className="bg-gray-900 text-white p-4 rounded-2xl shadow-xl border border-gray-800 text-sm">
 					<p className="font-bold mb-2 opacity-50">{label}</p>
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
 					{payload.map((entry: any, index: number) => (
 						<div key={index} className="flex items-center gap-2">
 							<div

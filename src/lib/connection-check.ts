@@ -19,7 +19,8 @@ export async function checkSupabaseConnection(
 
 		clearTimeout(timeoutId);
 		return response.status !== 0; // Any response means server is reachable
-	} catch (error) {
+	} catch {
+		// Ignore errors during check
 		return false;
 	}
 }
@@ -33,9 +34,10 @@ export function suppressNetworkErrors() {
 	const originalError = console.error;
 	const originalWarn = console.warn;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	console.error = (...args: any[]) => {
 		const message = args.join(" ");
-		
+
 		// Suppress known Supabase network errors
 		if (
 			message.includes("ERR_CONNECTION_TIMED_OUT") ||
@@ -53,9 +55,10 @@ export function suppressNetworkErrors() {
 		originalError(...args);
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	console.warn = (...args: any[]) => {
 		const message = args.join(" ");
-		
+
 		// Suppress network-related warnings
 		if (message.includes("Failed to fetch") || message.includes("timeout")) {
 			if (process.env.NODE_ENV === "development") {

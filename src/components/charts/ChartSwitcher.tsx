@@ -1,6 +1,6 @@
 "use client";
 
-import { AreaChart, BarChart, LineChart, TrendingUp } from "lucide-react";
+import { AreaChart, BarChart, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type ChartType = "area" | "bar" | "line";

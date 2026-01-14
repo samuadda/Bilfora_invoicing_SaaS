@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
+
 import { useSearchParams, useRouter } from "next/navigation";
 import {
 	PieChart,
@@ -16,21 +17,16 @@ import {
 	ShoppingCart,
 	DollarSign,
 	AlertCircle,
-	Calendar,
 	Package,
 	ArrowUpRight,
 	ArrowDownRight,
-	Download,
-	FileText,
-	Table,
-	Printer,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { Invoice, InvoiceStatus, InvoiceWithClientAndItems } from "@/types/database";
+import { InvoiceWithClientAndItems } from "@/types/database";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text, Card, Button } from "@/components/ui";
+import { Heading, Text, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import AnalyticsFiltersComponent, { AnalyticsFilters } from "@/components/filters/AnalyticsFilters";
 import KPICard from "@/components/analytics/KPICard";
@@ -63,7 +59,9 @@ interface EnhancedStats {
 	overdueRatioComparison: PeriodComparison;
 }
 
-export default function AnalyticsPage() {
+// function AnalyticsContent() {
+// export default function AnalyticsPage() { // Previous export
+function AnalyticsContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const fromParam = searchParams.get("from");
@@ -125,7 +123,7 @@ export default function AnalyticsPage() {
 	const previousDateFrom = new Date(
 		dateFrom.getTime() - previousPeriodDays * 24 * 60 * 60 * 1000
 	);
-	const previousDateTo = new Date(dateFrom.getTime());
+	// const previousDateTo = new Date(dateFrom.getTime());
 
 	useEffect(() => {
 		loadAnalyticsData();
@@ -174,7 +172,7 @@ export default function AnalyticsPage() {
 				(invoicesData as InvoiceWithClientAndItems[]) || [],
 				user.id
 			);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Error loading analytics:", err);
 			setError("حدث خطأ أثناء تحميل البيانات");
 		} finally {
@@ -284,8 +282,8 @@ export default function AnalyticsPage() {
 		const invoicesChange =
 			previousInvoices.length > 0
 				? ((currentInvoices.length - previousInvoices.length) /
-						previousInvoices.length) *
-				  100
+					previousInvoices.length) *
+				100
 				: 0;
 		const collectionRateChange = previousCollectionRate
 			? currentCollectionRate - previousCollectionRate
@@ -878,5 +876,13 @@ export default function AnalyticsPage() {
 				</div>
 			</motion.div>
 		</div>
+	);
+}
+
+export default function AnalyticsPage() {
+	return (
+		<Suspense fallback={<LoadingState />}>
+			<AnalyticsContent />
+		</Suspense>
 	);
 }

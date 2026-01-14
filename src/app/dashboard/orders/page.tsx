@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import {
-	Eye,
 	Edit,
 	Download,
 	Filter,
@@ -18,13 +17,9 @@ import {
 	Trash2,
 	Loader2,
 } from "lucide-react";
-import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
-	Order,
 	OrderWithClientAndItems,
-	CreateOrderInput,
-	UpdateOrderInput,
 	OrderStatus,
 	Client,
 } from "@/types/database";
@@ -71,7 +66,7 @@ export default function OrdersPage() {
 	const [editingOrder, setEditingOrder] =
 		useState<OrderWithClientAndItems | null>(null);
 	const [saving, setSaving] = useState(false);
-	
+
 	// Pagination
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
@@ -626,8 +621,8 @@ export default function OrdersPage() {
 									onChange={(e) =>
 										setStatusFilter(
 											e.target.value as
-												| OrderStatus
-												| "all"
+											| OrderStatus
+											| "all"
 										)
 									}
 									className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
@@ -1044,8 +1039,8 @@ export default function OrdersPage() {
 									{saving
 										? "جاري الحفظ..."
 										: editingOrder
-										? "تحديث"
-										: "إضافة"}
+											? "تحديث"
+											: "إضافة"}
 								</button>
 							</div>
 						</form>

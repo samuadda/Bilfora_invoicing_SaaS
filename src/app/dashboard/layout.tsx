@@ -2,7 +2,6 @@
 
 import { ReactNode, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { supabasePersistent, supabaseSession } from "@/lib/supabase-clients";
 import Sidebar from "@/components/dashboard/sideBar";
 import { useSidebar } from "@/components/dashboard/sidebar/SidebarContext";
@@ -62,17 +61,19 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 
 			// Check persistent client first
 			const persistentPromise = supabasePersistent.auth.getUser();
-			const persistentResult = await Promise.race([persistentPromise, timeoutPromise]) as any;
+			const persistentResult = await Promise.race([persistentPromise, timeoutPromise]) as { data: { user: unknown }, error: unknown };
 
 			let user = persistentResult?.data?.user;
-			let error = persistentResult?.error;
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let error = (persistentResult as { error: any })?.error; // Keep error as any for now to access properties or cast properly
 
 			// If no user in persistent client, check session client
 			if (!user && !error) {
 				const sessionPromise = supabaseSession.auth.getUser();
-				const sessionResult = await Promise.race([sessionPromise, timeoutPromise]) as any;
+				const sessionResult = await Promise.race([sessionPromise, timeoutPromise]) as { data: { user: unknown }, error: unknown };
 				user = sessionResult?.data?.user;
-				error = sessionResult?.error;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				error = (sessionResult as { error: any })?.error;
 			}
 
 			// Check for network/connection errors
@@ -99,16 +100,18 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 			}
 			setAuthChecked(true);
 			setConnectionError(false);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error("Error checking authentication:", error);
+
+			const err = error as { message?: string, name?: string };
 
 			// Handle timeout and network errors gracefully
 			if (
-				error?.message?.includes("timeout") ||
-				error?.message?.includes("Failed to fetch") ||
-				error?.message?.includes("NetworkError") ||
-				error?.message?.includes("ERR_CONNECTION_TIMED_OUT") ||
-				error?.name === "TypeError"
+				err?.message?.includes("timeout") ||
+				err?.message?.includes("Failed to fetch") ||
+				err?.message?.includes("NetworkError") ||
+				err?.message?.includes("ERR_CONNECTION_TIMED_OUT") ||
+				err?.name === "TypeError"
 			) {
 				setConnectionError(true);
 				setAuthChecked(false);
@@ -126,7 +129,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 
 		// ✅ Real-time auth listener
 		// Listen to both clients for auth state changes
-		let subscriptions: Array<{ subscription: { unsubscribe: () => void } }> = [];
+		const subscriptions: Array<{ subscription: { unsubscribe: () => void } }> = [];
 
 		try {
 			// Listen to persistent client
@@ -159,7 +162,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 				}
 			});
 		};
-	}, [checkAuth, router]);
+	}, [checkAuth, router, connectionError]);
 
 	// ⏳ Loading state
 	if (isLoading && !connectionError) {

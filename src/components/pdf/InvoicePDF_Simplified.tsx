@@ -194,6 +194,7 @@ export function InvoicePDF_Simplified({
 				{/* QR Code */}
 				{qrDataUrl && (
 					<View style={{ alignItems: "center", marginTop: 20 }}>
+						{/* eslint-disable-next-line jsx-a11y/alt-text */}
 						<Image src={qrDataUrl} style={{ width: 100, height: 100 }} />
 						<Text style={{ fontSize: 8, color: "#6B7280", marginTop: 4 }}>
 							رمز الاستجابة السريعة

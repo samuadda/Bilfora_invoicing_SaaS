@@ -6,23 +6,17 @@ import { useToast } from "@/components/ui/use-toast";
 import {
 	Loader2,
 	AlertCircle,
-	Trash2,
-	Plus,
 	X,
 	User,
 	FileText,
-	Phone,
-	Mail,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import type {
 	Client,
 	CreateInvoiceInput,
 	CreateInvoiceItemInput,
-	InvoiceType,
 	Product,
 } from "@/types/database";
-import { labelByInvoiceType } from "@/lib/invoiceTypeLabels";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
@@ -103,7 +97,7 @@ export default function InvoiceCreationModal({
 		order_id: z.string().uuid().nullable().optional().or(z.literal("")),
 
 		invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"], {
-			errorMap: () => ({ message: "نوع الفاتورة مطلوب" }),
+			message: "نوع الفاتورة مطلوب",
 		}),
 
 		document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),

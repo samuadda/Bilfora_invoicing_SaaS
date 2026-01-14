@@ -5,11 +5,12 @@ import { getInvoiceSettings } from "@/features/settings/data/settings.repo";
 import type { Client, InvoiceItem, InvoiceWithClientAndItems } from "@/types/database";
 import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 
-export default async function InvoiceDetailPage({
-	params,
-}: {
-	params: { id: string };
-}) {
+type Props = {
+	params: Promise<{ id: string }>;
+};
+
+export default async function InvoiceDetailPage({ params }: Props) {
+	const { id } = await params;
 	const supabase = await createClient();
 
 	const {
@@ -29,7 +30,7 @@ export default async function InvoiceDetailPage({
             items:invoice_items(*)
       `,
 		)
-		.eq("id", params.id)
+		.eq("id", id)
 		.eq("user_id", user.id)
 		.single();
 
@@ -37,10 +38,15 @@ export default async function InvoiceDetailPage({
 		notFound();
 	}
 
-	const invoice: InvoiceWithClientAndItems & { client: Client | null; items: InvoiceItem[] } = {
-		...(invoiceData as InvoiceWithClientAndItems),
-		client: (invoiceData as { client?: Client | null }).client ?? null,
-		items: (invoiceData as { items?: InvoiceItem[] }).items ?? [],
+	// Cast to the expected structure with nullable client
+	const invoiceBase = invoiceData as unknown as InvoiceWithClientAndItems;
+	const clientData = (invoiceData as unknown as { client?: Client | null }).client ?? null;
+	const itemsData = (invoiceData as unknown as { items?: InvoiceItem[] }).items ?? [];
+
+	const invoice = {
+		...invoiceBase,
+		client: clientData,
+		items: itemsData,
 	};
 
 	const invoiceSettings: InvoiceSettings | null = await getInvoiceSettings(supabase, user.id);

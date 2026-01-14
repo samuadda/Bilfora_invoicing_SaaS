@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { interactive, getButtonClass } from "@/lib/ui/tokens";
+import { getButtonClass } from "@/lib/ui/tokens";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

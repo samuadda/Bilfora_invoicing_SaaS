@@ -2,7 +2,7 @@
 
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { InvoiceWithClientAndItems, Client, InvoiceItem } from "@/types/database";
-import { baseStyles as s, s as safeString, formatCurrency, formatDate } from "./sharedStyles";
+import { baseStyles as s, safeText as safeString, formatCurrency, formatDate } from "./sharedStyles";
 import { convertToHijri } from "@/lib/dateConvert";
 
 interface SellerInfo {
@@ -85,6 +85,7 @@ export function InvoiceStandardPDF({
 							</View>
 							{qrDataUrl && (
 								<View style={{ marginTop: 8, alignItems: "flex-end" }}>
+									{/* eslint-disable-next-line jsx-a11y/alt-text */}
 									<Image src={qrDataUrl} style={{ width: 80, height: 80 }} />
 									<Text style={{ fontSize: 8, color: "#6B7280", marginTop: 4 }}>
 										رمز الاستجابة السريعة

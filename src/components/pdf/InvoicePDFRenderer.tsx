@@ -8,7 +8,7 @@ import { InvoicePDF_Regular } from "./InvoicePDF_Regular";
 import { InvoicePDF_CreditNote } from "./InvoicePDF_CreditNote";
 
 interface InvoicePDFRendererProps {
-	invoice: InvoiceWithClientAndItems;
+	invoice: Omit<InvoiceWithClientAndItems, 'client'> & { client?: Client | null };
 	client: Client | null;
 	items: InvoiceItem[];
 	qrDataUrl?: string | null;
@@ -28,16 +28,19 @@ export function InvoicePDFRenderer({
 
 	const documentKind = invoice.document_kind || "invoice";
 
+	// Cast invoice for child components (they use separate client prop anyway)
+	const invoiceForPdf = invoice as InvoiceWithClientAndItems;
+
 	// Determine which template to use
 	if (documentKind === "credit_note") {
 		return (
 			<InvoicePDF_CreditNote
-				invoice={invoice}
+				invoice={invoiceForPdf}
 				client={client}
 				items={items}
 				invoiceSettings={invoiceSettings}
 				relatedInvoiceNumber={
-					(invoice as any).related_invoice_id || invoice.invoice_number
+					(invoice as unknown as { related_invoice_id?: string }).related_invoice_id || invoice.invoice_number
 				}
 			/>
 		);
@@ -46,7 +49,7 @@ export function InvoicePDFRenderer({
 	if (invoiceType === "standard_tax") {
 		return (
 			<InvoicePDF_Tax
-				invoice={invoice}
+				invoice={invoiceForPdf}
 				client={client}
 				items={items}
 				qrDataUrl={qrDataUrl}
@@ -58,7 +61,7 @@ export function InvoicePDFRenderer({
 	if (invoiceType === "simplified_tax") {
 		return (
 			<InvoicePDF_Simplified
-				invoice={invoice}
+				invoice={invoiceForPdf}
 				client={client}
 				items={items}
 				qrDataUrl={qrDataUrl}
@@ -70,11 +73,12 @@ export function InvoicePDFRenderer({
 	// non_tax invoice
 	return (
 		<InvoicePDF_Regular
-			invoice={invoice}
+			invoice={invoiceForPdf}
 			client={client}
 			items={items}
 			invoiceSettings={invoiceSettings}
 		/>
 	);
 }
+
 

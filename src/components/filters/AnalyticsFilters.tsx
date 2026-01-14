@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Filter, X, ChevronDown } from "lucide-react";
+import { Filter, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Client, InvoiceStatus } from "@/types/database";
+import { InvoiceStatus } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -25,9 +25,8 @@ export default function AnalyticsFiltersComponent({
 	onFiltersChange,
 }: AnalyticsFiltersProps) {
 	const [isOpen, setIsOpen] = useState(false);
-	const [clients, setClients] = useState<Client[]>([]);
+	const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
 	const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
-	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		loadClients();
@@ -76,7 +75,7 @@ export default function AnalyticsFiltersComponent({
 		}
 	};
 
-	const updateFilter = (key: keyof AnalyticsFilters, value: any) => {
+	const updateFilter = (key: keyof AnalyticsFilters, value: string | number | null) => {
 		onFiltersChange({ ...filters, [key]: value });
 	};
 

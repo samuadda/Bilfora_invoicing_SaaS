@@ -3,10 +3,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TextAnimate } from "@/components/landing-page/text-animate";
 import { ChevronDown, HelpCircle, Shield, FileText, CreditCard, Lock, Download, WifiOff } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Section, Container, Heading, Text, Button } from "@/components/ui";
-import { layout } from "@/lib/ui/tokens";
+import { Section, Container, Text, Button } from "@/components/ui";
 
 const faqs = [
   {

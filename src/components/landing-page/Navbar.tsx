@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
 import { ChevronLeft } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { NavigationMenu } from "@/components/landing-page/MobileMenu";
 
@@ -21,7 +19,6 @@ const NavItems = [
 const Navbar = () => {
 	// Note: usePathname won't detect hash changes, but we use it for other logic if needed.
 	// For a landing page with hash links, active state is usually handled by scroll observers (not implemented here for simplicity, or we can add it later).
-	const pathname = usePathname();
 
 	return (
 		<>

@@ -2,13 +2,10 @@
 
 import {
 	useState,
-	useContext,
-	createContext,
 	useEffect,
 } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { supabasePersistent, supabaseSession } from "@/lib/supabase-clients";
 import {
 	LayoutDashboard,
@@ -29,9 +26,8 @@ import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { createPortal } from "react-dom";
 
-import { SidebarContext, useSidebar } from "./sidebar/SidebarContext";
+import { useSidebar } from "./sidebar/SidebarContext";
 import { SidebarLogoutModal } from "./sidebar/SidebarLogoutModal";
 import { SidebarNavItem } from "./sidebar/SidebarNavItem";
 import { SidebarTooltip } from "./sidebar/SidebarTooltip";
@@ -54,7 +50,7 @@ export default function Sidebar() {
 		const saved = localStorage.getItem("sidebar-collapsed");
 		if (saved) setIsCollapsed(saved === "true");
 		setMounted(true);
-	}, []);
+	}, [setIsCollapsed]);
 
 	useEffect(() => {
 		localStorage.setItem("sidebar-collapsed", String(isCollapsed));

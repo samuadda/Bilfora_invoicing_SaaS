@@ -26,7 +26,7 @@ const headingVariants = cva("", {
 
 export interface HeadingProps
   extends React.HTMLAttributes<HTMLHeadingElement>,
-    VariantProps<typeof headingVariants> {
+  VariantProps<typeof headingVariants> {
   as?: "h1" | "h2" | "h3" | "h4";
   children: ReactNode;
 }
@@ -88,8 +88,8 @@ const textVariants = cva("", {
 });
 
 export interface TextProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof textVariants> {
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'color'>,
+  VariantProps<typeof textVariants> {
   as?: "p" | "span" | "div";
   children: ReactNode;
 }
@@ -142,7 +142,7 @@ const labelVariants = cva("", {
 
 export interface LabelProps
   extends React.LabelHTMLAttributes<HTMLLabelElement>,
-    VariantProps<typeof labelVariants> {
+  VariantProps<typeof labelVariants> {
   children: ReactNode;
 }
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
+
 import {
 	Eye,
 	Download,
-	ChevronDown,
 	ChevronLeft,
 	ChevronRight,
 	CheckCircle,
@@ -19,8 +19,8 @@ import {
 	Loader2,
 	Calendar,
 	Check,
-	ArrowDown,
 	ArrowUp,
+	ArrowDown,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -137,7 +137,8 @@ const getDueDateInfo = (
 	}
 };
 
-export default function InvoicesPage() {
+// export default function InvoicesPage() {
+function InvoicesContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [invoices, setInvoices] = useState<InvoiceWithClientAndItems[]>([]);
@@ -1381,3 +1382,12 @@ function StatsCard({
 		</Card>
 	);
 }
+
+export default function InvoicesPage() {
+	return (
+		<Suspense fallback={<LoadingState />}>
+			<InvoicesContent />
+		</Suspense>
+	);
+}
+

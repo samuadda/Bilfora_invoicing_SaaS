@@ -2,30 +2,25 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Calendar, ArrowRight, FileText, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
-import { supabase } from "@/lib/supabase";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
 import QuickClientModal from "@/components/QuickClientModal";
 import QuickProductModal from "@/components/QuickProductModal";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import DashboardQuickActions from "@/components/dashboard/DashboardQuickActions";
 import MonthlyStatsCards from "@/components/dashboard/MonthlyStatsCards";
 import MonthlyRevenueChart from "@/components/dashboard/MonthlyRevenueChart";
 import RecentInvoicesList from "@/components/dashboard/RecentInvoicesList";
-import { useInvoiceStats, MonthlyStats, DailyRevenue } from "@/hooks/useInvoiceStats";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQueryClient } from "@tanstack/react-query";
-import { InvoiceWithClientAndItems } from "@/types/database";
 import Link from "next/link";
-import { Heading, Text, Card, Button, Select } from "@/components/ui";
+import { Heading, Text, Card, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
 	const router = useRouter();
-	const { toast } = useToast();
 
 	// Month/Year selector state
 	const now = new Date();
@@ -99,6 +94,7 @@ export default function DashboardPage() {
 		const currentYear = now.getFullYear();
 		const yearsCount = currentYear - accountCreatedYear + 1;
 		return Array.from({ length: yearsCount }, (_, i) => currentYear - i);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [accountCreatedYear]);
 
 	const monthName = useMemo(() => {

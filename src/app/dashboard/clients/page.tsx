@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { 
-	Edit, Trash2, Plus, Search, Loader2, Undo2, Users, CheckCircle2, XCircle, 
-	Building2, Phone, Mail, MapPin, ChevronDown, ChevronLeft, ChevronRight, 
-	Eye, Check, AlertCircle, Download, FileText
+import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+	Edit, Trash2, Plus, Search, Loader2, Users, CheckCircle2, XCircle,
+	Building2, Phone, Mail, MapPin, ChevronDown, ChevronLeft, ChevronRight,
+	Eye, Check, AlertCircle, Download
 } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
-import { Client, ClientStatus, Invoice, InvoiceStatus } from "@/types/database";
+import { Client, ClientStatus, Invoice } from "@/types/database";
 import { useToast } from "@/components/ui/use-toast";
 import {
 	Dialog,
@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 import * as XLSX from "xlsx";
-import { Heading, Text, Card, Button as UIButton, Input, Select } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
 const statusConfig = {
@@ -41,12 +41,12 @@ type ClientWithInvoices = Client & {
 	total_invoiced_amount?: number;
 };
 
-type AdvancedFilter = 
-	| "all" 
-	| "active-only" 
-	| "inactive-only" 
-	| "has-overdue" 
-	| "no-invoices" 
+type AdvancedFilter =
+	| "all"
+	| "active-only"
+	| "inactive-only"
+	| "has-overdue"
+	| "no-invoices"
 	| "new-clients";
 
 const clientSchema = z.object({
@@ -68,7 +68,7 @@ const formatRelativeTime = (dateString: string | null | undefined): string => {
 	const now = new Date();
 	const diffTime = now.getTime() - date.getTime();
 	const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-	
+
 	if (diffDays === 0) return "اليوم";
 	if (diffDays === 1) return "منذ يوم";
 	if (diffDays < 7) return `منذ ${diffDays} أيام`;
@@ -92,7 +92,7 @@ export default function ClientsPage() {
 	const [loading, setLoading] = useState(true);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(20); // Default 20 per page
-	const [totalCount, setTotalCount] = useState(0);
+	// const [totalCount, setTotalCount] = useState(0);
 
 	const [statusFilter, setStatusFilter] = useState<AdvancedFilter>("all");
 	const [searchTerm, setSearchTerm] = useState("");
@@ -113,7 +113,7 @@ export default function ClientsPage() {
 		const active = clients.filter((c) => c.status === "active").length;
 		const inactive = clients.filter((c) => c.status === "inactive").length;
 		const withOverdue = clients.filter((c) => c.has_overdue_invoices).length;
-		
+
 		return { total, active, inactive, withOverdue };
 	}, [clients]);
 
@@ -131,16 +131,7 @@ export default function ClientsPage() {
 		};
 	};
 
-	useEffect(() => {
-		loadClients();
-	}, []);
-
-	useEffect(() => {
-		filterClients();
-		setCurrentPage(1);
-	}, [clients, statusFilter, searchTerm]);
-
-	const loadClients = async () => {
+	const loadClients = useCallback(async () => {
 		try {
 			setLoading(true);
 			const {
@@ -174,7 +165,7 @@ export default function ClientsPage() {
 				const clientInvoices = (invoicesData || []).filter(
 					(inv) => inv.client_id === client.id
 				);
-				
+
 				const hasOverdue = clientInvoices.some(isInvoiceOverdue);
 				const lastInvoice = clientInvoices.length > 0 ? clientInvoices[0] : null;
 				const totalInvoiced = clientInvoices.reduce((sum, inv) => sum + inv.total_amount, 0);
@@ -190,8 +181,8 @@ export default function ClientsPage() {
 			});
 
 			setClients(clientsWithInvoices);
-			setTotalCount(clientsWithInvoices.length);
-		} catch (err: any) {
+			// setTotalCount(clientsWithInvoices.length);
+		} catch (err: unknown) {
 			toast({
 				title: "خطأ",
 				description: "فشل في تحميل العملاء",
@@ -201,9 +192,9 @@ export default function ClientsPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [toast]);
 
-	const filterClients = () => {
+	const filterClients = useCallback(() => {
 		let filtered = [...clients];
 
 		// Advanced filters
@@ -237,7 +228,16 @@ export default function ClientsPage() {
 		}
 
 		setFilteredClients(filtered);
-	};
+	}, [clients, statusFilter, searchTerm]);
+
+	useEffect(() => {
+		loadClients();
+	}, [loadClients]);
+
+	useEffect(() => {
+		filterClients();
+		setCurrentPage(1);
+	}, [filterClients]);
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -317,10 +317,10 @@ export default function ClientsPage() {
 			setShowModal(false);
 			setCurrentPage(1);
 			await loadClients();
-		} catch (err: any) {
+		} catch (err: unknown) {
 			toast({
 				title: "خطأ",
-				description: err?.message || "حدث خطأ أثناء الحفظ",
+				description: (err as Error)?.message || "حدث خطأ أثناء الحفظ",
 				variant: "destructive",
 			});
 		} finally {
@@ -340,7 +340,7 @@ export default function ClientsPage() {
 			});
 			setDeleteCandidate(null);
 			await loadClients();
-		} catch (err) {
+		} catch {
 			toast({
 				title: "خطأ",
 				description: "فشل في حذف العميل",
@@ -364,7 +364,7 @@ export default function ClientsPage() {
 			setShowBulkDeleteDialog(false);
 			setSelectedClientIds(new Set());
 			await loadClients();
-		} catch (err) {
+		} catch {
 			toast({
 				title: "خطأ",
 				description: "فشل في حذف العملاء",
@@ -389,7 +389,7 @@ export default function ClientsPage() {
 			});
 			setSelectedClientIds(new Set());
 			await loadClients();
-		} catch (err) {
+		} catch {
 			toast({
 				title: "خطأ",
 				description: "فشل في تحديث العملاء",
@@ -463,7 +463,7 @@ export default function ClientsPage() {
 
 			const fileName = `clients-export-${new Date().toISOString().split("T")[0]}.xlsx`;
 			XLSX.writeFile(workbook, fileName);
-		} catch (err) {
+		} catch {
 			// Fallback to CSV
 			const csvContent = [
 				headers.join(","),

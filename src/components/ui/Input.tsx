@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { getInputClass } from "@/lib/ui/tokens";
 import { InputHTMLAttributes, forwardRef } from "react";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   /**
    * Input size variant
    * @default "default"

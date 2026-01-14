@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import MainButton from "@/components/MainButton";
 import { TextAnimate } from "@/components/landing-page/text-animate";
 import {
     Laptop,
@@ -8,14 +7,13 @@ import {
     Palette,
     Zap,
     Layout,
-    CheckCircle2,
     FileText,
     CreditCard,
     Shield
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Section, Container, Heading, Text, Button } from "@/components/ui";
+import { Section, Container, Text, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
 export const Features = () => {

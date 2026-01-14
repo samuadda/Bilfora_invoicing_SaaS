@@ -61,7 +61,7 @@ export default function QuickProductModal({
 				return;
 			}
 
-			const payload: any = {
+			const payload = {
 				user_id: user.id,
 				name: form.name.trim(),
 				description: form.description?.trim() || null,
@@ -82,8 +82,8 @@ export default function QuickProductModal({
 
 			handleClose();
 			if (onSuccess) onSuccess();
-		} catch (e: any) {
-			setError(e.message || "حدث خطأ غير متوقع");
+		} catch (e: unknown) {
+			setError((e as Error).message || "حدث خطأ غير متوقع");
 		} finally {
 			setSaving(false);
 		}

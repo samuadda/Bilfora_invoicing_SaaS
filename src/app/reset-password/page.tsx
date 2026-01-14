@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { DotPattern } from "@/components/landing-page/dot-pattern";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Loader2 } from "lucide-react";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [passwordError, setPasswordError] = useState("");
@@ -306,27 +306,25 @@ export default function ResetPasswordPage() {
 											{[1, 2, 3, 4].map((level) => (
 												<div
 													key={level}
-													className={`h-1 w-6 sm:w-8 rounded-full ${
-														level <=
+													className={`h-1 w-6 sm:w-8 rounded-full ${level <=
 														passwordStrength.strength
-															? passwordStrength.color
-															: "bg-gray-200"
-													}`}
+														? passwordStrength.color
+														: "bg-gray-200"
+														}`}
 												/>
 											))}
 										</div>
 										<span
-											className={`text-xs font-medium text-center sm:text-right ${
-												passwordStrength.strength <= 1
-													? "text-red-600"
-													: passwordStrength.strength ===
-													  2
+											className={`text-xs font-medium text-center sm:text-right ${passwordStrength.strength <= 1
+												? "text-red-600"
+												: passwordStrength.strength ===
+													2
 													? "text-yellow-600"
 													: passwordStrength.strength ===
-													  3
-													? "text-blue-600"
-													: "text-green-600"
-											}`}
+														3
+														? "text-blue-600"
+														: "text-green-600"
+												}`}
 										>
 											{passwordStrength.text}
 										</span>
@@ -392,11 +390,10 @@ export default function ResetPasswordPage() {
 						<button
 							type="submit"
 							disabled={isLoading}
-							className={`w-full text-white rounded-lg px-3 py-2.5 text-xs sm:text-sm font-semibold transition duration-100 flex items-center justify-center gap-2 ${
-								isLoading
-									? "bg-gray-400 cursor-not-allowed"
-									: "bg-[#7f2dfb] hover:bg-violet-400"
-							}`}
+							className={`w-full text-white rounded-lg px-3 py-2.5 text-xs sm:text-sm font-semibold transition duration-100 flex items-center justify-center gap-2 ${isLoading
+								? "bg-gray-400 cursor-not-allowed"
+								: "bg-[#7f2dfb] hover:bg-violet-400"
+								}`}
 						>
 							{isLoading ? (
 								<>
@@ -413,5 +410,22 @@ export default function ResetPasswordPage() {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+export default function ResetPasswordPage() {
+	return (
+		<Suspense
+			fallback={
+				<div className="min-h-screen w-full flex items-center justify-center bg-white">
+					<div className="text-center">
+						<Loader2 className="h-8 w-8 animate-spin text-[#7f2dfb] mx-auto mb-2" />
+						<p className="text-gray-500">جاري التحميل...</p>
+					</div>
+				</div>
+			}
+		>
+			<ResetPasswordContent />
+		</Suspense>
 	);
 }

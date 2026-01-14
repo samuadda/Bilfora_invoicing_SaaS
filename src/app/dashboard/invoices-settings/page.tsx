@@ -14,9 +14,9 @@ import {
 	LayoutTemplate,
 	Palette,
 	QrCode,
-    Receipt,
-    Globe,
-    ChevronDown
+	Receipt,
+	Globe,
+	ChevronDown
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -28,9 +28,9 @@ export default function InvoicesSettingsPage() {
 	const [autoSend, setAutoSend] = useState(false);
 	const [allowPartials, setAllowPartials] = useState(true);
 	const [footerNote, setFooterNote] = useState("شكراً لتعاملكم معنا");
-	const [enableCard, setEnableCard] = useState(true);
-	const [enableMada, setEnableMada] = useState(true);
-	const [enableBank, setEnableBank] = useState(false);
+	// const [enableCard, setEnableCard] = useState(true);
+	// const [enableMada, setEnableMada] = useState(true);
+	// const [enableBank, setEnableBank] = useState(false);
 
 	// Added: Business info
 	const [vatNumber, setVatNumber] = useState("");
@@ -38,7 +38,7 @@ export default function InvoicesSettingsPage() {
 	const [businessLogo, setBusinessLogo] = useState<string | null>(null);
 	const [addressLine, setAddressLine] = useState("");
 	const [city, setCity] = useState("");
-	const [country, setCountry] = useState("");
+	// const [country, setCountry] = useState("");
 
 	// Added: Branding & template
 	const [template, setTemplate] = useState<"classic" | "compact" | "modern">(
@@ -61,26 +61,26 @@ export default function InvoicesSettingsPage() {
 	return (
 		<div className="space-y-8 pb-10">
 			{/* Header */}
-            <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col gap-2"
-            >
-                <h1 className="text-3xl font-bold text-[#012d46]">إعدادات الفواتير</h1>
-                <p className="text-gray-500">تخصيص مظهر الفواتير، الضرائب، وخيارات الدفع</p>
-            </motion.div>
+			<motion.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				className="flex flex-col gap-2"
+			>
+				<h1 className="text-3xl font-bold text-[#012d46]">إعدادات الفواتير</h1>
+				<p className="text-gray-500">تخصيص مظهر الفواتير، الضرائب، وخيارات الدفع</p>
+			</motion.div>
 
 			{/* Business info */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Building2 className="text-[#7f2dfb]" size={24} />
-                    بيانات النشاط التجاري
-                </h2>
+					<Building2 className="text-[#7f2dfb]" size={24} />
+					بيانات النشاط التجاري
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
@@ -178,16 +178,16 @@ export default function InvoicesSettingsPage() {
 			</motion.div>
 
 			{/* Numbering & due */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.2 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Hash className="text-[#7f2dfb]" size={24} />
-                    إعدادات الترقيم
-                </h2>
+					<Hash className="text-[#7f2dfb]" size={24} />
+					إعدادات الترقيم
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
@@ -202,7 +202,7 @@ export default function InvoicesSettingsPage() {
 								value={prefix}
 								onChange={(e) => setPrefix(e.target.value)}
 								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-                                placeholder="INV-"
+								placeholder="INV-"
 							/>
 						</div>
 					</div>
@@ -246,16 +246,16 @@ export default function InvoicesSettingsPage() {
 			</motion.div>
 
 			{/* Taxes, sending, footer */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.3 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Percent className="text-[#7f2dfb]" size={24} />
-                    الضرائب والشروط
-                </h2>
+					<Percent className="text-[#7f2dfb]" size={24} />
+					الضرائب والشروط
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
@@ -316,16 +316,16 @@ export default function InvoicesSettingsPage() {
 			</motion.div>
 
 			{/* Branding & template */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.4 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <Palette className="text-[#7f2dfb]" size={24} />
-                    التصميم
-                </h2>
+					<Palette className="text-[#7f2dfb]" size={24} />
+					التصميم
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
@@ -349,7 +349,7 @@ export default function InvoicesSettingsPage() {
 								<option value="compact">مضغوط</option>
 								<option value="modern">عصري</option>
 							</select>
-                            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -365,37 +365,37 @@ export default function InvoicesSettingsPage() {
 								}
 								className="w-full h-12 rounded-xl border border-gray-200 p-1 cursor-pointer"
 							/>
-                            <div className="absolute left-3 pointer-events-none text-xs font-bold text-gray-500 uppercase">{primaryColor}</div>
+							<div className="absolute left-3 pointer-events-none text-xs font-bold text-gray-500 uppercase">{primaryColor}</div>
 						</div>
 					</div>
 				</div>
 			</motion.div>
 
 			{/* Default payment info */}
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
-            >
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.5 }}
+				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
+			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-                    <CreditCard className="text-[#7f2dfb]" size={24} />
-                    بيانات الدفع
-                </h2>
+					<CreditCard className="text-[#7f2dfb]" size={24} />
+					بيانات الدفع
+				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							رقم الآيبان (IBAN)
 						</label>
 						<div className="relative">
-                            <Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-						    <input
-							    value={iban}
-							    onChange={(e) => setIban(e.target.value)}
-							    className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-							    placeholder="SAxx xxxx xxxx xxxx xxxx xx"
-						    />
-                        </div>
+							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input
+								value={iban}
+								onChange={(e) => setIban(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+							/>
+						</div>
 					</div>
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
@@ -415,11 +415,11 @@ export default function InvoicesSettingsPage() {
 						</div>
 					</div>
 				</div>
-                <div className="flex justify-end mt-8">
-                    <button className="px-8 py-3 rounded-xl bg-[#7f2dfb] text-white text-base font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all">
-                        حفظ الإعدادات
-                    </button>
-                </div>
+				<div className="flex justify-end mt-8">
+					<button className="px-8 py-3 rounded-xl bg-[#7f2dfb] text-white text-base font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all">
+						حفظ الإعدادات
+					</button>
+				</div>
 			</motion.div>
 		</div>
 	);

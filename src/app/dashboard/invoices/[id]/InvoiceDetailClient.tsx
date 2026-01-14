@@ -19,7 +19,7 @@ import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSetting
 import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 
 type InvoiceDetailClientProps = {
-	invoice: InvoiceWithClientAndItems;
+	invoice: Omit<InvoiceWithClientAndItems, 'client'> & { client?: Client | null };
 	client: Client | null;
 	items: InvoiceItem[];
 	invoiceSettings: InvoiceSettings | null;
@@ -72,7 +72,7 @@ export default function InvoiceDetailClient({
 		};
 
 		const subtotalFromInvoice =
-			toNumber((invoice as any).subtotal) ?? toNumber(invoice.subtotal);
+			toNumber((invoice as unknown as Record<string, unknown>).subtotal) ?? toNumber(invoice.subtotal);
 
 		const subtotalComputed =
 			subtotalFromInvoice ??
@@ -83,7 +83,7 @@ export default function InvoiceDetailClient({
 			);
 
 		const vatFromInvoice =
-			toNumber(invoice.vat_amount) ?? toNumber((invoice as any).tax_amount);
+			toNumber(invoice.vat_amount) ?? toNumber((invoice as unknown as Record<string, unknown>).tax_amount);
 
 		const vatComputed = isNonTax
 			? 0
@@ -181,7 +181,7 @@ export default function InvoiceDetailClient({
 				qrDataUrl={qrDataUrl}
 				invoiceSettings={invoiceSettings}
 			/>
-		) as React.ReactElement;
+		);
 	}, [client, invoice, invoiceSettings, isSettingsReady, items, qrDataUrl]);
 
 	return (

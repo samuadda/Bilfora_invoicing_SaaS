@@ -260,6 +260,125 @@ export const baseStyles = StyleSheet.create({
 		color: "#9CA3AF",
 		textAlign: "center",
 	},
+	// Logo Section
+	logoSection: {
+		flexDirection: "column",
+		alignItems: "flex-start",
+	},
+	logoPlaceholder: {
+		width: 60,
+		height: 60,
+		backgroundColor: "#1F2937",
+		borderRadius: 8,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 8,
+	},
+	logoText: {
+		color: "#FFFFFF",
+		fontSize: 14,
+		fontWeight: "bold",
+	},
+	companyName: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "#1F2937",
+		marginBottom: 4,
+	},
+	companyInfo: {
+		flexDirection: "column",
+	},
+	companyInfoRow: {
+		fontSize: 9,
+		color: "#6B7280",
+		marginBottom: 2,
+	},
+	// Invoice Info
+	invoiceInfo: {
+		flexDirection: "column",
+		alignItems: "flex-end",
+	},
+	invoiceDetails: {
+		flexDirection: "column",
+		alignItems: "flex-end",
+	},
+	invoiceDetailRow: {
+		fontSize: 10,
+		color: "#374151",
+		marginBottom: 4,
+	},
+	// Section
+	section: {
+		marginBottom: 16,
+	},
+	sectionTitle: {
+		fontSize: 13,
+		fontWeight: "bold",
+		color: "#1F2937",
+		marginBottom: 8,
+		paddingBottom: 6,
+		borderBottomWidth: 1,
+		borderBottomColor: "#E5E7EB",
+	},
+	// Client Info
+	clientInfo: {
+		backgroundColor: "#F9FAFB",
+		padding: 12,
+		borderRadius: 4,
+		borderWidth: 1,
+		borderColor: "#E5E7EB",
+	},
+	clientName: {
+		fontSize: 12,
+		fontWeight: "bold",
+		color: "#1F2937",
+		marginBottom: 4,
+	},
+	clientDetailRow: {
+		fontSize: 10,
+		color: "#6B7280",
+		marginBottom: 2,
+	},
+	// Table column widths for standard invoice
+	indexCell: { flex: 0.5, paddingHorizontal: 4 },
+	descriptionCell: { flex: 2.5, paddingHorizontal: 4 },
+	quantityCell: { flex: 0.8, paddingHorizontal: 4 },
+	unitPriceCell: { flex: 1.5, paddingHorizontal: 4 },
+	taxRateCell: { flex: 1.0, paddingHorizontal: 4 },
+	taxAmountCell: { flex: 1.2, paddingHorizontal: 4 },
+	totalCell: { flex: 1.5, paddingHorizontal: 4 },
+	tableRowZebra: {
+		backgroundColor: "#F9FAFB",
+	},
+	// Totals Card
+	totalsCard: {
+		width: 300,
+		backgroundColor: "#FFFFFF",
+		borderWidth: 1,
+		borderColor: "#D1D5DB",
+		borderRadius: 4,
+		padding: 12,
+		alignSelf: "flex-end",
+	},
+	// Final Total Row
+	finalTotal: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		paddingTop: 8,
+		borderTopWidth: 2,
+		borderTopColor: "#1F2937",
+		marginTop: 4,
+	},
+	// Notes Section
+	notes: {
+		marginTop: 16,
+		padding: 12,
+		backgroundColor: "#FEF3C7",
+		borderRadius: 4,
+		borderWidth: 1,
+		borderColor: "#FCD34D",
+	},
 });
 
 // Helper function to safely get string value (prevents xCoordinate error)
