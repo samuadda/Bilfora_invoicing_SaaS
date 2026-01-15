@@ -36,19 +36,7 @@ CREATE POLICY "Users can create payments for their own invoices" ON payments
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM invoices
-            WHERE invoices.id = payment_id  -- Note: using payment_id is wrong here, it should be the new row's invoice_id
-            -- Wait, in WITH CHECK, we can reference the new row columns directly
-        )
-    );
-    
--- Correction for INSERT policy:
-DROP POLICY IF EXISTS "Users can create payments for their own invoices" ON payments;
-CREATE POLICY "Users can create payments for their own invoices" ON payments
-    FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM invoices
-            WHERE invoices.id = payments.invoice_id
+            WHERE invoices.id = invoice_id
             AND invoices.user_id = auth.uid()
         )
     );
