@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
-import { useClients } from "@/hooks/useClients"; // Added hook import
+import { useClients } from "@/hooks/useClients";
+import { useAllInvoicesStats } from "@/hooks/useAllInvoicesStats";
 
 import {
 	Eye,
@@ -146,15 +147,25 @@ function InvoicesContent() {
 
 	// Hooks
 	// Client data for filter dropdown
+	// Hooks
+	const deleteInvoiceMutation = useDeleteInvoice();
+	const updateStatusMutation = useUpdateInvoiceStatus();
+	// Client data for filter dropdown
 	const { data: clientsData = [] } = useClients();
 
 	// Local State for Filters (controlled inputs)
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all" | "overdue">("all");
 	// const [documentKindFilter, setDocumentKindFilter] = useState... // Keeping simplistic for now
+	const [documentKindFilter, setDocumentKindFilter] = useState<"all" | "invoice" | "credit_note">("all");
 	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [clientFilter, setClientFilter] = useState<string>("all");
 	const [amountFilter, setAmountFilter] = useState<AmountFilter>("all");
+	// Additional State
+	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+	const [deleteCandidate, setDeleteCandidate] = useState<InvoiceWithClientAndItems | null>(null);
+	const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+	const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
 	// Pagination State
 	const [currentPage, setCurrentPage] = useState(1);
@@ -182,7 +193,7 @@ function InvoicesContent() {
 		search: debouncedSearch,
 		status: statusFilter === "overdue" ? "all" : statusFilter as InvoiceStatus | "all", // Handle overdue separately or later
 		clientId: clientFilter,
-		dateRange: dateFilter as any
+		dateRange: dateFilter === "all" ? "all" : dateFilter as "today" | "week" | "month"
 	});
 
 	const invoices = invoicesData?.data || [];
@@ -229,7 +240,9 @@ function InvoicesContent() {
 		) {
 			setStatusFilter(status as InvoiceStatus | "all");
 		}
-		if (date) setDateFilter(date);
+		if (date && ["all", "today", "week", "month"].includes(date)) {
+			setDateFilter(date as "all" | "today" | "week" | "month");
+		}
 		if (client) setClientFilter(client);
 		if (
 			amount &&
@@ -417,12 +430,15 @@ function InvoicesContent() {
 	};
 
 	// Stats calculations (from all invoices, not filtered)
+	// Stats calculations (from all invoices via useAllInvoicesStats)
+	const { data: statsInvoices = [] } = useAllInvoicesStats();
+
 	const stats = useMemo(() => {
-		const total = invoices.length;
-		const overdue = invoices.filter((i) =>
+		const total = statsInvoices.length;
+		const overdue = statsInvoices.filter((i) =>
 			isOverdue(i.due_date, i.status)
 		).length;
-		const dueIn7Days = invoices.filter((i) => {
+		const dueIn7Days = statsInvoices.filter((i) => {
 			if (i.status === "paid" || i.status === "cancelled") return false;
 			const days = getDaysDifference(i.due_date);
 			return days >= 0 && days <= 7;
@@ -431,14 +447,14 @@ function InvoicesContent() {
 			(sum, i) => sum + i.total_amount,
 			0
 		);
-		const outstanding = invoices.filter(
+		const outstanding = statsInvoices.filter(
 			(i) => i.status !== "paid" && i.status !== "cancelled"
 		);
 		const outstandingAmount = outstanding.reduce(
 			(sum, i) => sum + i.total_amount,
 			0
 		);
-		const paid = invoices.filter((i) => i.status === "paid");
+		const paid = statsInvoices.filter((i) => i.status === "paid");
 		const paidAmount = paid.reduce((sum, i) => sum + i.total_amount, 0);
 
 		return {
@@ -448,7 +464,7 @@ function InvoicesContent() {
 			paidAmount,
 			dueIn7DaysAmount,
 		};
-	}, [invoices]);
+	}, [statsInvoices]);
 
 	if (loading) {
 		return <LoadingState message="جاري جلب الفواتير..." />;
@@ -637,7 +653,7 @@ function InvoicesContent() {
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={dateFilter}
-								onChange={(e) => setDateFilter(e.target.value)}
+								onChange={(e) => setDateFilter(e.target.value as any)}
 							>
 								<option value="all">كل الوقت</option>
 								<option value="today">اليوم</option>

@@ -69,7 +69,7 @@ export function useInvoices(options: InvoiceFilters = {}) {
             // Apply Date Range
             if (dateRange !== "all") {
                 const now = new Date();
-                let filterDate = new Date();
+                const filterDate = new Date();
 
                 if (dateRange === "today") {
                     filterDate.setHours(0, 0, 0, 0);
