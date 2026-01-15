@@ -13,12 +13,13 @@ import {
 import { invoiceSchema } from "@/lib/schemas/invoice";
 // import { supabase } from "@/lib/supabase"; // DB logic moved to server action
 import { createInvoiceAction } from "@/actions/invoices";
-import { supabase } from "@/lib/supabase"; // Kept only for client loading logic (if needed)
+import { useQueryClient } from "@tanstack/react-query";
+import { useClients } from "@/hooks/useClients";
+import { useProducts } from "@/hooks/useProducts";
 import type {
 	Client,
 	CreateInvoiceInput,
 	CreateInvoiceItemInput,
-	Product,
 } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -52,8 +53,11 @@ export default function InvoiceCreationModal({
 
 
 	// Modal state
-	const [clients, setClients] = useState<Client[]>([]);
-	const [products, setProducts] = useState<Product[]>([]);
+	const queryClient = useQueryClient();
+	const { data: clients = [] } = useClients();
+	const { data: products = [] } = useProducts();
+	// const [clients, setClients] = useState<Client[]>([]); // Replaced by hook
+	// const [products, setProducts] = useState<Product[]>([]); // Replaced by hook
 	const [saving, setSaving] = useState(false);
 	const [invoiceFormData, setInvoiceFormData] = useState<CreateInvoiceInput>({
 		client_id: "",
@@ -76,13 +80,13 @@ export default function InvoiceCreationModal({
 		onClose();
 	}, [onClose]);
 
-	// Load data when modal opens
-	useEffect(() => {
+	// Load data when modal opens -> Handled by TanStack Query automatically
+	/* useEffect(() => {
 		if (isOpen) {
 			loadClientsForInvoice();
 			loadProducts();
 		}
-	}, [isOpen]);
+	}, [isOpen]); */
 
 	// Handle ESC key and backdrop click
 	useEffect(() => {
@@ -103,55 +107,7 @@ export default function InvoiceCreationModal({
 		};
 	}, [isOpen, closeModal]);
 
-	const loadClientsForInvoice = async () => {
-		try {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (!user) return;
-
-			const { data, error } = await supabase
-				.from("clients")
-				.select("*")
-				.eq("user_id", user.id)
-				.eq("status", "active")
-				.order("name");
-
-			if (error) {
-				console.error("Error loading clients:", error);
-				return;
-			}
-
-			setClients(data || []);
-		} catch (err) {
-			console.error("Error loading clients:", err);
-		}
-	};
-
-	const loadProducts = async () => {
-		try {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (!user) return;
-
-			const { data, error } = await supabase
-				.from("products")
-				.select("*")
-				.eq("user_id", user.id)
-				.eq("active", true)
-				.order("name");
-
-			if (error) {
-				console.error("Error loading products:", error);
-				return;
-			}
-
-			setProducts(data || []);
-		} catch (err) {
-			console.error("Error loading products:", err);
-		}
-	};
+	// Manual loading functions removed in favor of hooks
 
 	const handleInvoiceInputChange = (
 		e: React.ChangeEvent<
@@ -281,7 +237,9 @@ export default function InvoiceCreationModal({
 	};
 
 	const handleClientCreated = (newClient: Client) => {
-		setClients((prev) => [...prev, newClient]);
+		// Invalidate clients query to refetch list
+		queryClient.invalidateQueries({ queryKey: ["clients"] });
+		// Set the newly created client as selected
 		setInvoiceFormData((prev) => ({
 			...prev,
 			client_id: newClient.id,

@@ -3,9 +3,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('avatars', 'avatars', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Enable RLS on storage.objects if not already enabled
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
 -- Policy: Public Read Access
 -- Allow anyone to view avatars
 CREATE POLICY "Avatar images are publicly accessible"
