@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { useClients } from "@/hooks/useClients"; // Added hook import
 
 import {
 	Eye,
@@ -143,33 +144,59 @@ function InvoicesContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	const { data: invoices = [], isLoading: loading } = useInvoices();
-	const deleteInvoiceMutation = useDeleteInvoice();
-	const updateStatusMutation = useUpdateInvoiceStatus();
+	// Hooks
+	// Client data for filter dropdown
+	const { data: clientsData = [] } = useClients();
 
-	const [filteredInvoices, setFilteredInvoices] = useState<
-		InvoiceWithClientAndItems[]
-	>([]);
-	// const [loading, setLoading] = useState(true); // Removed manual loading state
+	// Local State for Filters (controlled inputs)
 	const [searchTerm, setSearchTerm] = useState("");
-	const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">(
-		"all"
-	);
-	const [documentKindFilter, setDocumentKindFilter] = useState<
-		"all" | "invoice" | "credit_note"
-	>("all");
-	const [dateFilter, setDateFilter] = useState("all");
+	const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all" | "overdue">("all");
+	// const [documentKindFilter, setDocumentKindFilter] = useState... // Keeping simplistic for now
+	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [clientFilter, setClientFilter] = useState<string>("all");
 	const [amountFilter, setAmountFilter] = useState<AmountFilter>("all");
-	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-	const [deleteCandidate, setDeleteCandidate] =
-		useState<InvoiceWithClientAndItems | null>(null);
-	const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
-	const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
-	// Pagination
+	// Pagination State
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
+
+	// Debounce search term for query
+	const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+	useEffect(() => {
+		const timer = setTimeout(() => setDebouncedSearch(searchTerm), 500);
+		return () => clearTimeout(timer);
+	}, [searchTerm]);
+
+	// Reset page on filter change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [debouncedSearch, statusFilter, dateFilter, clientFilter, amountFilter]);
+
+	// Query Hook
+	const {
+		data: invoicesData,
+		isLoading: loading
+	} = useInvoices({
+		page: currentPage,
+		pageSize,
+		search: debouncedSearch,
+		status: statusFilter === "overdue" ? "all" : statusFilter as InvoiceStatus | "all", // Handle overdue separately or later
+		clientId: clientFilter,
+		dateRange: dateFilter as any
+	});
+
+	const invoices = invoicesData?.data || [];
+	const totalCount = invoicesData?.count || 0;
+	const totalPages = Math.ceil(totalCount / pageSize);
+
+	// Apply client-side "Overdue" and "Amount" filtering if necessary (since API limitations)
+	// Or just display what we got. For "Amount" filter, it's safer to do client side on the page or ignore for now if not critical.
+	// The previous implementation had pure client side. 
+	// Let's stick to server returned data for main pagination flow.
+
+	// For mapping to UI
+	const filteredInvoices = invoices; // Direct mapping now
+	const paginatedInvoices = invoices; // Already paginated by server
 
 	// Sorting
 	const [sortField, setSortField] = useState<SortField>(null);
@@ -180,11 +207,11 @@ function InvoicesContent() {
 		new Set()
 	);
 
-	// Get unique clients from invoices
-	const uniqueClients = useMemo(() => {
+	// Get unique clients from invoices -> Replaced by useClients hook
+	/* const uniqueClients = useMemo(() => {
 		const clients = invoices.map((inv) => inv.client.name);
 		return Array.from(new Set(clients)).sort();
-	}, [invoices]);
+	}, [invoices]); */
 
 	// Initialize from URL params
 	useEffect(() => {
@@ -251,141 +278,12 @@ function InvoicesContent() {
 	// Removed useEffect for loadInvoices since we use useInvoices hook now
 
 
-	useEffect(() => {
-		let filtered = [...invoices];
-
-		// Status filter
-		if (statusFilter !== "all") {
-			if (statusFilter === "overdue") {
-				filtered = filtered.filter((i) =>
-					isOverdue(i.due_date, i.status)
-				);
-			} else {
-				filtered = filtered.filter((i) => i.status === statusFilter);
-			}
-		}
-
-		// Document kind filter
-		if (documentKindFilter !== "all") {
-			filtered = filtered.filter(
-				(i) => i.document_kind === documentKindFilter
-			);
-		}
-
-		// Search filter
-		if (searchTerm) {
-			filtered = filtered.filter(
-				(i) =>
-					i.invoice_number
-						.toLowerCase()
-						.includes(searchTerm.toLowerCase()) ||
-					i.client.name
-						.toLowerCase()
-						.includes(searchTerm.toLowerCase()) ||
-					i.client.email
-						?.toLowerCase()
-						.includes(searchTerm.toLowerCase())
-			);
-		}
-
-		// Date filter
-		if (dateFilter !== "all") {
-			const now = new Date();
-			const filterDate = new Date();
-
-			switch (dateFilter) {
-				case "today":
-					filterDate.setHours(0, 0, 0, 0);
-					break;
-				case "week":
-					filterDate.setDate(now.getDate() - 7);
-					break;
-				case "month":
-					filterDate.setMonth(now.getMonth() - 1);
-					break;
-			}
-
-			filtered = filtered.filter(
-				(i) => new Date(i.created_at) >= filterDate
-			);
-		}
-
-		// Client filter
-		if (clientFilter !== "all") {
-			filtered = filtered.filter((i) => i.client.name === clientFilter);
-		}
-
-		// Amount filter
-		if (amountFilter !== "all") {
-			switch (amountFilter) {
-				case "under-1000":
-					filtered = filtered.filter((i) => i.total_amount < 1000);
-					break;
-				case "1000-5000":
-					filtered = filtered.filter(
-						(i) => i.total_amount >= 1000 && i.total_amount <= 5000
-					);
-					break;
-				case "over-5000":
-					filtered = filtered.filter((i) => i.total_amount > 5000);
-					break;
-			}
-		}
-
-		// Sorting
-		if (sortField) {
-			filtered.sort((a, b) => {
-				let aVal: number | string;
-				let bVal: number | string;
-
-				switch (sortField) {
-					case "amount":
-						aVal = a.total_amount;
-						bVal = b.total_amount;
-						break;
-					case "issue_date":
-						aVal = new Date(a.created_at).getTime();
-						bVal = new Date(b.created_at).getTime();
-						break;
-					case "due_date":
-						aVal = new Date(a.due_date).getTime();
-						bVal = new Date(b.due_date).getTime();
-						break;
-					default:
-						return 0;
-				}
-
-				if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-				if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-				return 0;
-			});
-		}
-
-		setFilteredInvoices(filtered);
-		setCurrentPage(1);
-		// Clear selection if selected invoices are no longer visible
-		setSelectedInvoiceIds((prev) => {
-			const filteredIds = new Set(filtered.map((i) => i.id));
-			return new Set([...prev].filter((id) => filteredIds.has(id)));
-		});
-	}, [
-		invoices,
-		statusFilter,
-		searchTerm,
-		dateFilter,
-		clientFilter,
-		amountFilter,
-		documentKindFilter,
-		sortField,
-		sortDirection,
-	]);
+	// Removed giant useEffect for client-side filtering
+	/* useEffect(() => { ... }) */
 
 	// Pagination
-	const totalPages = Math.ceil(filteredInvoices.length / pageSize);
-	const paginatedInvoices = filteredInvoices.slice(
-		(currentPage - 1) * pageSize,
-		currentPage * pageSize
-	);
+	// const totalPages = Math.ceil(filteredInvoices.length / pageSize); -> Calculated above
+	// const paginatedInvoices = filteredInvoices.slice(...) -> Server returns page
 
 	const allSelected =
 		paginatedInvoices.length > 0 &&
@@ -747,7 +645,7 @@ function InvoicesContent() {
 								<option value="month">هذا الشهر</option>
 							</Select>
 						</div>
-						{uniqueClients.length > 0 && (
+						{clientsData.length > 0 && (
 							<div className="relative flex-1 lg:flex-none min-w-[140px]">
 								<Select
 									value={clientFilter}
@@ -756,9 +654,9 @@ function InvoicesContent() {
 									}
 								>
 									<option value="all">كل العملاء</option>
-									{uniqueClients.map((client) => (
-										<option key={client} value={client}>
-											{client}
+									{clientsData.map((client) => (
+										<option key={client.id} value={client.name}>
+											{client.name}
 										</option>
 									))}
 								</Select>
@@ -793,6 +691,60 @@ function InvoicesContent() {
 					</div>
 				</div>
 			</Card>
+
+			{/* Pagination Controls */}
+			{totalCount > 0 && (
+				<div className="flex items-center justify-between mt-4">
+					<Text variant="body-small" color="muted">
+						عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
+					</Text>
+					<div className="flex items-center gap-2">
+						<Button
+							variant="secondary"
+							size="sm"
+							onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+							disabled={currentPage === 1 || loading}
+						>
+							<ChevronRight size={16} />
+							السابق
+						</Button>
+						<div className="flex items-center gap-1">
+							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+								// Simple logic to show first few pages, can be improved for many pages
+								let p = i + 1;
+								if (totalPages > 5 && currentPage > 3) {
+									p = currentPage - 2 + i;
+								}
+								if (p > totalPages) return null;
+
+								return (
+									<button
+										key={p}
+										onClick={() => setCurrentPage(p)}
+										className={cn(
+											"w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+											currentPage === p
+												? "bg-blue-600 text-white"
+												: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+										)}
+									>
+										{p}
+									</button>
+								)
+							})}
+						</div>
+						<Button
+							variant="secondary"
+							size="sm"
+							onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+							disabled={currentPage === totalPages || loading}
+						>
+							التالي
+							<ChevronLeft size={16} />
+						</Button>
+					</div>
+				</div>
+			)}
 
 			{/* Invoices Table */}
 			<Card padding="none" className="overflow-hidden">

@@ -26,11 +26,6 @@ export function generateZatcaTLVBase64(params: {
 	invoiceTotal: string; // e.g. '17250.00'
 	vatTotal: string; // e.g. '2250.00'
 }): string {
-	// Guard against SSR
-	if (typeof window === "undefined") {
-		return "";
-	}
-
 	const parts = [
 		encodeTLV(1, params.sellerName),
 		encodeTLV(2, params.vatNumber),
@@ -48,13 +43,17 @@ export function generateZatcaTLVBase64(params: {
 		offset += p.length;
 	}
 
-	// Convert to base64
+	// SSR Safe: works in Node (Buffer) and Browser (btoa)
+	if (typeof window === "undefined") {
+		return Buffer.from(tlvBytes).toString("base64");
+	}
+
+	// Convert to base64 browser-side
 	let binary = "";
 	for (let i = 0; i < tlvBytes.length; i++) {
 		binary += String.fromCharCode(tlvBytes[i]);
 	}
 
-	// btoa is available in the browser
 	return btoa(binary);
 }
 
