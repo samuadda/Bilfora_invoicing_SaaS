@@ -23,7 +23,10 @@ import {
 	Check,
 	ArrowUp,
 	ArrowDown,
+	Copy,
 } from "lucide-react";
+import { duplicateInvoiceAction } from "@/actions/invoices";
+import { useToast } from "@/components/ui/use-toast";
 import * as XLSX from "xlsx";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -139,6 +142,8 @@ function InvoicesContent() {
 	const deleteInvoiceMutation = useDeleteInvoice();
 	const updateStatusMutation = useUpdateInvoiceStatus();
 	// Client data for filter dropdown
+	const { toast } = useToast();
+	const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 	const { data: clientsData = [] } = useClients();
 
 	// Local State for Filters (controlled inputs)
@@ -368,6 +373,35 @@ function InvoicesContent() {
 			await handleDeleteInvoice(Array.from(selectedInvoiceIds));
 		} finally {
 			setBulkActionLoading(false);
+		}
+	};
+
+	const handleDuplicate = async (id: string, invoiceNumber: string | null) => {
+		if (duplicatingId) return;
+		setDuplicatingId(id);
+		try {
+			const result = await duplicateInvoiceAction(id);
+			if (result.success && result.data?.id) {
+				toast({
+					title: "تم نسخ الفاتورة بنجاح",
+					description: `تم إنشاء نسخة مسودة من الفاتورة ${invoiceNumber}`,
+				});
+				router.push(`/dashboard/invoices/${result.data.id}`);
+			} else {
+				toast({
+					variant: "destructive",
+					title: "خطأ في النسخ",
+					description: result.error || "حدث خطأ غير متوقع",
+				});
+			}
+		} catch {
+			toast({
+				variant: "destructive",
+				title: "خطأ في النسخ",
+				description: "حدث خطأ غير متوقع",
+			});
+		} finally {
+			setDuplicatingId(null);
 		}
 	};
 
@@ -1011,6 +1045,18 @@ function InvoicesContent() {
 													title="عرض التفاصيل"
 												>
 													<Eye size={18} />
+												</button>
+												<button
+													onClick={() => handleDuplicate(invoice.id, invoice.invoice_number)}
+													disabled={!!duplicatingId}
+													className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+													title="نسخ الفاتورة"
+												>
+													{duplicatingId === invoice.id ? (
+														<Loader2 size={18} className="animate-spin" />
+													) : (
+														<Copy size={18} />
+													)}
 												</button>
 												{invoice.status === "draft" && (
 													<button

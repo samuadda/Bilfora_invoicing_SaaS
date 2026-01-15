@@ -27,7 +27,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
 			`
             *,
             client:clients(*),
-            items:invoice_items(*)
+            items:invoice_items(*),
+            payments:payments(*)
       `,
 		)
 		.eq("id", id)
@@ -47,6 +48,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
 		...invoiceBase,
 		client: clientData,
 		items: itemsData,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		payments: ((invoiceData as unknown as { payments: any[] }).payments ?? []),
 	};
 
 	const invoiceSettings: InvoiceSettings | null = await getInvoiceSettings(supabase, user.id);
@@ -60,6 +63,7 @@ export default async function InvoiceDetailPage({ params }: Props) {
 			invoice={invoice}
 			client={invoice.client}
 			items={invoice.items}
+			payments={invoice.payments}
 			invoiceSettings={invoiceSettings}
 			isSettingsReady={isSettingsReady}
 		/>

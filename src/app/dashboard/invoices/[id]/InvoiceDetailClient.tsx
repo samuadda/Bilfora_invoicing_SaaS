@@ -17,11 +17,28 @@ import type {
 } from "@/types/database";
 import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
+import { PaymentRecordingModal } from "@/components/payments/PaymentRecordingModal";
+import { InvoicePaymentsList } from "@/components/payments/InvoicePaymentsList";
+import { Button } from "@/components/ui/Button";
+import { CreditCard, Copy } from "lucide-react";
+import { duplicateInvoiceAction } from "@/actions/invoices";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+
+interface Payment {
+	id: string;
+	amount: number;
+	payment_date: string;
+	payment_method: string;
+	reference_number?: string | null;
+	notes?: string | null;
+}
 
 type InvoiceDetailClientProps = {
 	invoice: Omit<InvoiceWithClientAndItems, 'client'> & { client?: Client | null };
 	client: Client | null;
 	items: InvoiceItem[];
+	payments: Payment[];
 	invoiceSettings: InvoiceSettings | null;
 	isSettingsReady: boolean;
 };
@@ -30,11 +47,16 @@ export default function InvoiceDetailClient({
 	invoice,
 	client,
 	items,
+	payments,
 	invoiceSettings,
 	isSettingsReady,
 }: InvoiceDetailClientProps) {
 	const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 	const [qrWarning, setQrWarning] = useState<string | null>(null);
+	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+	const [isDuplicating, setIsDuplicating] = useState(false);
+	const router = useRouter();
+	const { toast } = useToast();
 
 	// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
 	const invoiceType: InvoiceType =
@@ -95,12 +117,17 @@ export default function InvoiceDetailClient({
 			totalFromInvoice ??
 			(isCredit ? -(subtotalComputed + vatComputed) : subtotalComputed + vatComputed);
 
+		const totalPaid = payments.reduce((sum, p) => sum + Number(p.amount), 0);
+		const outstanding = Math.max(0, totalComputed - totalPaid);
+
 		return {
 			subtotal: subtotalComputed,
 			vat: vatComputed,
 			total: totalComputed,
+			paid: totalPaid,
+			outstanding,
 		};
-	}, [invoice, items, isNonTax, isCredit, taxRate]);
+	}, [invoice, items, isNonTax, isCredit, taxRate, payments]);
 
 	useEffect(() => {
 		async function buildQr() {
@@ -184,6 +211,35 @@ export default function InvoiceDetailClient({
 		);
 	}, [client, invoice, invoiceSettings, isSettingsReady, items, qrDataUrl]);
 
+	const handleDuplicate = async () => {
+		if (isDuplicating) return;
+		setIsDuplicating(true);
+		try {
+			const result = await duplicateInvoiceAction(invoice.id);
+			if (result.success && result.data?.id) {
+				toast({
+					title: "تم نسخ الفاتورة بنجاح",
+					description: `تم إنشاء نسخة مسودة من الفاتورة ${invoice.invoice_number || invoice.id}`,
+				});
+				router.push(`/dashboard/invoices/${result.data.id}`);
+			} else {
+				toast({
+					variant: "destructive",
+					title: "خطأ في النسخ",
+					description: result.error || "حدث خطأ غير متوقع",
+				});
+				setIsDuplicating(false);
+			}
+		} catch {
+			toast({
+				variant: "destructive",
+				title: "خطأ في النسخ",
+				description: "حدث خطأ غير متوقع",
+			});
+			setIsDuplicating(false);
+		}
+	};
+
 	return (
 		<>
 			<div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -214,7 +270,30 @@ export default function InvoiceDetailClient({
 									</p>
 								)}
 							</div>
-							<div className="flex gap-3">
+							<div className="flex gap-3 items-center">
+								{invoice.status !== "paid" && invoice.status !== "cancelled" && (
+									<Button
+										onClick={() => setIsPaymentModalOpen(true)}
+										className="gap-2 bg-green-600 hover:bg-green-700"
+									>
+										<CreditCard className="w-4 h-4" />
+										تسجيل دفعة
+									</Button>
+								)}
+								<Button
+									variant="secondary"
+									onClick={handleDuplicate}
+									disabled={isDuplicating}
+									className="gap-2"
+								>
+									{isDuplicating ? (
+										<Loader2 className="w-4 h-4 animate-spin" />
+									) : (
+										<Copy className="w-4 h-4" />
+									)}
+									نسخ
+								</Button>
+
 								{pdfDoc ? (
 									<PDFDownloadLink
 										document={pdfDoc}
@@ -421,17 +500,43 @@ export default function InvoiceDetailClient({
 											<span>مجموع الضريبة ({taxRate}%):</span>
 											<span className="font-medium">{formatCurrency(totals.vat)}</span>
 										</div>
-										<div className="border-t border-gray-300 pt-2 mt-2">
+										<div className="border-t border-gray-300 pt-2 mt-2 space-y-2">
 											<div className="flex justify-between text-lg font-bold text-[#012d46]">
 												<span>{isCredit ? "إشعار دائن:" : "الإجمالي المستحق:"}</span>
 												<span>{formatCurrency(totals.total)}</span>
 											</div>
+											{totals.paid > 0 && (
+												<>
+													<div className="flex justify-between text-green-600 font-medium">
+														<span>المدفوع:</span>
+														<span>{formatCurrency(totals.paid)}</span>
+													</div>
+													<div className="flex justify-between text-red-600 font-bold">
+														<span>المتبقي:</span>
+														<span>{formatCurrency(totals.outstanding)}</span>
+													</div>
+												</>
+											)}
 										</div>
 									</>
 								) : (
-									<div className="flex justify-between text-lg font-bold text-[#012d46]">
-										<span>{isCredit ? "إشعار دائن:" : "المجموع:"}</span>
-										<span>{formatCurrency(totals.total)}</span>
+									<div className="space-y-2">
+										<div className="flex justify-between text-lg font-bold text-[#012d46]">
+											<span>{isCredit ? "إشعار دائن:" : "المجموع:"}</span>
+											<span>{formatCurrency(totals.total)}</span>
+										</div>
+										{totals.paid > 0 && (
+											<>
+												<div className="flex justify-between text-green-600 font-medium">
+													<span>المدفوع:</span>
+													<span>{formatCurrency(totals.paid)}</span>
+												</div>
+												<div className="flex justify-between text-red-600 font-bold">
+													<span>المتبقي:</span>
+													<span>{formatCurrency(totals.outstanding)}</span>
+												</div>
+											</>
+										)}
 									</div>
 								)}
 							</div>
@@ -444,6 +549,25 @@ export default function InvoiceDetailClient({
 								<p className="text-yellow-800 text-sm">{invoice.notes}</p>
 							</div>
 						)}
+
+						{/* Payment History */}
+						{payments.length > 0 && (
+							<div className="mt-8">
+								<h3 className="text-lg font-semibold text-[#012d46] mb-4">سجل الدفعات</h3>
+								<InvoicePaymentsList payments={payments} />
+							</div>
+						)}
+
+						<PaymentRecordingModal
+							isOpen={isPaymentModalOpen}
+							onClose={() => setIsPaymentModalOpen(false)}
+							invoiceId={invoice.id}
+							totalAmount={totals.total ?? 0}
+							outstandingAmount={totals.outstanding ?? 0}
+							onSuccess={() => {
+								// Optional: Refresh data if not handled by server action revalidation
+							}}
+						/>
 					</motion.div>
 				</div>
 			</div>

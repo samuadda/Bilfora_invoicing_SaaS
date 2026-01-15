@@ -131,3 +131,109 @@ export async function createInvoiceAction(data: CreateInvoiceSchema): Promise<Ac
         return { success: false, error: "Unexpected server error" };
     }
 }
+
+export async function duplicateInvoiceAction(originalId: string): Promise<ActionState> {
+    const cookieStore = await cookies();
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return cookieStore.getAll();
+                },
+                setAll(cookiesToSet) {
+                    try {
+                        cookiesToSet.forEach(({ name, value, options }) =>
+                            cookieStore.set(name, value, options)
+                        );
+                    } catch {
+                        // Ignored
+                    }
+                },
+            },
+        }
+    );
+
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Unauthorized" };
+    }
+
+    try {
+        // 1. Fetch Original Invoice with Items
+        const { data: original, error: fetchError } = await supabase
+            .from("invoices")
+            .select(`
+                *,
+                items:invoice_items(*)
+            `)
+            .eq("id", originalId)
+            .single();
+
+        if (fetchError || !original) {
+            return { success: false, error: "Invoice not found" };
+        }
+
+        // 2. Prepare New Data
+        // Set dates to today by default for the new draft
+        const today = new Date().toISOString().split("T")[0];
+
+        // Map items to the format expected by the RPC
+        // The RPC expects simple objects, not database rows with IDs
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const itemsPayload = (original.items || []).map((item: any) => ({
+            description: item.description,
+            quantity: Number(item.quantity) || 0,
+            unit_price: Number(item.unit_price) || 0,
+        }));
+
+        // 3. Create Duplicate via RPC
+        // We reuse the existing secure RPC for creation
+        const { data: rpcData, error: createError } = await supabase.rpc("create_invoice_with_items", {
+            p_client_id: original.client_id,
+            p_order_id: null, // Don't link old order
+            p_invoice_type: original.invoice_type,
+            p_document_kind: original.document_kind ?? "invoice",
+            p_issue_date: today,
+            p_due_date: today, // User can adjust this in the draft
+            p_status: "draft", // Always start as draft
+            p_tax_rate: Number(original.tax_rate) || 0,
+            p_notes: original.notes,
+            p_items: itemsPayload,
+        });
+
+        if (createError) {
+            console.error("Duplicate RPC Error:", createError);
+            return { success: false, error: createError.message };
+        }
+
+        revalidatePath("/dashboard/invoices");
+
+        // Extract ID from RPC response
+        let createdId = null;
+        if (Array.isArray(rpcData) && rpcData.length > 0) {
+            createdId = rpcData[0].id;
+        } else if (rpcData && typeof rpcData === 'object' && 'id' in rpcData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            createdId = (rpcData as any).id;
+        }
+
+        if (!createdId) {
+            return { success: false, error: "Failed to retrieve new invoice ID" };
+        }
+
+        return {
+            success: true,
+            data: { id: createdId, invoice_number: null },
+        };
+
+    } catch (err) {
+        console.error("Unexpected Duplicate Error:", err);
+        return { success: false, error: "Unexpected server error" };
+    }
+}
