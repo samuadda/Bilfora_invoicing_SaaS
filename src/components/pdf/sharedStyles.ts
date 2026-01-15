@@ -1,4 +1,5 @@
 import { Font, StyleSheet } from "@react-pdf/renderer";
+import { formatCurrency as libFormatCurrency, formatDate as libFormatDate, formatDateTime as libFormatDateTime } from "@/lib/formatters";
 
 // Register Markazi font for RTL-safe PDF rendering
 try {
@@ -388,42 +389,7 @@ export const safeText = (value: unknown): string => {
 	return str === "" ? "—" : str;
 };
 
-// Currency formatter
-export const formatCurrency = (amount: number): string => {
-	if (isNaN(amount) || !isFinite(amount)) return "0.00";
-	return new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "SAR",
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-	}).format(amount);
-};
-
-// Date formatter
-export const formatDate = (dateString?: string | null): string => {
-	if (!dateString) return "—";
-	try {
-		const date = new Date(dateString);
-		if (isNaN(date.getTime())) return "—";
-		return date.toLocaleDateString("en-GB");
-	} catch {
-		return "—";
-	}
-};
-
-// Format date with time for simplified invoices
-export const formatDateTime = (dateString?: string | null): string => {
-	if (!dateString) return "—";
-	try {
-		const date = new Date(dateString);
-		if (isNaN(date.getTime())) return "—";
-		const dateStr = date.toLocaleDateString("en-GB");
-		const timeStr = date.toLocaleTimeString("en-GB", {
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-		return `${dateStr} ${timeStr}`;
-	} catch {
-		return "—";
-	}
-};
+// Re-export formatters for backward compatibility in PDF components
+export const formatCurrency = libFormatCurrency;
+export const formatDate = libFormatDate;
+export const formatDateTime = libFormatDateTime;

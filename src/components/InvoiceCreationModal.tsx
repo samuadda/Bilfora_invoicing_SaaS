@@ -29,6 +29,7 @@ import {
 	Button,
 } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import { formatCurrency } from "@/lib/formatters";
 import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection";
 import { InvoiceDetailsForm } from "@/components/invoice/InvoiceDetailsForm";
 import { InvoiceItemsTable } from "@/components/invoice/InvoiceItemsTable";
@@ -246,12 +247,7 @@ export default function InvoiceCreationModal({
 		}));
 	};
 
-	const formatCurrency = (amount: number) =>
-		new Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: "SAR",
-			maximumFractionDigits: 2,
-		}).format(amount);
+
 
 	return (
 		<AnimatePresence>

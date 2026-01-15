@@ -16,8 +16,9 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { Heading, Text, Card, Button } from "@/components/ui";
-import { layout } from "@/lib/ui/tokens";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/formatters";
+import { layout } from "@/lib/ui/tokens";
 
 export default function DashboardPage() {
 	const router = useRouter();
@@ -58,13 +59,7 @@ export default function DashboardPage() {
 		? new Date(profile.created_at).getFullYear()
 		: now.getFullYear();
 
-	// Format currency helper
-	const formatCurrency = (amount: number) =>
-		new Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: "SAR",
-			maximumFractionDigits: 0,
-		}).format(amount);
+
 
 
 	// Generate month options for selector
@@ -194,7 +189,7 @@ export default function DashboardPage() {
 			</motion.div>
 
 			{/* Monthly Stats Cards */}
-			<MonthlyStatsCards stats={stats} formatCurrency={formatCurrency} />
+			<MonthlyStatsCards stats={stats} />
 
 			{/* Chart and Summary Row */}
 			<div className={cn("grid grid-cols-1 lg:grid-cols-3", layout.gap.large)}>
@@ -297,7 +292,7 @@ export default function DashboardPage() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.7 }}
 			>
-				<RecentInvoicesList invoices={recentInvoices} formatCurrency={formatCurrency} />
+				<RecentInvoicesList invoices={recentInvoices} />
 			</motion.div>
 
 			{/* Link to Analytics */}

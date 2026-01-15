@@ -2,14 +2,14 @@
 
 import { motion } from "framer-motion";
 import { FileText, ArrowLeft } from "lucide-react";
-import { InvoiceWithClientAndItems, InvoiceStatus } from "@/types/database";
+import { InvoiceWithClient, InvoiceStatus } from "@/types/database";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { convertToHijri } from "@/lib/dateConvert";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface RecentInvoicesListProps {
-	invoices: InvoiceWithClientAndItems[];
-	formatCurrency: (amount: number) => string;
+	invoices: InvoiceWithClient[];
 }
 
 const statusConfig: Record<InvoiceStatus, { label: string; color: string }> = {
@@ -22,14 +22,8 @@ const statusConfig: Record<InvoiceStatus, { label: string; color: string }> = {
 
 export default function RecentInvoicesList({
 	invoices,
-	formatCurrency,
 }: RecentInvoicesListProps) {
 	const router = useRouter();
-
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString("en-GB");
-	};
 
 	if (invoices.length === 0) {
 		return (

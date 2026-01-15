@@ -5,15 +5,14 @@ import { DollarSign, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { MonthlyStats } from "@/hooks/useInvoiceStats";
 import { Card, Text, Heading } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import { formatCurrency } from "@/lib/formatters";
 
 interface MonthlyStatsCardsProps {
 	stats: MonthlyStats;
-	formatCurrency: (amount: number) => string;
 }
 
 export default function MonthlyStatsCards({
 	stats,
-	formatCurrency,
 }: MonthlyStatsCardsProps) {
 	const cards = [
 		{

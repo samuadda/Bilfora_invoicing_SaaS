@@ -16,13 +16,9 @@ interface MonthlyRevenueChartProps {
 	data: DailyRevenue[];
 }
 
+import { formatCurrency } from "@/lib/formatters";
+
 export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) {
-	const formatCurrency = (amount: number) =>
-		new Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: "SAR",
-			maximumFractionDigits: 0,
-		}).format(amount);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const CustomTooltip = ({ active, payload }: any) => {

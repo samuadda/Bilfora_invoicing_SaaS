@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Card, Button, Input, Select } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 const statusConfig = {
 	draft: {
@@ -74,20 +75,7 @@ type SortField = "amount" | "issue_date" | "due_date" | null;
 type SortDirection = "asc" | "desc";
 type AmountFilter = "all" | "under-1000" | "1000-5000" | "over-5000";
 
-// Helper functions
-const formatCurrency = (amount: number) =>
-	new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "SAR",
-		maximumFractionDigits: 0,
-	}).format(amount);
-
 import { convertToHijri } from "@/lib/dateConvert";
-
-const formatDate = (dateString: string) => {
-	const date = new Date(dateString);
-	return date.toLocaleDateString("en-GB");
-};
 
 const isOverdue = (dueDate: string, status: InvoiceStatus): boolean => {
 	return (
