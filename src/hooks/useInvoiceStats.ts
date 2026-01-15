@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { InvoiceWithClientAndItems } from "@/types/database";
+import { InvoiceWithClient } from "@/types/database";
 
 export interface MonthlyStats {
 	totalInvoiced: number;
@@ -123,7 +123,7 @@ export function useInvoiceStats() {
 			.limit(limit);
 
 		if (error) throw error;
-		return (data as any[]) || []; // Returning basic array or typed
+		return (data as InvoiceWithClient[]) || [];
 	};
 
 	return {

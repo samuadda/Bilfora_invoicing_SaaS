@@ -653,7 +653,7 @@ function InvoicesContent() {
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={dateFilter}
-								onChange={(e) => setDateFilter(e.target.value as any)}
+								onChange={(e) => setDateFilter(e.target.value as string)}
 							>
 								<option value="all">كل الوقت</option>
 								<option value="today">اليوم</option>
