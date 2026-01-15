@@ -575,26 +575,53 @@ function InvoicesContent() {
 						</div>
 					</motion.div>
 					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange("paid")}
-							disabled={bulkActionLoading}
-							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
-						>
-							<CheckCircle size={16} />
-							تحديد كـ مدفوعة
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange("sent")}
-							disabled={bulkActionLoading}
-							className="bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200"
-						>
-							<Send size={16} />
-							تحديد كـ مرسلة
-						</Button>
+						<div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+							<span className="text-xs font-medium text-gray-500 px-2">تغيير الحالة:</span>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => handleBulkStatusChange("draft")}
+								disabled={bulkActionLoading}
+								className="h-8 px-2 text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm"
+								title="مسودة"
+							>
+								<FileText size={14} className="ml-1" />
+								مسودة
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => handleBulkStatusChange("sent")}
+								disabled={bulkActionLoading}
+								className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm"
+								title="مرسلة"
+							>
+								<Send size={14} className="ml-1" />
+								مرسلة
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => handleBulkStatusChange("paid")}
+								disabled={bulkActionLoading}
+								className="h-8 px-2 text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 shadow-sm"
+								title="مدفوعة"
+							>
+								<CheckCircle size={14} className="ml-1" />
+								مدفوعة
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => handleBulkStatusChange("cancelled")}
+								disabled={bulkActionLoading}
+								className="h-8 px-2 text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-sm"
+								title="ملغية"
+							>
+								<XCircle size={14} className="ml-1" />
+								ملغية
+							</Button>
+						</div>
 						<Button
 							variant="ghost"
 							size="sm"
@@ -616,7 +643,8 @@ function InvoicesContent() {
 						</Button>
 					</div>
 				</Card>
-			)}
+			)
+			}
 
 			{/* Filters & Search */}
 			<Card padding="standard">
@@ -731,58 +759,60 @@ function InvoicesContent() {
 			</Card>
 
 			{/* Pagination Controls */}
-			{totalCount > 0 && (
-				<div className="flex items-center justify-between mt-4">
-					<Text variant="body-small" color="muted">
-						عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
-					</Text>
-					<div className="flex items-center gap-2">
-						<Button
-							variant="secondary"
-							size="sm"
-							onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-							disabled={currentPage === 1 || loading}
-						>
-							<ChevronRight size={16} />
-							السابق
-						</Button>
-						<div className="flex items-center gap-1">
-							{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-								// Simple logic to show first few pages, can be improved for many pages
-								let p = i + 1;
-								if (totalPages > 5 && currentPage > 3) {
-									p = currentPage - 2 + i;
-								}
-								if (p > totalPages) return null;
+			{
+				totalCount > 0 && (
+					<div className="flex items-center justify-between mt-4">
+						<Text variant="body-small" color="muted">
+							عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
+						</Text>
+						<div className="flex items-center gap-2">
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+								disabled={currentPage === 1 || loading}
+							>
+								<ChevronRight size={16} />
+								السابق
+							</Button>
+							<div className="flex items-center gap-1">
+								{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+									// Simple logic to show first few pages, can be improved for many pages
+									let p = i + 1;
+									if (totalPages > 5 && currentPage > 3) {
+										p = currentPage - 2 + i;
+									}
+									if (p > totalPages) return null;
 
-								return (
-									<button
-										key={p}
-										onClick={() => setCurrentPage(p)}
-										className={cn(
-											"w-8 h-8 rounded-lg text-sm font-medium transition-colors",
-											currentPage === p
-												? "bg-blue-600 text-white"
-												: "bg-gray-100 text-gray-600 hover:bg-gray-200"
-										)}
-									>
-										{p}
-									</button>
-								)
-							})}
+									return (
+										<button
+											key={p}
+											onClick={() => setCurrentPage(p)}
+											className={cn(
+												"w-8 h-8 rounded-lg text-sm font-medium transition-colors",
+												currentPage === p
+													? "bg-blue-600 text-white"
+													: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+											)}
+										>
+											{p}
+										</button>
+									)
+								})}
+							</div>
+							<Button
+								variant="secondary"
+								size="sm"
+								onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+								disabled={currentPage === totalPages || loading}
+							>
+								التالي
+								<ChevronLeft size={16} />
+							</Button>
 						</div>
-						<Button
-							variant="secondary"
-							size="sm"
-							onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-							disabled={currentPage === totalPages || loading}
-						>
-							التالي
-							<ChevronLeft size={16} />
-						</Button>
 					</div>
-				</div>
-			)}
+				)
+			}
 
 			{/* Invoices Table */}
 			<Card padding="none" className="overflow-hidden">
@@ -1283,7 +1313,7 @@ function InvoicesContent() {
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
-		</div>
+		</div >
 	);
 }
 
