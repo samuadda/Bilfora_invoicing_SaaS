@@ -158,8 +158,10 @@ function LoginContent() {
 			setIsLoading(false);
 
 			// Show redirecting message after a brief moment
+			// Show redirecting message after a brief moment
 			setTimeout(() => {
 				setIsRedirecting(true);
+				router.refresh();
 				setTimeout(() => {
 					router.push("/dashboard");
 				}, 500);
