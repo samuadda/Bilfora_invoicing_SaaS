@@ -34,7 +34,7 @@ import EnhancedChart from "@/components/charts/EnhancedChart";
 import EmptyState from "@/components/analytics/EmptyState";
 import RevenueByCategory from "@/components/analytics/RevenueByCategory";
 import ExportMenu from "@/components/analytics/ExportMenu";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { useRef } from "react";
 
 interface PeriodComparison {
@@ -538,41 +538,44 @@ function AnalyticsContent() {
 		document.body.removeChild(link);
 	};
 
-	const exportToExcel = () => {
-		const headers = [
-			"رقم الفاتورة",
-			"العميل",
-			"المبلغ",
-			"الحالة",
-			"تاريخ الإصدار",
-			"تاريخ الاستحقاق",
+	const exportToExcel = async () => {
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet("التحليلات");
+
+		worksheet.columns = [
+			{ header: "رقم الفاتورة", key: "invoice_number", width: 15 },
+			{ header: "العميل", key: "client_name", width: 20 },
+			{ header: "المبلغ", key: "amount", width: 12 },
+			{ header: "الحالة", key: "status", width: 12 },
+			{ header: "تاريخ الإصدار", key: "issue_date", width: 15 },
+			{ header: "تاريخ الاستحقاق", key: "due_date", width: 15 },
 		];
 
-		const rows = filteredInvoices.map((inv) => [
-			inv.invoice_number,
-			inv.client?.name || "",
-			inv.total_amount,
-			inv.status,
-			new Date(inv.created_at).toLocaleDateString("en-GB"),
-			new Date(inv.due_date).toLocaleDateString("en-GB"),
-		]);
+		filteredInvoices.forEach((inv) => {
+			worksheet.addRow({
+				invoice_number: inv.invoice_number,
+				client_name: inv.client?.name || "",
+				amount: inv.total_amount,
+				status: inv.status,
+				issue_date: new Date(inv.created_at).toLocaleDateString("en-GB"),
+				due_date: new Date(inv.due_date).toLocaleDateString("en-GB"),
+			});
+		});
 
-		const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-		const columnWidths = [
-			{ wch: 15 },
-			{ wch: 20 },
-			{ wch: 12 },
-			{ wch: 12 },
-			{ wch: 15 },
-			{ wch: 15 },
-		];
-		worksheet["!cols"] = columnWidths;
+		const headerRow = worksheet.getRow(1);
+		headerRow.font = { bold: true };
+		headerRow.alignment = { vertical: "middle", horizontal: "center" };
 
-		const workbook = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(workbook, worksheet, "التحليلات");
-
-		const fileName = `analytics-export-${new Date().toISOString().split("T")[0]}.xlsx`;
-		XLSX.writeFile(workbook, fileName);
+		const buffer = await workbook.xlsx.writeBuffer();
+		const blob = new Blob([buffer], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `analytics-export-${new Date().toISOString().split("T")[0]}.xlsx`;
+		anchor.click();
+		window.URL.revokeObjectURL(url);
 	};
 
 	const exportToPDF = () => {

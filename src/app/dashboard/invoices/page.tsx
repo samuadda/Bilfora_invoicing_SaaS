@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { duplicateInvoiceAction } from "@/actions/invoices";
 import { useToast } from "@/components/ui/use-toast";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
 	Dialog,
@@ -405,50 +405,52 @@ function InvoicesContent() {
 		}
 	};
 
-	const exportToExcel = () => {
-		const headers = [
-			"رقم الفاتورة",
-			"اسم العميل",
-			"البريد الإلكتروني",
-			"المبلغ",
-			"الحالة",
-			"تاريخ الإصدار",
-			"تاريخ الاستحقاق",
+	const exportToExcel = async () => {
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet("الفواتير");
+
+		// Define columns
+		worksheet.columns = [
+			{ header: "رقم الفاتورة", key: "invoice_number", width: 15 },
+			{ header: "اسم العميل", key: "client_name", width: 20 },
+			{ header: "البريد الإلكتروني", key: "client_email", width: 25 },
+			{ header: "المبلغ", key: "amount", width: 15 },
+			{ header: "الحالة", key: "status", width: 15 },
+			{ header: "تاريخ الإصدار", key: "issue_date", width: 15 },
+			{ header: "تاريخ الاستحقاق", key: "due_date", width: 15 },
 		];
 
-		const rows = filteredInvoices.map((invoice) => [
-			invoice.invoice_number,
-			invoice.client.name,
-			invoice.client.email || "",
-			invoice.total_amount,
-			statusConfig[invoice.status]?.label || invoice.status,
-			formatDate(invoice.created_at),
-			formatDate(invoice.due_date),
-		]);
+		// Add rows
+		filteredInvoices.forEach((invoice) => {
+			worksheet.addRow({
+				invoice_number: invoice.invoice_number,
+				client_name: invoice.client.name,
+				client_email: invoice.client.email || "",
+				amount: invoice.total_amount,
+				status: statusConfig[invoice.status]?.label || invoice.status,
+				issue_date: formatDate(invoice.created_at),
+				due_date: formatDate(invoice.due_date),
+			});
+		});
 
-		// Create workbook and worksheet
-		const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+		// Style header row
+		const headerRow = worksheet.getRow(1);
+		headerRow.font = { bold: true };
+		headerRow.alignment = { vertical: "middle", horizontal: "center" };
 
-		// Set column widths for better readability
-		const columnWidths = [
-			{ wch: 15 }, // رقم الفاتورة
-			{ wch: 20 }, // اسم العميل
-			{ wch: 25 }, // البريد الإلكتروني
-			{ wch: 12 }, // المبلغ
-			{ wch: 12 }, // الحالة
-			{ wch: 15 }, // تاريخ الإصدار
-			{ wch: 15 }, // تاريخ الاستحقاق
-		];
-		worksheet["!cols"] = columnWidths;
+		// Generate buffer
+		const buffer = await workbook.xlsx.writeBuffer();
 
-		// Create workbook
-		const workbook = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(workbook, worksheet, "الفواتير");
-
-		// Generate Excel file and download
-		const fileName = `invoices-export-${new Date().toISOString().split("T")[0]
-			}.xlsx`;
-		XLSX.writeFile(workbook, fileName);
+		// Create blob and download
+		const blob = new Blob([buffer], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `invoices-export-${new Date().toISOString().split("T")[0]}.xlsx`;
+		anchor.click();
+		window.URL.revokeObjectURL(url);
 	};
 
 	// Stats calculations (from all invoices, not filtered)

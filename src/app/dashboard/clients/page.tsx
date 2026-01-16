@@ -23,7 +23,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
@@ -420,71 +420,57 @@ export default function ClientsPage() {
 		}
 	};
 
-	const exportClients = (useSelected: boolean = false) => {
+	const exportClients = async (useSelected: boolean = false) => {
 		const clientsToExport = useSelected
 			? filteredClients.filter((c) => selectedClientIds.has(c.id))
 			: filteredClients;
 
-		const headers = [
-			"الاسم",
-			"اسم الشركة",
-			"البريد الإلكتروني",
-			"الهاتف",
-			"الرقم الضريبي",
-			"الحالة",
-			"تاريخ الإضافة",
-			"عدد الفواتير",
-			"إجمالي المبلغ",
+		// If falling back to CSV is desired on error, we can wrap in try-catch,
+		// but ExcelJS is generally reliable. For now, strict Excel export.
+
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet("العملاء");
+
+		worksheet.columns = [
+			{ header: "الاسم", key: "name", width: 20 },
+			{ header: "اسم الشركة", key: "company_name", width: 20 },
+			{ header: "البريد الإلكتروني", key: "email", width: 25 },
+			{ header: "الهاتف", key: "phone", width: 15 },
+			{ header: "الرقم الضريبي", key: "tax_number", width: 15 },
+			{ header: "الحالة", key: "status", width: 12 },
+			{ header: "تاريخ الإضافة", key: "created_at", width: 15 },
+			{ header: "عدد الفواتير", key: "invoice_count", width: 12 },
+			{ header: "إجمالي المبلغ", key: "total_amount", width: 15 },
 		];
 
-		const rows = clientsToExport.map((client) => [
-			client.name,
-			client.company_name || "",
-			client.email,
-			client.phone,
-			client.tax_number || "",
-			statusConfig[client.status]?.label || client.status,
-			new Date(client.created_at).toLocaleDateString("en-GB"),
-			client.invoice_count || 0,
-			client.total_invoiced_amount || 0,
-		]);
-
-		// Use Excel if available, otherwise CSV
-		try {
-			const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-			const columnWidths = [
-				{ wch: 20 }, { wch: 20 }, { wch: 25 }, { wch: 15 },
-				{ wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 15 },
-			];
-			worksheet["!cols"] = columnWidths;
-
-			const workbook = XLSX.utils.book_new();
-			XLSX.utils.book_append_sheet(workbook, worksheet, "العملاء");
-
-			const fileName = `clients-export-${new Date().toISOString().split("T")[0]}.xlsx`;
-			XLSX.writeFile(workbook, fileName);
-		} catch {
-			// Fallback to CSV
-			const csvContent = [
-				headers.join(","),
-				...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-			].join("\n");
-
-			const blob = new Blob(["\uFEFF" + csvContent], {
-				type: "text/csv;charset=utf-8;",
+		clientsToExport.forEach((client) => {
+			worksheet.addRow({
+				name: client.name,
+				company_name: client.company_name || "",
+				email: client.email,
+				phone: client.phone,
+				tax_number: client.tax_number || "",
+				status: statusConfig[client.status]?.label || client.status,
+				created_at: new Date(client.created_at).toLocaleDateString("en-GB"),
+				invoice_count: client.invoice_count || 0,
+				total_amount: client.total_invoiced_amount || 0,
 			});
-			const link = document.createElement("a");
-			const url = URL.createObjectURL(blob);
-			link.setAttribute("href", url);
-			link.setAttribute(
-				"download",
-				`clients-export-${new Date().toISOString().split("T")[0]}.csv`
-			);
-			link.style.visibility = "hidden";
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		}
+		});
+
+		const headerRow = worksheet.getRow(1);
+		headerRow.font = { bold: true };
+		headerRow.alignment = { vertical: "middle", horizontal: "center" };
+
+		const buffer = await workbook.xlsx.writeBuffer();
+		const blob = new Blob([buffer], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `clients-export-${new Date().toISOString().split("T")[0]}.xlsx`;
+		anchor.click();
+		window.URL.revokeObjectURL(url);
 	};
 
 	const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB");
