@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Calendar, ArrowRight, FileText, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
+import { ArrowRight, FileText, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
 import QuickClientModal from "@/components/QuickClientModal";
 import QuickProductModal from "@/components/QuickProductModal";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import DashboardQuickActions from "@/components/dashboard/DashboardQuickActions";
 import MonthlyStatsCards from "@/components/dashboard/MonthlyStatsCards";
@@ -25,8 +25,8 @@ export default function DashboardPage() {
 
 	// Month/Year selector state
 	const now = new Date();
-	const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-	const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
+	const [selectedYear] = useState(now.getFullYear());
+	const [selectedMonth] = useState(now.getMonth());
 
 	// Modals state
 	const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -54,43 +54,11 @@ export default function DashboardPage() {
 
 	// Derived UI state
 	const userName = profile?.full_name || "";
-	// If profile creation year is missing, fallback to current year
-	const accountCreatedYear = profile?.created_at
-		? new Date(profile.created_at).getFullYear()
-		: now.getFullYear();
 
 
 
 
-	// Generate month options for selector
-	const monthOptions = useMemo(() => {
-		const months = [
-			"يناير",
-			"فبراير",
-			"مارس",
-			"أبريل",
-			"مايو",
-			"يونيو",
-			"يوليو",
-			"أغسطس",
-			"سبتمبر",
-			"أكتوبر",
-			"نوفمبر",
-			"ديسمبر",
-		];
-		return months.map((name, index) => ({
-			value: index,
-			label: `${name} ${selectedYear}`,
-		}));
-	}, [selectedYear]);
 
-	// Generate year options (from account creation year to current year)
-	const yearOptions = useMemo(() => {
-		const currentYear = now.getFullYear();
-		const yearsCount = currentYear - accountCreatedYear + 1;
-		return Array.from({ length: yearsCount }, (_, i) => currentYear - i);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [accountCreatedYear]);
 
 	const monthName = useMemo(() => {
 		const months = [
@@ -139,7 +107,7 @@ export default function DashboardPage() {
 	return (
 		<div className="space-y-6 pb-6">
 			{/* Header with Month Selector */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: -10 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
@@ -154,39 +122,13 @@ export default function DashboardPage() {
 					</Text>
 				</div>
 				<div className={cn("flex items-center", layout.gap.standard)}>
-					{/* Month Selector */}
-					<div className="flex items-center gap-2 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-2.5">
-						<Calendar className="text-gray-400" size={18} />
-						<select
-							value={selectedMonth}
-							onChange={(e) => setSelectedMonth(Number(e.target.value))}
-							className="bg-transparent border-none outline-none text-sm font-medium text-gray-700 cursor-pointer"
-						>
-							{monthOptions.map((option) => (
-								<option key={option.value} value={option.value}>
-									{option.label}
-								</option>
-							))}
-						</select>
-						<select
-							value={selectedYear}
-							onChange={(e) => setSelectedYear(Number(e.target.value))}
-							className="bg-transparent border-none outline-none text-sm font-medium text-gray-700 cursor-pointer mr-2"
-						>
-							{yearOptions.map((year) => (
-								<option key={year} value={year}>
-									{year}
-								</option>
-							))}
-						</select>
-					</div>
 					<DashboardQuickActions
 						onCreateInvoice={openInvoiceModal}
 						onCreateClient={openClientModal}
 						onCreateProduct={openProductModal}
 					/>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Monthly Stats Cards */}
 			<MonthlyStatsCards stats={stats} />
@@ -194,7 +136,7 @@ export default function DashboardPage() {
 			{/* Chart and Summary Row */}
 			<div className={cn("grid grid-cols-1 lg:grid-cols-3", layout.gap.large)}>
 				{/* Revenue Chart */}
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.5 }}
@@ -227,10 +169,10 @@ export default function DashboardPage() {
 							</div>
 						)}
 					</Card>
-				</motion.div>
+				</m.div>
 
 				{/* Quick Summary */}
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.6 }}
@@ -283,20 +225,20 @@ export default function DashboardPage() {
 							</div>
 						)}
 					</Card>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Recent Invoices List */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.7 }}
 			>
 				<RecentInvoicesList invoices={recentInvoices} />
-			</motion.div>
+			</m.div>
 
 			{/* Link to Analytics */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ delay: 0.8 }}
@@ -308,7 +250,7 @@ export default function DashboardPage() {
 						<ArrowRight size={16} />
 					</Button>
 				</Link>
-			</motion.div>
+			</m.div>
 
 			{/* Modals */}
 			<InvoiceCreationModal

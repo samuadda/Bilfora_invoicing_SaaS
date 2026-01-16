@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, AlertCircle, X, Phone, Mail } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface QuickClientModalProps {
 	isOpen: boolean;
@@ -98,14 +98,14 @@ export default function QuickClientModal({
 		<AnimatePresence>
 			{isOpen && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						className="fixed inset-0 bg-black/40 backdrop-blur-sm"
 						onClick={handleClose}
 					/>
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -249,7 +249,7 @@ export default function QuickClientModal({
 								</button>
 							</div>
 						</form>
-					</motion.div>
+					</m.div>
 				</div>
 			)}
 		</AnimatePresence>

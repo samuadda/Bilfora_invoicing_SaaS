@@ -34,7 +34,7 @@ import EnhancedChart from "@/components/charts/EnhancedChart";
 import EmptyState from "@/components/analytics/EmptyState";
 import RevenueByCategory from "@/components/analytics/RevenueByCategory";
 import ExportMenu from "@/components/analytics/ExportMenu";
-import ExcelJS from "exceljs";
+// ExcelJS is dynamically imported in exportToExcel to reduce bundle size
 import { useRef } from "react";
 
 interface PeriodComparison {
@@ -539,6 +539,8 @@ function AnalyticsContent() {
 	};
 
 	const exportToExcel = async () => {
+		// Dynamic import to reduce initial bundle size (~500KB savings)
+		const ExcelJS = (await import("exceljs")).default;
 		const workbook = new ExcelJS.Workbook();
 		const worksheet = workbook.addWorksheet("التحليلات");
 

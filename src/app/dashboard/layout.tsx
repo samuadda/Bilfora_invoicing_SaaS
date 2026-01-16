@@ -53,28 +53,25 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 			setIsLoading(true);
 			setConnectionError(false);
 
-			// Check both clients to find active session (could be in localStorage or sessionStorage)
-			// Try persistent client first, then session client if no user found
+		// Check both clients to find active session (could be in localStorage or sessionStorage)
+			// Check both clients in PARALLEL to eliminate waterfall
 			const timeoutPromise = new Promise((_, reject) =>
 				setTimeout(() => reject(new Error("Connection timeout")), 10000)
 			);
 
-			// Check persistent client first
-			const persistentPromise = supabasePersistent.auth.getUser();
-			const persistentResult = await Promise.race([persistentPromise, timeoutPromise]) as { data: { user: unknown }, error: unknown };
+			// Check both clients in parallel for faster auth verification
+			const [persistentResult, sessionResult] = await Promise.race([
+				Promise.all([
+					supabasePersistent.auth.getUser(),
+					supabaseSession.auth.getUser(),
+				]),
+				timeoutPromise.then(() => { throw new Error("Connection timeout"); }),
+			]) as [{ data: { user: unknown }, error: unknown }, { data: { user: unknown }, error: unknown }];
 
-			let user = persistentResult?.data?.user;
+			// Use whichever client has a user
+			const user = persistentResult?.data?.user || sessionResult?.data?.user;
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			let error = (persistentResult as { error: any })?.error; // Keep error as any for now to access properties or cast properly
-
-			// If no user in persistent client, check session client
-			if (!user && !error) {
-				const sessionPromise = supabaseSession.auth.getUser();
-				const sessionResult = await Promise.race([sessionPromise, timeoutPromise]) as { data: { user: unknown }, error: unknown };
-				user = sessionResult?.data?.user;
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				error = (sessionResult as { error: any })?.error;
-			}
+			const error = (persistentResult as { error: any })?.error || (sessionResult as { error: any })?.error;
 
 			// Check for network/connection errors
 			if (error) {

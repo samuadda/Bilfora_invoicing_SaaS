@@ -23,7 +23,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
-import ExcelJS from "exceljs";
+// ExcelJS is dynamically imported in exportClients to reduce bundle size
 import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
@@ -428,6 +428,8 @@ export default function ClientsPage() {
 		// If falling back to CSV is desired on error, we can wrap in try-catch,
 		// but ExcelJS is generally reliable. For now, strict Excel export.
 
+		// Dynamic import to reduce initial bundle size (~500KB savings)
+		const ExcelJS = (await import("exceljs")).default;
 		const workbook = new ExcelJS.Workbook();
 		const worksheet = workbook.addWorksheet("العملاء");
 

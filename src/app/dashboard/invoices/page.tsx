@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense, useCallback } from "react";
 import { useClients } from "@/hooks/useClients";
 import { useAllInvoicesStats } from "@/hooks/useAllInvoicesStats";
 
@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { duplicateInvoiceAction } from "@/actions/invoices";
 import { useToast } from "@/components/ui/use-toast";
-import ExcelJS from "exceljs";
+// ExcelJS is dynamically imported in exportToExcel to reduce bundle size
 import { useRouter, useSearchParams } from "next/navigation";
 import {
 	Dialog,
@@ -39,7 +39,7 @@ import {
 import { InvoiceWithClientAndItems, InvoiceStatus, InvoiceType } from "@/types/database";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
 import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Card, Button, Input, Select } from "@/components/ui";
@@ -252,8 +252,8 @@ function InvoicesContent() {
 		}
 	}, [searchParams]);
 
-	// Update URL when filters change
-	useEffect(() => {
+	// Memoized URL update handler to prevent unnecessary re-renders
+	const updateUrlParams = useCallback(() => {
 		const params = new URLSearchParams();
 		if (statusFilter !== "all") params.set("status", statusFilter);
 		if (dateFilter !== "all") params.set("date", dateFilter);
@@ -280,6 +280,11 @@ function InvoicesContent() {
 		sortDirection,
 		router,
 	]);
+
+	// Update URL when filters change
+	useEffect(() => {
+		updateUrlParams();
+	}, [updateUrlParams]);
 
 	// Removed useEffect for loadInvoices since we use useInvoices hook now
 
@@ -406,6 +411,8 @@ function InvoicesContent() {
 	};
 
 	const exportToExcel = async () => {
+		// Dynamic import to reduce initial bundle size (~500KB savings)
+		const ExcelJS = (await import("exceljs")).default;
 		const workbook = new ExcelJS.Workbook();
 		const worksheet = workbook.addWorksheet("الفواتير");
 
@@ -506,7 +513,7 @@ function InvoicesContent() {
 						إدارة ومتابعة فواتير العملاء
 					</Text>
 				</div>
-				<motion.div
+				<m.div
 					whileHover={{ scale: 1.02 }}
 					whileTap={{ scale: 0.98 }}
 				>
@@ -518,7 +525,7 @@ function InvoicesContent() {
 						<Plus size={20} strokeWidth={2.5} />
 						<span>إنشاء فاتورة جديدة</span>
 					</Button>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Stats Cards */}
@@ -559,7 +566,7 @@ function InvoicesContent() {
 			{/* Bulk Actions Bar */}
 			{hasSelected && (
 				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: -10 }}
 						animate={{ opacity: 1, y: 0 }}
 						className="flex items-center gap-3"
@@ -575,7 +582,7 @@ function InvoicesContent() {
 								اختر إجراءاً لتطبيقه على الفواتير المحددة
 							</Text>
 						</div>
-					</motion.div>
+					</m.div>
 					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
 						<div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
 							<span className="text-xs font-medium text-gray-500 px-2">تغيير الحالة:</span>
@@ -924,7 +931,7 @@ function InvoicesContent() {
 								const dueDateInfo = getDueDateInfo(invoice);
 
 								return (
-									<motion.tr
+									<m.tr
 										initial={{ opacity: 0, y: 10 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ delay: i * 0.05 }}
@@ -1153,7 +1160,7 @@ function InvoicesContent() {
 												)}
 											</div>
 										</td>
-									</motion.tr>
+									</m.tr>
 								);
 							})}
 						</tbody>

@@ -33,7 +33,7 @@ export function useDashboardData(selectedYear: number, selectedMonth: number) {
     // Fetch Monthly Stats
     const { data: monthlyStats, isLoading: isStatsLoading } = useQuery({
         queryKey: ["monthlyStats", user?.id, selectedYear, selectedMonth],
-        queryFn: () => getMonthlyStats(user!.id, selectedYear, selectedMonth),
+        queryFn: () => getMonthlyStats(user!.id, selectedYear, selectedMonth + 1),
         enabled: !!user,
         placeholderData: (prev) => prev, // Keep previous data while fetching new month
     });
@@ -41,7 +41,7 @@ export function useDashboardData(selectedYear: number, selectedMonth: number) {
     // Fetch Daily Revenue
     const { data: dailyRevenue, isLoading: isRevenueLoading } = useQuery({
         queryKey: ["dailyRevenue", user?.id, selectedYear, selectedMonth],
-        queryFn: () => getDailyRevenue(user!.id, selectedYear, selectedMonth),
+        queryFn: () => getDailyRevenue(user!.id, selectedYear, selectedMonth + 1),
         enabled: !!user,
         placeholderData: (prev) => prev,
     });
@@ -49,7 +49,7 @@ export function useDashboardData(selectedYear: number, selectedMonth: number) {
     // Fetch Recent Invoices
     const { data: recentInvoices, isLoading: isInvoicesLoading } = useQuery({
         queryKey: ["recentInvoices", user?.id, selectedYear, selectedMonth],
-        queryFn: () => getRecentInvoices(user!.id, selectedYear, selectedMonth, 8),
+        queryFn: () => getRecentInvoices(user!.id, selectedYear, selectedMonth + 1, 8),
         enabled: !!user,
         placeholderData: (prev) => prev,
     });

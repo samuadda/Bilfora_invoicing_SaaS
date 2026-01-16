@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
 import { Eye, EyeClosed, Check, ArrowLeft, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { DotPattern } from "@/components/landing-page/dot-pattern";
 import { AuthError } from "@supabase/supabase-js";
 
@@ -258,7 +258,7 @@ function LoginContent() {
 					<span>العودة للرئيسية</span>
 				</Link>
 
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5 }}
@@ -281,7 +281,7 @@ function LoginContent() {
 					</div>
 
 					{successMessage && (
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: "auto" }}
 							className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3"
@@ -292,11 +292,11 @@ function LoginContent() {
 							<p className="text-green-700 text-sm font-medium">
 								{successMessage}
 							</p>
-						</motion.div>
+						</m.div>
 					)}
 
 					{isRedirecting && (
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: "auto" }}
 							className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-3"
@@ -305,11 +305,11 @@ function LoginContent() {
 							<p className="text-blue-700 text-sm font-medium">
 								جاري التحويل...
 							</p>
-						</motion.div>
+						</m.div>
 					)}
 
 					{generalError && (
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: "auto" }}
 							className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
@@ -317,7 +317,7 @@ function LoginContent() {
 							<p className="text-red-600 text-sm font-medium">
 								{generalError}
 							</p>
-						</motion.div>
+						</m.div>
 					)}
 
 					<form onSubmit={handleSubmit} className="space-y-6" style={{ pointerEvents: isRedirecting ? 'none' : 'auto', opacity: isRedirecting ? 0.6 : 1 }}>
@@ -455,7 +455,7 @@ function LoginContent() {
 							أنشئ حساباً جديداً
 						</Link>
 					</p>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Left Side - Image/Decoration */}
@@ -470,7 +470,7 @@ function LoginContent() {
 				/>
 				<div className="w-full h-full flex items-center justify-center p-12 relative z-10">
 					<div className="max-w-xl text-center">
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.8 }}
@@ -483,7 +483,7 @@ function LoginContent() {
 								className="object-contain drop-shadow-2xl rounded-2xl"
 								priority
 							/>
-						</motion.div>
+						</m.div>
 						<h1 className="text-3xl font-bold text-[#012d46] mb-4">
 							أدر أعمالك بذكاء
 						</h1>
@@ -497,7 +497,7 @@ function LoginContent() {
 			{/* Forgot Password Modal */}
 			{showForgotPassword && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, scale: 0.95 }}
 						animate={{ opacity: 1, scale: 1 }}
 						className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative"
@@ -578,7 +578,7 @@ function LoginContent() {
 								</div>
 							</form>
 						)}
-					</motion.div>
+					</m.div>
 				</div>
 			)}
 		</div>

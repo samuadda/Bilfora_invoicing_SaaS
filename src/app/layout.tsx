@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { MotionProvider } from "@/components/providers/MotionProvider";
 
 const vazirmatn = Vazirmatn({
 	subsets: ["arabic"],
@@ -40,8 +41,10 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<QueryProvider>
-						{children}
-						<Toaster />
+						<MotionProvider>
+							{children}
+							<Toaster />
+						</MotionProvider>
 					</QueryProvider>
 				</ThemeProvider>
 			</body>

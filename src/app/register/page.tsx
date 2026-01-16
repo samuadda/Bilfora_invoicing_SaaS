@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
 	Dialog,
 	DialogContent,
@@ -187,7 +187,7 @@ const Form = () => {
 					<span>العودة للرئيسية</span>
 				</Link>
 
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5 }}
@@ -210,7 +210,7 @@ const Form = () => {
 					</div>
 
 					{generalError && (
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: "auto" }}
 							className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
@@ -218,7 +218,7 @@ const Form = () => {
 							<p className="text-red-600 text-sm font-medium">
 								{generalError}
 							</p>
-						</motion.div>
+						</m.div>
 					)}
 
 					<form onSubmit={handleSubmit} className="space-y-5">
@@ -424,7 +424,7 @@ const Form = () => {
 							سجل الدخول
 						</Link>
 					</p>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Left Side - Visuals */}
@@ -439,7 +439,7 @@ const Form = () => {
 
 				<div className="relative z-10 w-full max-w-lg">
 					<div className="grid grid-cols-2 gap-4 mb-8">
-						<motion.div 
+						<m.div 
 							initial={{ opacity: 0, x: -20 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ delay: 0.2 }}
@@ -450,8 +450,8 @@ const Form = () => {
 							</div>
 							<h3 className="text-white font-bold mb-1">تطبيق جوال</h3>
 							<p className="text-white/60 text-sm">أدر فواتيرك من أي مكان وفي أي وقت.</p>
-						</motion.div>
-						<motion.div 
+						</m.div>
+						<m.div 
 							initial={{ opacity: 0, x: 20 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ delay: 0.3 }}
@@ -462,10 +462,10 @@ const Form = () => {
 							</div>
 							<h3 className="text-white font-bold mb-1">لوحة تحكم</h3>
 							<p className="text-white/60 text-sm">تقارير وتحليلات متقدمة لنمو أعمالك.</p>
-						</motion.div>
+						</m.div>
 					</div>
 					
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.5 }}
@@ -477,7 +477,7 @@ const Form = () => {
 						<p className="text-white/70">
 							ابدأ رحلتك المالية الرقمية اليوم مع بيلفورا.
 						</p>
-					</motion.div>
+					</m.div>
 				</div>
 			</div>
 
