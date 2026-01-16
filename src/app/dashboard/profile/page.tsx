@@ -23,7 +23,7 @@ import {
 	Gender,
 	AccountType,
 } from "@/types/database";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text } from "@/components/ui";
 
@@ -398,17 +398,17 @@ export default function ProfilePage() {
 		<div className="space-y-6 pb-10">
 			{/* Success/Error Messages */}
 			{success && (
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
 					className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3"
 				>
 					<CheckCircle className="h-5 w-5 text-green-600" />
 					<p className="text-green-800 font-medium">{success}</p>
-				</motion.div>
+				</m.div>
 			)}
 			{error && (
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
 					className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3"
@@ -421,11 +421,11 @@ export default function ProfilePage() {
 					>
 						إعادة المحاولة
 					</button>
-				</motion.div>
+				</m.div>
 			)}
 
 			{/* Header */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center gap-6 md:justify-between"
@@ -465,7 +465,7 @@ export default function ProfilePage() {
 								<span className="font-bold text-[#7f2dfb]">{completionPercent}%</span>
 							</div>
 							<div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-								<motion.div
+								<m.div
 									initial={{ width: 0 }}
 									animate={{ width: `${completionPercent}%` }}
 									transition={{ duration: 1, ease: "easeOut" }}
@@ -491,12 +491,12 @@ export default function ProfilePage() {
 						تصدير البيانات
 					</button>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Grid */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Left column: profile forms */}
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, x: 20 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ delay: 0.1 }}
@@ -852,10 +852,10 @@ export default function ProfilePage() {
 							</div>
 						</form>
 					</div>
-				</motion.div>
+				</m.div>
 
 				{/* Right column: public profile preview */}
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, x: -20 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ delay: 0.2 }}
@@ -912,7 +912,7 @@ export default function ProfilePage() {
 							</div>
 						</div>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 		</div>
 	);

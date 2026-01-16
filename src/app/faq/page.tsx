@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
 	ChevronDown,
 	ChevronUp,
@@ -169,7 +169,7 @@ export default function FAQPage() {
 
 			{/* Header */}
 			<div className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-center">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
@@ -184,12 +184,12 @@ export default function FAQPage() {
 					<p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
 						إجابات على أكثر الأسئلة شيوعاً حول نظام إدارة الفواتير
 					</p>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Category Filter */}
 			<div className="relative z-10 px-4 sm:px-6 lg:px-8 mb-12">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.2 }}
@@ -221,13 +221,13 @@ export default function FAQPage() {
 							</button>
 						))}
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* FAQ List */}
 			<div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20">
 				<AnimatePresence mode="wait">
-					<motion.div
+					<m.div
 						key={selectedCategory + searchTerm}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -242,7 +242,7 @@ export default function FAQPage() {
 						)}
 
 						{filteredFAQs.map((faq, index) => (
-							<motion.div
+							<m.div
 								key={faq.id}
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -281,7 +281,7 @@ export default function FAQPage() {
 
 									<AnimatePresence>
 										{openItems.includes(faq.id) && (
-											<motion.div
+											<m.div
 												id={`faq-answer-${faq.id}`}
 												role="region"
 												aria-labelledby={`faq-question-${faq.id}`}
@@ -302,19 +302,19 @@ export default function FAQPage() {
 														{faq.answer}
 													</p>
 												</div>
-											</motion.div>
+											</m.div>
 										)}
 									</AnimatePresence>
 								</div>
-							</motion.div>
+							</m.div>
 						))}
-					</motion.div>
+					</m.div>
 				</AnimatePresence>
 			</div>
 
 			{/* CTA */}
 			<div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.6 }}
@@ -348,7 +348,7 @@ export default function FAQPage() {
 							</Link>
 						</div>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 		</div>
 	);

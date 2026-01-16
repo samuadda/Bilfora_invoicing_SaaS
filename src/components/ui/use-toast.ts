@@ -1,9 +1,12 @@
 "use client";
 
 import { toast as sonnerToast } from "sonner";
+import { useCallback } from "react";
 
 export function useToast() {
-	const toast = (options: {
+	// Function reference must be stable to prevent infinite loops in useEffects
+	// that depend on toast (like in products/page.tsx)
+	const toast = useCallback((options: {
 		title?: string;
 		description?: string;
 		variant?: "default" | "destructive";
@@ -17,7 +20,7 @@ export function useToast() {
 				description: options.description,
 			});
 		}
-	};
+	}, []);
 
 	return { toast };
 }

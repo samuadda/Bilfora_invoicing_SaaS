@@ -25,7 +25,7 @@ import {
 	Package,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
@@ -181,7 +181,11 @@ export default function ProductsPage() {
 		try {
 			setLoading(true);
 			const { data: { user } } = await supabase.auth.getUser();
-			if (!user) return;
+			if (!user) {
+				// User not authenticated - loading will be set to false in finally block
+				console.warn("Products: No authenticated user found");
+				return;
+			}
 			const { data, error } = await supabase
 				.from("products")
 				.select("*")
@@ -471,14 +475,14 @@ export default function ProductsPage() {
 						أضف منتجاتك وخدماتك ليسهل عليك إنشاء الفواتير
 					</Text>
 				</div>
-				<motion.div
+				<m.div
 					whileHover={{ scale: 1.02 }}
 					whileTap={{ scale: 0.98 }}
 				>
 					<UIButton variant="primary" onClick={openNew} className="inline-flex items-center gap-2">
 						<Plus size={20} strokeWidth={2.5} /> إضافة منتج
 					</UIButton>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Stats Grid */}
@@ -516,7 +520,7 @@ export default function ProductsPage() {
 			{/* Bulk Actions Bar */}
 			{hasSelected && (
 				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: -10 }}
 						animate={{ opacity: 1, y: 0 }}
 						className={cn("flex items-center", layout.gap.standard)}
@@ -532,7 +536,7 @@ export default function ProductsPage() {
 								اختر إجراءاً لتطبيقه على المنتجات المحددة
 							</Text>
 						</div>
-					</motion.div>
+					</m.div>
 					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
 						<UIButton
 							variant="ghost"
@@ -578,7 +582,7 @@ export default function ProductsPage() {
 			)}
 
 			{/* Filters & Table Container */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.4 }}
@@ -694,14 +698,14 @@ export default function ProductsPage() {
 								: "حاول تغيير البحث أو الفلاتر"}
 						</p>
 						{products.length === 0 && (
-							<motion.button
+							<m.button
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
 								onClick={openNew}
 								className="inline-flex items-center gap-2 rounded-xl bg-[#7f2dfb] text-white px-6 py-3 text-base font-bold shadow-lg shadow-purple-200 hover:shadow-xl hover:bg-[#6a1fd8] transition-all"
 							>
 								<Plus size={20} strokeWidth={2.5} /> إضافة منتج
-							</motion.button>
+							</m.button>
 						)}
 					</div>
 				) : (
@@ -925,20 +929,20 @@ export default function ProductsPage() {
 						)}
 					</>
 				)}
-			</motion.div>
+			</m.div>
 
 			{/* Add/Edit Modal */}
 			<AnimatePresence>
 				{showModal && (
 					<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-						<motion.div
+						<m.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							className="fixed inset-0 bg-black/40 backdrop-blur-sm"
 							onClick={closeModal}
 						/>
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, scale: 0.95, y: 20 }}
 							animate={{ opacity: 1, scale: 1, y: 0 }}
 							exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -1086,7 +1090,7 @@ export default function ProductsPage() {
 											: "إضافة المنتج"}
 								</button>
 							</div>
-						</motion.div>
+						</m.div>
 					</div>
 				)}
 			</AnimatePresence>

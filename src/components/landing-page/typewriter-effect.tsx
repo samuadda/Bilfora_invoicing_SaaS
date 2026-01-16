@@ -53,25 +53,25 @@ export const TypewriterEffect = ({
 
     const renderWords = () => {
         return (
-            <motion.div ref={scope} className="inline" dir="rtl">
+            <m.div ref={scope} className="inline" dir="rtl">
                 {wordsArray.map((word, idx) => (
                     <div key={`word-${idx}`} className="inline-block">
                         {word.text.map((char, index) => (
-                            <motion.span initial={{}} key={`char-${idx}-${index}`} className={cn(`dark:text-white text-black opacity-0 hidden`, word.className)}>
+                            <m.span initial={{}} key={`char-${idx}-${index}`} className={cn(`dark:text-white text-black opacity-0 hidden`, word.className)}>
                                 {char}
-                            </motion.span>
+                            </m.span>
                         ))}
                         &nbsp;
                     </div>
                 ))}
-            </motion.div>
+            </m.div>
         );
     };
 
     return (
         <div className={cn("text-base sm:text-xl md:text-3xl lg:text-5xl font-bold text-center", className)} dir="rtl">
             {renderWords()}
-            <motion.span
+            <m.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
@@ -80,7 +80,7 @@ export const TypewriterEffect = ({
                     repeatType: "reverse",
                 }}
                 className={cn("inline-block rounded-sm w-[4px] h-4 md:h-6 lg:h-10 bg-blue-500", cursorClassName)}
-            ></motion.span>
+            ></m.span>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 "use client";
 import Navbar from "@/components/landing-page/Navbar";
 import { TextAnimate } from "@/components/landing-page/text-animate";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Link from "next/link";
 import { Github, Twitter } from "lucide-react";
 
@@ -28,7 +28,7 @@ export default function AboutPage() {
 
 				{/* Dev card */}
 				<section className="grid md:grid-cols-[1.1fr_1.2fr] gap-10 items-center mb-20">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5 }}
@@ -54,7 +54,7 @@ export default function AboutPage() {
 								شخص واحد يحب المنتجات المتقنة.
 							</p>
 						</div>
-					</motion.div>
+					</m.div>
 
 					<div className="space-y-6 text-gray-700 leading-relaxed">
 						<h3 className="text-xl font-bold text-[#012d46]">

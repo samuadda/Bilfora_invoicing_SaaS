@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
 import { ChevronLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { NavigationMenu } from "@/components/landing-page/MobileMenu";
 
 const NavItems = [
@@ -22,7 +22,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<motion.nav
+			<m.nav
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.5 }}
@@ -72,7 +72,7 @@ const Navbar = () => {
 						/>
 					</Link>
 				</div>
-			</motion.nav>
+			</m.nav>
 			<NavigationMenu NavItems={NavItems} MainButtonText="جرب مجاناً" />
 		</>
 	);

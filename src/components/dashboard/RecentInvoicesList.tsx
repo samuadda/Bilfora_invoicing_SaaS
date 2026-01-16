@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { FileText, ArrowLeft } from "lucide-react";
 import { InvoiceWithClient, InvoiceStatus } from "@/types/database";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ export default function RecentInvoicesList({
 					const { formattedHijri } = convertToHijri(invoice.issue_date);
 
 					return (
-						<motion.div
+						<m.div
 							key={invoice.id}
 							initial={{ opacity: 0, x: 20 }}
 							animate={{ opacity: 1, x: 0 }}
@@ -87,7 +87,7 @@ export default function RecentInvoicesList({
 									/>
 								</div>
 							</div>
-						</motion.div>
+						</m.div>
 					);
 				})}
 			</div>

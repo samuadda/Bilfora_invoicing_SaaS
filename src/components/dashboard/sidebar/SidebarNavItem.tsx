@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import { colors } from "@/lib/ui/tokens";
@@ -41,7 +41,7 @@ export function SidebarNavItem({
             )}
         >
             {active && (
-                <motion.div
+                <m.div
                     layoutId="activeTab"
                     className={`absolute right-0 top-0 bottom-0 w-1 bg-[${colors.brand.primary}] rounded-l-full`}
                     initial={{ opacity: 0 }}

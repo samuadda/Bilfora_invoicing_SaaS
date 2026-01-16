@@ -11,7 +11,7 @@ import { supabase } from "@/lib/supabase";
 import { Client, Invoice, InvoiceStatus } from "@/types/database";
 import LoadingState from "@/components/LoadingState";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const statusConfig: Record<InvoiceStatus, { label: string; color: string; icon: typeof CheckCircle }> = {
 	draft: {
@@ -154,7 +154,7 @@ export default function ClientDetailPage() {
 			</div>
 
 			{/* Client Info Card */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8"
@@ -235,7 +235,7 @@ export default function ClientDetailPage() {
 						</div>
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Stats Cards */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-5">
@@ -258,7 +258,7 @@ export default function ClientDetailPage() {
 			</div>
 
 			{/* Invoices Table */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.2 }}
@@ -341,7 +341,7 @@ export default function ClientDetailPage() {
 						</div>
 					)}
 				</div>
-			</motion.div>
+			</m.div>
 		</div>
 	);
 }

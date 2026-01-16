@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Download, FileText, Table, Printer, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface ExportMenuProps {
 	onExportCSV: () => void;
@@ -50,7 +50,7 @@ export default function ExportMenu({
 							className="fixed inset-0 z-40"
 							onClick={() => setIsOpen(false)}
 						/>
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, y: -10 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, y: -10 }}
@@ -86,7 +86,7 @@ export default function ExportMenu({
 								<Printer size={16} />
 								تصدير PDF
 							</button>
-						</motion.div>
+						</m.div>
 					</>
 				)}
 			</AnimatePresence>

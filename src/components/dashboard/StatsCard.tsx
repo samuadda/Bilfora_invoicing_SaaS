@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, LucideIcon } from "lucide-react";
 import { Card, Text, Heading } from "@/components/ui";
@@ -24,7 +24,7 @@ export function StatsCard({ title, value, icon: Icon, trend, color, delay = 0, i
     };
 
     return (
-        <motion.div
+        <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay, duration: 0.5 }}
@@ -54,7 +54,7 @@ export function StatsCard({ title, value, icon: Icon, trend, color, delay = 0, i
                     <Heading variant="h3" className="text-3xl font-extrabold tracking-tight">{value}</Heading>
                 </div>
             </Card>
-        </motion.div>
+        </m.div>
     );
 }
 

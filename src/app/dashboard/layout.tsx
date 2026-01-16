@@ -8,7 +8,7 @@ import { useSidebar } from "@/components/dashboard/sidebar/SidebarContext";
 import SidebarProvider from "@/components/dashboard/SidebarProvider";
 import LoadingState from "@/components/LoadingState";
 import { Toaster } from "@/components/ui/sonner";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutWrapperProps {
@@ -27,13 +27,13 @@ function DashboardContent({ children }: { children: ReactNode }) {
 			)}
 		>
 			<div className="p-4 md:p-8 pt-20 md:pt-8 max-w-[1600px] mx-auto">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
 					{children}
-				</motion.div>
+				</m.div>
 			</div>
 		</main>
 	);
@@ -172,7 +172,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 	if (connectionError) {
 		return (
 			<div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
 					className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-red-100"
@@ -207,7 +207,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 							العودة إلى صفحة تسجيل الدخول
 						</button>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 		);
 	}

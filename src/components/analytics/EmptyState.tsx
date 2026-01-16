@@ -1,14 +1,14 @@
 "use client";
 
 import { FileText, Plus } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 export default function AnalyticsEmptyState() {
 	const router = useRouter();
 
 	return (
-		<motion.div
+		<m.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			className="flex flex-col items-center justify-center py-20 text-center"
@@ -23,7 +23,7 @@ export default function AnalyticsEmptyState() {
 				لا توجد فواتير حتى الآن. ابدأ بإنشاء فاتورة جديدة لرؤية التحليلات
 				والإحصائيات هنا.
 			</p>
-			<motion.button
+			<m.button
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={() => router.push("/dashboard/invoices")}
@@ -31,8 +31,8 @@ export default function AnalyticsEmptyState() {
 			>
 				<Plus size={20} strokeWidth={2.5} />
 				<span>إنشاء فاتورة جديدة</span>
-			</motion.button>
-		</motion.div>
+			</m.button>
+		</m.div>
 	);
 }
 

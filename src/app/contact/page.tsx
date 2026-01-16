@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
 	Mail,
 	Phone,
@@ -104,7 +104,7 @@ export default function ContactPage() {
 
 			{/* Header */}
 			<div className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-center">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
@@ -120,12 +120,12 @@ export default function ContactPage() {
 						نحن هنا لمساعدتك! تواصل مع فريق الدعم الفني للحصول على
 						المساعدة التي تحتاجها
 					</p>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Contact Methods */}
 			<div className="relative z-10 px-4 sm:px-6 lg:px-8 mb-12">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.2 }}
@@ -133,7 +133,7 @@ export default function ContactPage() {
 				>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{contactMethods.map((method, index) => (
-							<motion.div
+							<m.div
 								key={method.title}
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -155,15 +155,15 @@ export default function ContactPage() {
 								<p className="text-gray-600 text-sm">
 									{method.description}
 								</p>
-							</motion.div>
+							</m.div>
 						))}
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Contact Form */}
 			<div className="relative z-10 px-4 sm:px-6 lg:px-8 pb-20">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.4 }}
@@ -304,7 +304,7 @@ export default function ContactPage() {
 							</div>
 						</form>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 		</div>
 	);

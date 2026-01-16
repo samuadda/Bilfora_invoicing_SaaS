@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
 interface SidebarTooltipProps {
@@ -19,7 +19,7 @@ export function SidebarTooltip({
     return createPortal(
         <AnimatePresence>
             {isCollapsed && hoveredItem && (
-                <motion.div
+                <m.div
                     initial={{ opacity: 0, x: 10, scale: 0.9 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     exit={{ opacity: 0, x: 5, scale: 0.9 }}
@@ -38,7 +38,7 @@ export function SidebarTooltip({
                         {/* Right pointing triangle (points to sidebar) */}
                         <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-gray-900/95"></div>
                     </div>
-                </motion.div>
+                </m.div>
             )}
         </AnimatePresence>,
         document.body

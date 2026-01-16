@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Loader2, Printer, ArrowLeft, AlertCircle } from "lucide-react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { InvoicePDFRenderer } from "@/components/pdf/InvoicePDFRenderer";
 import { generateZatcaTLVBase64 } from "@/components/pdf/zatcaQr";
 import { convertToHijri } from "@/lib/dateConvert";
@@ -364,7 +364,7 @@ export default function InvoiceDetailClient({
 					</div>
 
 					{/* Invoice Details */}
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						className="print-invoice bg-white rounded-lg shadow-sm p-6 md:p-8"
@@ -568,7 +568,7 @@ export default function InvoiceDetailClient({
 								// Optional: Refresh data if not handled by server action revalidation
 							}}
 						/>
-					</motion.div>
+					</m.div>
 				</div>
 			</div>
 		</>

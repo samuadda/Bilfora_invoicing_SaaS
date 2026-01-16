@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface ActivityItem {
@@ -40,7 +40,7 @@ export default function DashboardRecentActivity({
 					{activities.map((act, i) => {
 						const Icon = act.icon;
 						return (
-							<motion.div
+							<m.div
 								key={i}
 								initial={{ opacity: 0, x: 20 }}
 								animate={{ opacity: 1, x: 0 }}
@@ -89,7 +89,7 @@ export default function DashboardRecentActivity({
 										/>
 									)}
 								</div>
-							</motion.div>
+							</m.div>
 						);
 					})}
 				</div>

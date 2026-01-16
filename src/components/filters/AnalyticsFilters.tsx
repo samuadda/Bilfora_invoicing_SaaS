@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Filter, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { InvoiceStatus } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -132,7 +132,7 @@ export default function AnalyticsFiltersComponent({
 							className="fixed inset-0 z-40"
 							onClick={() => setIsOpen(false)}
 						/>
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, y: -10 }}
 							animate={{ opacity: 1, y: 0 }}
 							exit={{ opacity: 0, y: -10 }}
@@ -252,7 +252,7 @@ export default function AnalyticsFiltersComponent({
 							>
 								تطبيق الفلاتر
 							</button>
-						</motion.div>
+						</m.div>
 					</>
 				)}
 			</AnimatePresence>

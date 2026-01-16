@@ -16,7 +16,7 @@ import {
 	RotateCcw,
 	ChevronDown
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 type Frequency = "immediate" | "daily" | "weekly";
 
@@ -110,17 +110,17 @@ export default function NotificationsPage() {
 	return (
 		<div className="space-y-8 pb-24">
 			{/* Header */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="flex flex-col gap-2"
 			>
 				<h1 className="text-3xl font-bold text-[#012d46]">الإشعارات</h1>
 				<p className="text-gray-500">تحكم في كيفية ووقت استلامك للتنبيهات</p>
-			</motion.div>
+			</m.div>
 
 			{/* Channels with verification and test */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.1 }}
@@ -222,10 +222,10 @@ export default function NotificationsPage() {
 						</div>
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Matrix */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.2 }}
@@ -304,10 +304,10 @@ export default function NotificationsPage() {
 						</tbody>
 					</table>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Advanced: frequency, DND, snooze, pause */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.3 }}
@@ -378,11 +378,11 @@ export default function NotificationsPage() {
 						)}
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Sticky save bar */}
 			{dirty && (
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 50 }}
 					animate={{ opacity: 1, y: 0 }}
 					className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-md px-4"
@@ -407,7 +407,7 @@ export default function NotificationsPage() {
 							</button>
 						</div>
 					</div>
-				</motion.div>
+				</m.div>
 			)}
 		</div>
 	);

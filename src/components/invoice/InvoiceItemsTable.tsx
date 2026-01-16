@@ -1,7 +1,7 @@
 "use client";
 
 import { Trash2, Plus } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
     Heading,
     Button,
@@ -46,7 +46,7 @@ export function InvoiceItemsTable({
 
             <div className={layout.stack.standard}>
                 {items.map((item, index) => (
-                    <motion.div
+                    <m.div
                         key={index}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -139,7 +139,7 @@ export function InvoiceItemsTable({
                                 )}
                             </div>
                         </div>
-                    </motion.div>
+                    </m.div>
                 ))}
             </div>
         </div>

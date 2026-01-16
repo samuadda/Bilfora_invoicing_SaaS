@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useMotionValueEvent, useScroll } from "motion/react";
-import { motion } from "motion/react";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const backgroundColors = [
@@ -60,7 +60,7 @@ export const StickyScroll = ({
   }, [activeCard]);
 
   return (
-    <motion.div
+    <m.div
       animate={{
         backgroundColor: backgroundColors[activeCard % backgroundColors.length],
       }}
@@ -71,7 +71,7 @@ export const StickyScroll = ({
         <div className="max-w-2xl">
           {content.map((item, index) => (
             <div key={item.title + index} className="my-20">
-              <motion.h2
+              <m.h2
                 initial={{
                   opacity: 0,
                 }}
@@ -81,8 +81,8 @@ export const StickyScroll = ({
                 className="text-2xl font-bold text-slate-100"
               >
                 {item.title}
-              </motion.h2>
-              <motion.p
+              </m.h2>
+              <m.p
                 initial={{
                   opacity: 0,
                 }}
@@ -92,7 +92,7 @@ export const StickyScroll = ({
                 className="text-kg mt-10 max-w-sm text-slate-300"
               >
                 {item.description}
-              </motion.p>
+              </m.p>
             </div>
           ))}
           <div className="h-40" />
@@ -107,6 +107,6 @@ export const StickyScroll = ({
       >
         {content[activeCard].content ?? null}
       </div>
-    </motion.div>
+    </m.div>
   );
 };

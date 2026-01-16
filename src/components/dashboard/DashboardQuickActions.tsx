@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, UserPlus, Package } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface DashboardQuickActionsProps {
 	onCreateInvoice: () => void;
@@ -16,7 +16,7 @@ export default function DashboardQuickActions({
 }: DashboardQuickActionsProps) {
 	return (
 		<div className="flex flex-wrap gap-3">
-			<motion.button
+			<m.button
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={onCreateInvoice}
@@ -24,8 +24,8 @@ export default function DashboardQuickActions({
 			>
 				<Plus size={18} strokeWidth={2.5} />
 				<span>إنشاء فاتورة جديدة</span>
-			</motion.button>
-			<motion.button
+			</m.button>
+			<m.button
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={onCreateClient}
@@ -33,8 +33,8 @@ export default function DashboardQuickActions({
 			>
 				<UserPlus size={18} strokeWidth={2.5} />
 				<span>إضافة عميل</span>
-			</motion.button>
-			<motion.button
+			</m.button>
+			<m.button
 				whileHover={{ scale: 1.02 }}
 				whileTap={{ scale: 0.98 }}
 				onClick={onCreateProduct}
@@ -42,7 +42,7 @@ export default function DashboardQuickActions({
 			>
 				<Package size={18} strokeWidth={2.5} />
 				<span>إضافة منتج</span>
-			</motion.button>
+			</m.button>
 		</div>
 	);
 }

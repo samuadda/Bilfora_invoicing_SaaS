@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { DollarSign, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { MonthlyStats } from "@/hooks/useInvoiceStats";
 import { Card, Text, Heading } from "@/components/ui";
@@ -57,7 +57,7 @@ export default function MonthlyStatsCards({
 			{cards.map((card) => {
 				const Icon = card.icon;
 				return (
-					<motion.div
+					<m.div
 						key={card.title}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export default function MonthlyStatsCards({
 								</Heading>
 							</div>
 						</Card>
-					</motion.div>
+					</m.div>
 				);
 			})}
 		</div>

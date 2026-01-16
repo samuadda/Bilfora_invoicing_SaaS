@@ -2,12 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
 import { ChevronLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const SimpleNavbar = () => {
 	return (
 		<>
-			<motion.nav
+			<m.nav
 				initial={{ opacity: 0, y: -50 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="fixed top-0 navbar bg-white/10 backdrop-blur-md  border-b border-white/20 px-7 z-50"
@@ -47,7 +47,7 @@ const SimpleNavbar = () => {
 						/>
 					</Link>
 				</div>
-			</motion.nav>
+			</m.nav>
 		</>
 	);
 };

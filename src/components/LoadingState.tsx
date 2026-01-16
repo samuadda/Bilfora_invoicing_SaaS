@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface LoadingStateProps {
@@ -19,7 +19,7 @@ export default function LoadingState({
       fullScreen ? "fixed inset-0 z-50 bg-white/80 backdrop-blur-sm" : "min-h-[60vh]",
       className
     )}>
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -34,7 +34,7 @@ export default function LoadingState({
           <p className="text-brand-dark font-bold text-lg">{message}</p>
           <p className="text-gray-400 text-sm">يرجى الانتظار قليلاً</p>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

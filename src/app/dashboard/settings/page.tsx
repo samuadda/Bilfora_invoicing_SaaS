@@ -17,7 +17,7 @@ import {
 	Settings,
 	ChevronDown
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Heading } from "@/components/ui";
 
 interface InvoiceItem {
@@ -91,17 +91,17 @@ export default function SettingsPage() {
 	return (
 		<div className="space-y-8 pb-10">
 			{/* Header */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="flex flex-col gap-2"
 			>
 				<Heading variant="h1">الإعدادات</Heading>
 				<p className="text-gray-500">تحكم في إعدادات حسابك، الأمان، والفوترة</p>
-			</motion.div>
+			</m.div>
 
 			{/* Security */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.1 }}
@@ -212,10 +212,10 @@ export default function SettingsPage() {
 						<LogOut size={16} /> تسجيل الخروج من جميع الأجهزة
 					</button>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Notifications */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.2 }}
@@ -279,10 +279,10 @@ export default function SettingsPage() {
 						<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* System Preferences */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.3 }}
@@ -356,10 +356,10 @@ export default function SettingsPage() {
 						</div>
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Billing & Subscription */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.4 }}
@@ -425,10 +425,10 @@ export default function SettingsPage() {
 						</div>
 					</div>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Danger Zone */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.5 }}
@@ -450,7 +450,7 @@ export default function SettingsPage() {
 						تصدير كل البيانات
 					</button>
 				</div>
-			</motion.div>
+			</m.div>
 		</div>
 	);
 }

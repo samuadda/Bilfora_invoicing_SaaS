@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface CategoryData {
 	name: string;
@@ -46,7 +46,7 @@ export default function RevenueByCategory({ categories }: RevenueByCategoryProps
 				{categories.map((category, index) => {
 					const percentage = total > 0 ? (category.value / total) * 100 : 0;
 					return (
-						<motion.div
+						<m.div
 							key={category.name}
 							initial={{ opacity: 0, x: -20 }}
 							animate={{ opacity: 1, x: 0 }}
@@ -77,13 +77,13 @@ export default function RevenueByCategory({ categories }: RevenueByCategoryProps
 									/>
 								</div>
 							</div>
-						</motion.div>
+						</m.div>
 					);
 				})}
 			</div>
 
 			{/* Pie Chart */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, scale: 0.9 }}
 				animate={{ opacity: 1, scale: 1 }}
 				className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-center"
@@ -119,7 +119,7 @@ export default function RevenueByCategory({ categories }: RevenueByCategoryProps
 						</PieChart>
 					</ResponsiveContainer>
 				</div>
-			</motion.div>
+			</m.div>
 		</div>
 	);
 }

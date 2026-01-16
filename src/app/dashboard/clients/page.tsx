@@ -18,7 +18,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
@@ -137,7 +137,11 @@ export default function ClientsPage() {
 			const {
 				data: { user },
 			} = await supabase.auth.getUser();
-			if (!user) return;
+			if (!user) {
+				// User not authenticated - loading will be set to false in finally block
+				console.warn("Clients: No authenticated user found");
+				return;
+			}
 
 			// Load all clients with their invoices
 			const { data: clientsData, error: clientsError } = await supabase
@@ -502,7 +506,7 @@ export default function ClientsPage() {
 					<Heading variant="h1">العملاء</Heading>
 					<Text variant="body-large" color="muted" className="mt-2">إدارة قاعدة بيانات العملاء ومتابعة تفاصيلهم</Text>
 				</div>
-				<motion.div
+				<m.div
 					whileHover={{ scale: 1.02 }}
 					whileTap={{ scale: 0.98 }}
 				>
@@ -510,7 +514,7 @@ export default function ClientsPage() {
 						<Plus size={20} strokeWidth={2.5} />
 						<span>إضافة عميل</span>
 					</UIButton>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Stats Grid */}
@@ -548,7 +552,7 @@ export default function ClientsPage() {
 			{/* Bulk Actions Bar */}
 			{hasSelected && (
 				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: -10 }}
 						animate={{ opacity: 1, y: 0 }}
 						className={cn("flex items-center", layout.gap.standard)}
@@ -564,7 +568,7 @@ export default function ClientsPage() {
 								اختر إجراءاً لتطبيقه على العملاء المحددين
 							</Text>
 						</div>
-					</motion.div>
+					</m.div>
 					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
 						<UIButton
 							variant="ghost"
@@ -617,7 +621,7 @@ export default function ClientsPage() {
 			)}
 
 			{/* Filter & Table Container */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.4 }}
@@ -847,20 +851,20 @@ export default function ClientsPage() {
 						</div>
 					</div>
 				)}
-			</motion.div>
+			</m.div>
 
 			{/* Add/Edit Modal */}
 			<AnimatePresence>
 				{showModal && (
 					<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-						<motion.div
+						<m.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							className="fixed inset-0 bg-black/40 backdrop-blur-sm"
 							onClick={() => setShowModal(false)}
 						/>
-						<motion.div
+						<m.div
 							initial={{ opacity: 0, scale: 0.95, y: 20 }}
 							animate={{ opacity: 1, scale: 1, y: 0 }}
 							exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -1037,7 +1041,7 @@ export default function ClientsPage() {
 									</button>
 								</div>
 							</form>
-						</motion.div>
+						</m.div>
 					</div>
 				)}
 			</AnimatePresence>

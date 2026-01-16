@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { LucideIcon, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +39,7 @@ export default function KPICard({
 	const isPositive = trend ? trend.value >= 0 : null;
 
 	return (
-		<motion.div
+		<m.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay, duration: 0.5 }}
@@ -91,7 +91,7 @@ export default function KPICard({
 					<p className="text-xs text-gray-400 mt-1 text-right">{subtitle}</p>
 				)}
 			</div>
-		</motion.div>
+		</m.div>
 	);
 }
 

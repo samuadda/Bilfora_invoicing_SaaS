@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
 	FileText,
@@ -96,7 +96,7 @@ export const ElegantFeatures = ({ content }: { content: ContentItem[] }) => {
 				</div>
 
 				{/* Right: Big card that follows selection */}
-				<motion.div
+				<m.div
 					key={activeFeature?.title}
 					initial={{ opacity: 0, x: 40, scale: 0.96 }}
 					animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -137,7 +137,7 @@ export const ElegantFeatures = ({ content }: { content: ContentItem[] }) => {
 							</span>
 						</div>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 		</div>
 	);

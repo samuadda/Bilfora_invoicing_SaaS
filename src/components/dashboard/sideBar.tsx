@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 import { useSidebar } from "./sidebar/SidebarContext";
@@ -128,7 +128,7 @@ export default function Sidebar() {
 				<Menu size={24} />
 			</button>
 
-			<motion.aside
+			<m.aside
 				initial={{ x: 0 }}
 				animate={{
 					width: isCollapsed ? 80 : 280,
@@ -254,12 +254,12 @@ export default function Sidebar() {
 						{!isCollapsed && <span>تسجيل الخروج</span>}
 					</button>
 				</div>
-			</motion.aside>
+			</m.aside>
 
 			{/* Mobile Overlay */}
 			<AnimatePresence>
 				{isMobileMenuOpen && (
-					<motion.div
+					<m.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}

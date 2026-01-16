@@ -21,7 +21,7 @@ import type {
 	CreateInvoiceInput,
 	CreateInvoiceItemInput,
 } from "@/types/database";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
 	Heading,
@@ -253,14 +253,14 @@ export default function InvoiceCreationModal({
 		<AnimatePresence>
 			{isOpen && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						className="fixed inset-0 bg-black/40 backdrop-blur-sm"
 						onClick={closeModal}
 					/>
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -285,14 +285,14 @@ export default function InvoiceCreationModal({
 
 						{/* Error Display */}
 						{error && (
-							<motion.div
+							<m.div
 								initial={{ opacity: 0, height: 0 }}
 								animate={{ opacity: 1, height: "auto" }}
 								className="mx-6 mt-4 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3"
 							>
 								<AlertCircle size={20} className="text-red-600" />
 								<span className="text-red-700 font-medium">{error}</span>
-							</motion.div>
+							</m.div>
 						)}
 
 						{/* Scrollable Body */}
@@ -379,7 +379,7 @@ export default function InvoiceCreationModal({
 								</Button>
 							</div>
 						</div>
-					</motion.div>
+					</m.div>
 				</div>
 			)}
 		</AnimatePresence>

@@ -1,6 +1,6 @@
 "use client";
 import { Check, Shield } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Section, Container, Heading, Text, Card, Button } from "@/components/ui";
@@ -75,7 +75,7 @@ export function Pricing() {
         </Text>
         <div className={cn("isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3", layout.gap.large)}>
           {tiers.map((tier, tierIdx) => (
-            <motion.div
+            <m.div
               key={tier.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -145,7 +145,7 @@ export function Pricing() {
                   ))}
                 </ul>
               </Card>
-            </motion.div>
+            </m.div>
           ))}
         </div>
 

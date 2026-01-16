@@ -17,7 +17,7 @@ import {
     Send
 } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 interface FaqItem {
 	q: string;
@@ -121,7 +121,7 @@ export default function HelpPage() {
 	return (
 		<div className="space-y-8 pb-10">
 			{/* Header */}
-            <motion.div 
+            <m.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6"
@@ -151,7 +151,7 @@ export default function HelpPage() {
 						className="w-full rounded-2xl border border-gray-200 pr-12 pl-4 py-3.5 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all shadow-sm"
 					/>
 				</div>
-			</motion.div>
+			</m.div>
 
 			{/* Quick links */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -233,7 +233,7 @@ export default function HelpPage() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                     {filteredSections.map((section, index) => (
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
@@ -265,7 +265,7 @@ export default function HelpPage() {
                                             </button>
                                             <AnimatePresence>
                                                 {isOpen && (
-                                                    <motion.div
+                                                    <m.div
                                                         initial={{ height: 0, opacity: 0 }}
                                                         animate={{ height: "auto", opacity: 1 }}
                                                         exit={{ height: 0, opacity: 0 }}
@@ -280,14 +280,14 @@ export default function HelpPage() {
                                                                 قراءة المقال كاملاً <ExternalLink size={12} />
                                                             </Link>
                                                         </div>
-                                                    </motion.div>
+                                                    </m.div>
                                                 )}
                                             </AnimatePresence>
                                         </div>
                                     );
                                 })}
                             </div>
-                        </motion.div>
+                        </m.div>
                     ))}
                 </div>
 

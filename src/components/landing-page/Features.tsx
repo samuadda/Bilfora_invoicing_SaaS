@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { TextAnimate } from "@/components/landing-page/text-animate";
 import {
     Laptop,
@@ -159,12 +159,12 @@ export const Features = () => {
 
 const BounceCard = ({ className, children }: { className?: string, children: React.ReactNode }) => {
     return (
-        <motion.div
+        <m.div
             whileHover={{ scale: 0.98 }}
             className={cn("group relative min-h-[300px] cursor-pointer overflow-hidden rounded-3xl p-8 shadow-sm hover:shadow-md transition-all", className)}
         >
             {children}
-        </motion.div>
+        </m.div>
     );
 };
 

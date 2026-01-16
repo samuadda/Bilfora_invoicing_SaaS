@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { TextAnimate } from "@/components/landing-page/text-animate";
 import { ChevronDown, HelpCircle, Shield, FileText, CreditCard, Lock, Download, WifiOff } from "lucide-react";
 import Link from "next/link";
@@ -74,17 +74,17 @@ const AccordionItem = ({
           <Icon className="h-5 w-5 text-brand-primary flex-shrink-0" />
           <span className="text-right">{question}</span>
         </div>
-        <motion.div
+        <m.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           className="flex-shrink-0 mr-2"
         >
           <ChevronDown className="h-5 w-5 text-gray-500" />
-        </motion.div>
+        </m.div>
       </button>
       <AnimatePresence initial={false}>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -92,7 +92,7 @@ const AccordionItem = ({
             className="overflow-hidden"
           >
             <Text variant="body" color="muted" className="pb-6 leading-relaxed pr-8">{answer}</Text>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

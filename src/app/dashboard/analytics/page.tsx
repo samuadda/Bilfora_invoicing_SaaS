@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { InvoiceWithClientAndItems } from "@/types/database";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Button } from "@/components/ui";
@@ -723,7 +723,7 @@ function AnalyticsContent() {
 			</div>
 
 			{/* Revenue Chart with Forecast */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm"
@@ -741,11 +741,11 @@ function AnalyticsContent() {
 					forecastData={forecastData}
 					currency={true}
 				/>
-			</motion.div>
+			</m.div>
 
 			{/* Revenue & Status Distribution */}
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.1 }}
@@ -761,9 +761,9 @@ function AnalyticsContent() {
 						gradientId="monthlyRevenueGradient"
 						currency={true}
 					/>
-				</motion.div>
+				</m.div>
 
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.2 }}
@@ -815,12 +815,12 @@ function AnalyticsContent() {
 							</PieChart>
 						</ResponsiveContainer>
 					</div>
-				</motion.div>
+				</m.div>
 			</div>
 
 			{/* Revenue by Category */}
 			{revenueByCategory.length > 0 && (
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.3 }}
@@ -828,11 +828,11 @@ function AnalyticsContent() {
 				>
 					<h3 className="text-xl font-bold text-[#012d46] mb-8">الإيرادات حسب الفئة</h3>
 					<RevenueByCategory categories={revenueByCategory} />
-				</motion.div>
+				</m.div>
 			)}
 
 			{/* Top Customers */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: 0.4 }}
@@ -879,7 +879,7 @@ function AnalyticsContent() {
 						</div>
 					)}
 				</div>
-			</motion.div>
+			</m.div>
 		</div>
 	);
 }
