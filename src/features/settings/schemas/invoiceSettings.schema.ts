@@ -17,8 +17,8 @@ export const invoiceSettingsSchema = z.object({
   currency: z.literal('SAR'),
   timezone: z.string().min(1),
   numbering_prefix: z.string().min(1),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 
 export const invoiceSettingsInputSchema = z
