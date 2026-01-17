@@ -45,6 +45,7 @@ import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Card, Button, Input, Select } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { Pagination } from "@/components/ui/pagination";
 
 const statusConfig = {
 	draft: {
@@ -768,60 +769,19 @@ function InvoicesContent() {
 			</Card>
 
 			{/* Pagination Controls */}
-			{
-				totalCount > 0 && (
-					<div className="flex items-center justify-between mt-4">
-						<Text variant="body-small" color="muted">
-							عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
-						</Text>
-						<div className="flex items-center gap-2">
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-								disabled={currentPage === 1 || loading}
-							>
-								<ChevronRight size={16} />
-								السابق
-							</Button>
-							<div className="flex items-center gap-1">
-								{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-									// Simple logic to show first few pages, can be improved for many pages
-									let p = i + 1;
-									if (totalPages > 5 && currentPage > 3) {
-										p = currentPage - 2 + i;
-									}
-									if (p > totalPages) return null;
-
-									return (
-										<button
-											key={p}
-											onClick={() => setCurrentPage(p)}
-											className={cn(
-												"w-8 h-8 rounded-lg text-sm font-medium transition-colors",
-												currentPage === p
-													? "bg-blue-600 text-white"
-													: "bg-gray-100 text-gray-600 hover:bg-gray-200"
-											)}
-										>
-											{p}
-										</button>
-									)
-								})}
-							</div>
-							<Button
-								variant="secondary"
-								size="sm"
-								onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-								disabled={currentPage === totalPages || loading}
-							>
-								التالي
-								<ChevronLeft size={16} />
-							</Button>
-						</div>
-					</div>
-				)
-			}
+			{totalCount > 0 && (
+				<div className="flex items-center justify-between mt-4">
+					<Text variant="body-small" color="muted">
+						عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
+					</Text>
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={setCurrentPage}
+						isLoading={loading}
+					/>
+				</div>
+			)}
 
 			{/* Invoices Table */}
 			<Card padding="none" className="overflow-hidden">
