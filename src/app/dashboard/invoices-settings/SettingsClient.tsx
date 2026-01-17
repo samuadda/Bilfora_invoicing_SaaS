@@ -34,7 +34,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 
 	// Initialize state with props or defaults
 	const [prefix, setPrefix] = useState(initialSettings?.numbering_prefix ?? "INV-");
-	const [nextNumber, setNextNumber] = useState(101); // Not in schema currently? We'll ignore for now or add to schema if needed. Schema has 'numbering_prefix' only.
+	const [nextNumber] = useState(101); // Not in schema currently? We'll ignore for now or add to schema if needed. Schema has 'numbering_prefix' only.
 	// Note: 'next_invoice_number' might be in a sequence table, not settings. We'll disable this field or just keep it UI only for now if not in schema.
 	
 	const [dueDays, setDueDays] = useState(30); // Not in schema?
@@ -108,7 +108,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 					description: result.error || "تأكد من إدخال جميع البيانات المطلوبة",
 				});
 			}
-		} catch (error) {
+		} catch {
 			toast({
 				variant: "destructive",
 				title: "خطأ",
@@ -403,7 +403,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 							/>
 							<select
 								value={template}
-								onChange={(e) => setTemplate(e.target.value as any)}
+								onChange={(e) => setTemplate(e.target.value as "classic" | "compact" | "modern")}
 								className="w-full appearance-none rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm"
 							>
 								<option value="classic">كلاسيكي</option>
