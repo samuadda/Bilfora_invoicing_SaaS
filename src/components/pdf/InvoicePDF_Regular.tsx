@@ -47,17 +47,17 @@ export function InvoicePDF_Regular({
 						<Text style={s.invoiceMeta}>
 							رقم الفاتورة: {safeText(invoice.invoice_number || invoice.id)}
 						</Text>
-						<View style={{ marginBottom: 2 }}>
+						<View style={{ marginBottom: 8 }}>
 							<Text style={s.invoiceMeta}>
 								تاريخ الإصدار: {formatDate(invoice.issue_date)}
 							</Text>
 							{invoice.issue_date && (
-								<Text style={{ fontSize: 9, color: "#6B7280", marginTop: 1 }}>
+								<Text style={{ fontSize: 9, color: "#6B7280", marginTop: 2 }}>
 									الموافق: {convertToHijri(invoice.issue_date).formattedHijri}
 								</Text>
 							)}
 						</View>
-						<View style={{ marginBottom: 2 }}>
+						<View style={{ marginBottom: 8 }}>
 							<Text style={s.invoiceMeta}>
 								تاريخ الاستحقاق: {formatDate(invoice.due_date)}
 							</Text>
@@ -158,12 +158,12 @@ export function InvoicePDF_Regular({
 							<Text style={[s.tableHeaderCell, s.tableCellCenter]}>الكمية</Text>
 						</View>
 						<View style={s.colPriceSimple}>
-							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>
+							<Text style={s.tableHeaderCell}>
 								سعر الوحدة
 							</Text>
 						</View>
 						<View style={s.colTotal}>
-							<Text style={[s.tableHeaderCell, s.tableCellNumber]}>الإجمالي</Text>
+							<Text style={s.tableHeaderCell}>الإجمالي</Text>
 						</View>
 					</View>
 
