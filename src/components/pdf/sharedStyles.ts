@@ -316,3 +316,5 @@ export const formatDate = (date: string | Date | null) => {
 };
 
 export const formatDateTime = libFormatDateTime;
+
+export const baseStyles = premiumStyles;
