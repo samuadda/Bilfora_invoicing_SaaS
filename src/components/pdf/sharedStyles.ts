@@ -1,8 +1,12 @@
 import { Font, StyleSheet } from "@react-pdf/renderer";
 import { formatCurrency as libFormatCurrency, formatDate as libFormatDate, formatDateTime as libFormatDateTime } from "@/lib/formatters";
 
-// Register IBM Plex Sans Arabic font for a premium, modern look
-// Font source: https://github.com/IBM/plex
+// 1. Prevent Arabic Word Breaking
+// This is critical for connecting letters correctly and preventing mid-word wrapping
+Font.registerHyphenationCallback((word) => [word]);
+
+// 2. Register Premium SaaS Fonts
+// We strictly use IBM Plex Sans Arabic for that modern, clean SaaS look
 try {
 	Font.register({
 		family: "IBM Plex Sans Arabic",
@@ -21,16 +25,33 @@ try {
 	console.warn("Failed to register IBM Plex Sans Arabic font", err);
 }
 
+// Fallback font
+try {
+	Font.register({
+		family: "Markazi",
+		fonts: [
+			{ src: "/fonts/markazi/MarkaziText-Regular.ttf" },
+			{ src: "/fonts/markazi/MarkaziText-Bold.ttf", fontWeight: "bold" },
+		],
+	});
+} catch (err) {
+	console.warn("Failed to register Markazi font", err);
+}
+
+// 3. Styles targeting alignment and RTL
+// We use 'row-reverse' in flex containers to naturally map visual RTL (Right-to-Left)
+// to logical source order (First item = Rightmost).
 export const premiumStyles = StyleSheet.create({
 	page: {
 		flexDirection: "column",
 		backgroundColor: "#FFFFFF",
 		padding: 40,
 		fontSize: 10,
-		fontFamily: "Markazi", // TODO: Switch to "IBM Plex Sans Arabic" after downloading the font files
-		lineHeight: 1.6,
-		direction: "rtl",
+		fontFamily: "IBM Plex Sans Arabic", // Premium SaaS Font
+		lineHeight: 1.5,
 		color: "#334155", // slate-700
+		// We do NOT use direction: 'rtl' globally because it can be flaky with some flex implementations
+		// Instead we control layout explicitly with flex-direction
 	},
 	// Utility
 	bold: { fontWeight: "bold" },
@@ -40,35 +61,48 @@ export const premiumStyles = StyleSheet.create({
 	textXl: { fontSize: 14 },
 	text2Xl: { fontSize: 20 },
 
-	// Colors
 	textPrimary: { color: "#0f172a" }, // slate-900
 	textSecondary: { color: "#64748b" }, // slate-500
-	bgGray: { backgroundColor: "#f8fafc" }, // slate-50
 
-	// Layout
-	header: {
+	// Layout Helpers
+	// RowReverse = Visual RTL (Item 1 is Rightmost)
+	rowRtl: {
+		flexDirection: "row-reverse",
+		width: "100%",
+	},
+	// Normal Row = Visual LTR (Item 1 is Leftmost) - useful for LTR sections like English dates if needed
+	rowLtr: {
 		flexDirection: "row",
+		width: "100%",
+	},
+
+	// Header
+	header: {
+		flexDirection: "row-reverse", // Logo/Info on Right? Or Left?
+		// User guide: Header usually has Logo on one side, Info on other.
+		// Let's assume standard SaaS: Logo/Seller (Right), Invoice Details (Left)
 		justifyContent: "space-between",
 		marginBottom: 32,
 		alignItems: "flex-start",
 	},
-	headerLeft: {
+	headerSide: {
 		flexDirection: "column",
-		alignItems: "flex-start",
-		width: "50%",
+		alignItems: "flex-end", // Align text to the right (visually)
+		width: "48%",
 	},
-	headerRight: {
+	headerSideLeft: { // Visually Left
 		flexDirection: "column",
-		alignItems: "flex-end",
-		width: "50%",
+		alignItems: "flex-start", // Actually, for English/Arabic mixed, sometimes Left align is nicer for the Left block.
+		width: "48%",
 	},
 
-	// Brand
+	// Invoice Title
 	invoiceTitle: {
 		fontSize: 24,
 		fontWeight: "bold",
-		color: "#012d46", // Bilfora Brand Color
+		color: "#012d46",
 		marginBottom: 4,
+		textAlign: "left", // Visually Left side
 	},
 	invoiceBadge: {
 		backgroundColor: "#e2e8f0",
@@ -78,12 +112,12 @@ export const premiumStyles = StyleSheet.create({
 		fontSize: 9,
 		color: "#0f172a",
 		marginTop: 8,
-		alignSelf: "flex-end"
+		alignSelf: "flex-start", // Visually Left
 	},
 
-	// Grid System for Two-Column Details
+	// Grid System
 	gridContainer: {
-		flexDirection: "row",
+		flexDirection: "row-reverse", // Item 1 (Seller) Right, Item 2 (Buyer) Left
 		gap: 20,
 		marginBottom: 30,
 	},
@@ -93,29 +127,33 @@ export const premiumStyles = StyleSheet.create({
 		borderRadius: 8,
 		padding: 16,
 		border: "1px solid #E2E8F0",
+		textAlign: "right", // Text inside card aligned Right
 	},
 	cardTitle: {
 		fontSize: 10,
 		fontWeight: "bold",
-		color: "#94A3B8", // slate-400
+		color: "#94A3B8",
 		marginBottom: 8,
 		textTransform: "uppercase",
+		textAlign: "right",
 	},
 	cardContent: {
 		flexDirection: "column",
 		gap: 2,
 	},
 
-	// Table Styles (Clean & Modern)
+	// Table (The critical part)
 	table: {
 		width: "100%",
 		borderRadius: 8,
 		overflow: "hidden",
 		marginBottom: 24,
+		borderWidth: 1,
+		borderColor: "#E2E8F0",
 	},
 	tableHeader: {
-		flexDirection: "row",
-		backgroundColor: "#012d46", // Brand Color
+		flexDirection: "row-reverse", // Col 1 (Rightmost) -> Col N (Leftmost)
+		backgroundColor: "#012d46",
 		paddingVertical: 10,
 		paddingHorizontal: 12,
 		alignItems: "center",
@@ -124,15 +162,15 @@ export const premiumStyles = StyleSheet.create({
 		color: "#FFFFFF",
 		fontSize: 9,
 		fontWeight: "bold",
-		textAlign: "right", // Arabic Default
+		textAlign: "right",
 	},
 	tableRow: {
-		flexDirection: "row",
+		flexDirection: "row-reverse",
 		paddingVertical: 10,
 		paddingHorizontal: 12,
 		borderBottomWidth: 1,
 		borderBottomColor: "#E2E8F0",
-		alignItems: "center",
+		alignItems: "center", // Center vertically
 	},
 	tableRowZebra: {
 		backgroundColor: "#F8FAFC",
@@ -143,21 +181,33 @@ export const premiumStyles = StyleSheet.create({
 		textAlign: "right",
 	},
 
-	// Column Widths
+	// Column Layout - Total | Unit Price | Quantity | Description | #
+	// Visual Order (Right to Left):
+	// 1. # (Index) - Rightmost
+	// 2. Description - Wide
+	// 3. Qty
+	// 4. Unit Price
+	// 5. Total - Leftmost
+
+	colIndex: { width: "5%", textAlign: "right" },
 	colDesc: { width: "45%", textAlign: "right" },
-	colQty: { width: "15%", textAlign: "center" },
-	colPrice: { width: "20%", textAlign: "right" },
+	colQty: { width: "10%", textAlign: "center" }, // Center Qty usually looks better
+	colPrice: { width: "20%", textAlign: "right" }, // Prices Right aligned
 	colTotal: { width: "20%", textAlign: "right", fontWeight: "bold" },
 
-	// Totals Section
+	// Totals Layout
 	totalsContainer: {
-		flexDirection: "row",
+		flexDirection: "row-reverse", // Notes (Right), Totals (Left) OR Totals(Left), Notes(Right)?
+		// Usually Totals are on the bottom-right or bottom-left?
+		// Arabic: Totals usually on the Left?
+		// Let's assume standard: Notes on Right (Start), Totals on Left (End).
 		justifyContent: "space-between",
 		alignItems: "flex-start",
 	},
 	notesContainer: {
 		width: "55%",
-		paddingRight: 20,
+		paddingLeft: 20, // Padding on left since it's on the right
+		textAlign: "right",
 	},
 	totalsCard: {
 		width: "40%",
@@ -167,7 +217,7 @@ export const premiumStyles = StyleSheet.create({
 		overflow: "hidden",
 	},
 	totalRow: {
-		flexDirection: "row",
+		flexDirection: "row-reverse", // Label Right, Value Left
 		justifyContent: "space-between",
 		paddingVertical: 8,
 		paddingHorizontal: 16,
@@ -177,15 +227,17 @@ export const premiumStyles = StyleSheet.create({
 	totalLabel: {
 		fontSize: 9,
 		color: "#64748B",
+		textAlign: "right",
 	},
 	totalValue: {
 		fontSize: 9,
 		color: "#0F172A",
 		fontWeight: "bold",
-		fontFamily: "Helvetica", // Numbers often look better in non-Arabic font or specific numeral version
+		textAlign: "left", // Values often align Left or Right? Right matches label. 
+		// But in a row, usually Label (Right) ..... Value (Left).
 	},
 	finalTotalRow: {
-		flexDirection: "row",
+		flexDirection: "row-reverse",
 		justifyContent: "space-between",
 		backgroundColor: "#F1F5F9",
 		paddingVertical: 12,
@@ -197,15 +249,16 @@ export const premiumStyles = StyleSheet.create({
 		fontSize: 10,
 		fontWeight: "bold",
 		color: "#0F172A",
+		textAlign: "right",
 	},
 	finalTotalValue: {
 		fontSize: 12,
 		fontWeight: "bold",
 		color: "#012d46",
-		fontFamily: "Helvetica",
+		textAlign: "left",
 	},
 
-	// Footer & QR
+	// Footer
 	footer: {
 		position: "absolute",
 		bottom: 30,
@@ -214,17 +267,19 @@ export const premiumStyles = StyleSheet.create({
 		borderTopWidth: 1,
 		borderTopColor: "#E2E8F0",
 		paddingTop: 20,
-		flexDirection: "row",
+		flexDirection: "row-reverse",
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
 	footerText: {
 		fontSize: 8,
 		color: "#94A3B8",
+		textAlign: "center",
 	},
 	qrCodeContainer: {
-		alignItems: "center",
-		justifyContent: "center",
+		alignItems: "flex-end", // Align QR to right (in notes section)
+		justifyContent: "flex-start",
+		marginBottom: 8,
 	},
 	qrCodeImage: {
 		width: 70,
@@ -232,372 +287,21 @@ export const premiumStyles = StyleSheet.create({
 	}
 });
 
-export const baseStyles = StyleSheet.create({
-	page: {
-		flexDirection: "column",
-		backgroundColor: "#FFFFFF",
-		padding: 30,
-		fontSize: 11,
-		fontFamily: "Markazi",
-		lineHeight: 1.5,
-		direction: "rtl",
-	},
-	// Header Section
-	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 24,
-		paddingBottom: 16,
-		borderBottomWidth: 2,
-		borderBottomColor: "#1F2937",
-	},
-	headerLeft: {
-		flexDirection: "column",
-		width: "48%",
-	},
-	headerRight: {
-		flexDirection: "column",
-		alignItems: "flex-end",
-		width: "48%",
-	},
-	qrContainer: {
-		marginBottom: 12,
-		alignItems: "flex-end",
-	},
-	qrImage: {
-		width: 90,
-		height: 90,
-	},
-	qrLabel: {
-		fontSize: 8,
-		color: "#6B7280",
-		marginTop: 4,
-	},
-	// Seller/Buyer Info Sections
-	infoSection: {
-		marginBottom: 20,
-	},
-	infoSectionTitle: {
-		fontSize: 13,
-		fontWeight: "bold",
-		color: "#1F2937",
-		marginBottom: 8,
-		paddingBottom: 6,
-		borderBottomWidth: 1,
-		borderBottomColor: "#E5E7EB",
-	},
-	infoBox: {
-		backgroundColor: "#F9FAFB",
-		padding: 12,
-		borderRadius: 4,
-		borderWidth: 1,
-		borderColor: "#E5E7EB",
-	},
-	infoRow: {
-		flexDirection: "row",
-		marginBottom: 4,
-	},
-	infoLabel: {
-		fontSize: 10,
-		color: "#6B7280",
-		width: 100,
-		fontWeight: "bold",
-	},
-	infoValue: {
-		fontSize: 10,
-		color: "#1F2937",
-		flex: 1,
-	},
-	// Invoice Header
-	invoiceTitle: {
-		fontSize: 24,
-		fontWeight: "bold",
-		color: "#1F2937",
-		marginBottom: 12,
-		textAlign: "right",
-	},
-	invoiceMeta: {
-		fontSize: 10,
-		color: "#374151",
-		marginBottom: 4,
-		textAlign: "right",
-	},
-	// Table Styles
-	table: {
-		width: "100%",
-		marginTop: 16,
-		borderWidth: 1,
-		borderColor: "#D1D5DB",
-		borderRadius: 4,
-		overflow: "hidden",
-	},
-	tableHeader: {
-		flexDirection: "row",
-		backgroundColor: "#1F2937",
-		paddingVertical: 10,
-		paddingHorizontal: 8,
-	},
-	tableHeaderCell: {
-		color: "#FFFFFF",
-		fontSize: 10,
-		fontWeight: "bold",
-		textAlign: "right",
-	},
-	tableRow: {
-		flexDirection: "row",
-		paddingVertical: 8,
-		paddingHorizontal: 8,
-		borderBottomWidth: 1,
-		borderBottomColor: "#E5E7EB",
-		minHeight: 30,
-	},
-	tableRowAlt: {
-		backgroundColor: "#F9FAFB",
-	},
-	tableCell: {
-		fontSize: 10,
-		color: "#374151",
-		textAlign: "right",
-		paddingHorizontal: 4,
-	},
-	tableCellNumber: {
-		fontSize: 10,
-		color: "#374151",
-		textAlign: "left",
-		fontFamily: "Helvetica",
-		direction: "ltr",
-		paddingHorizontal: 4,
-	},
-	tableCellCenter: {
-		textAlign: "center",
-	},
-	// Column widths for tax invoice (using flex)
-	colIndex: { flex: 0.5, paddingHorizontal: 4 },
-	colDescription: { flex: 3.2, paddingHorizontal: 4 },
-	colQuantity: { flex: 0.8, paddingHorizontal: 4 },
-	colUnitPrice: { flex: 1.2, paddingHorizontal: 4 },
-	colTaxRate: { flex: 1.0, paddingHorizontal: 4 },
-	colTaxAmount: { flex: 1.3, paddingHorizontal: 4 },
-	colTotal: { flex: 2.0, paddingHorizontal: 4 },
-	// Column widths for simplified/regular
-	colDescSimple: { flex: 4.5, paddingHorizontal: 4 },
-	colQtySimple: { flex: 1.5, paddingHorizontal: 4 },
-	colPriceSimple: { flex: 4.0, paddingHorizontal: 4 },
-	// Totals Section
-	totalsSection: {
-		marginTop: 20,
-		alignItems: "flex-end",
-	},
-	totalsBox: {
-		width: 300,
-		backgroundColor: "#FFFFFF",
-		borderWidth: 1,
-		borderColor: "#D1D5DB",
-		borderRadius: 4,
-		padding: 12,
-	},
-	totalRow: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 6,
-		minHeight: 20,
-	},
-	totalLabel: {
-		fontSize: 10,
-		color: "#6B7280",
-		fontWeight: "bold",
-	},
-	totalValue: {
-		fontSize: 10,
-		color: "#1F2937",
-		fontWeight: "bold",
-		fontFamily: "Helvetica",
-		direction: "ltr",
-	},
-	totalDivider: {
-		height: 1,
-		backgroundColor: "#E5E7EB",
-		marginVertical: 8,
-	},
-	finalTotalRow: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingTop: 8,
-		borderTopWidth: 2,
-		borderTopColor: "#1F2937",
-		marginTop: 4,
-		minHeight: 24,
-	},
-	finalTotalLabel: {
-		fontSize: 12,
-		fontWeight: "bold",
-		color: "#1F2937",
-	},
-	finalTotalValue: {
-		fontSize: 14,
-		fontWeight: "bold",
-		color: "#1F2937",
-		fontFamily: "Helvetica",
-		direction: "ltr",
-	},
-	// Notes Section
-	notesSection: {
-		marginTop: 20,
-		padding: 12,
-		backgroundColor: "#FEF3C7",
-		borderRadius: 4,
-		borderWidth: 1,
-		borderColor: "#FCD34D",
-	},
-	notesLabel: {
-		fontSize: 11,
-		fontWeight: "bold",
-		color: "#92400E",
-		marginBottom: 6,
-	},
-	notesText: {
-		fontSize: 10,
-		color: "#78350F",
-		lineHeight: 1.6,
-	},
-	// Footer
-	footer: {
-		marginTop: 24,
-		paddingTop: 16,
-		borderTopWidth: 1,
-		borderTopColor: "#E5E7EB",
-	},
-	footerText: {
-		fontSize: 9,
-		color: "#9CA3AF",
-		textAlign: "center",
-	},
-	// Logo Section
-	logoSection: {
-		flexDirection: "column",
-		alignItems: "flex-start",
-	},
-	logoPlaceholder: {
-		width: 60,
-		height: 60,
-		backgroundColor: "#1F2937",
-		borderRadius: 8,
-		justifyContent: "center",
-		alignItems: "center",
-		marginBottom: 8,
-	},
-	logoText: {
-		color: "#FFFFFF",
-		fontSize: 14,
-		fontWeight: "bold",
-	},
-	companyName: {
-		fontSize: 16,
-		fontWeight: "bold",
-		color: "#1F2937",
-		marginBottom: 4,
-	},
-	companyInfo: {
-		flexDirection: "column",
-	},
-	companyInfoRow: {
-		fontSize: 9,
-		color: "#6B7280",
-		marginBottom: 2,
-	},
-	// Invoice Info
-	invoiceInfo: {
-		flexDirection: "column",
-		alignItems: "flex-end",
-	},
-	invoiceDetails: {
-		flexDirection: "column",
-		alignItems: "flex-end",
-	},
-	invoiceDetailRow: {
-		fontSize: 10,
-		color: "#374151",
-		marginBottom: 4,
-	},
-	// Section
-	section: {
-		marginBottom: 16,
-	},
-	sectionTitle: {
-		fontSize: 13,
-		fontWeight: "bold",
-		color: "#1F2937",
-		marginBottom: 8,
-		paddingBottom: 6,
-		borderBottomWidth: 1,
-		borderBottomColor: "#E5E7EB",
-	},
-	// Client Info
-	clientInfo: {
-		backgroundColor: "#F9FAFB",
-		padding: 12,
-		borderRadius: 4,
-		borderWidth: 1,
-		borderColor: "#E5E7EB",
-	},
-	clientName: {
-		fontSize: 12,
-		fontWeight: "bold",
-		color: "#1F2937",
-		marginBottom: 4,
-	},
-	clientDetailRow: {
-		fontSize: 10,
-		color: "#6B7280",
-		marginBottom: 2,
-	},
-	// Table column widths for standard invoice
-	indexCell: { flex: 0.5, paddingHorizontal: 4 },
-	descriptionCell: { flex: 2.5, paddingHorizontal: 4 },
-	quantityCell: { flex: 0.8, paddingHorizontal: 4 },
-	unitPriceCell: { flex: 1.5, paddingHorizontal: 4 },
-	taxRateCell: { flex: 1.0, paddingHorizontal: 4 },
-	taxAmountCell: { flex: 1.2, paddingHorizontal: 4 },
-	totalCell: { flex: 1.5, paddingHorizontal: 4 },
-	tableRowZebra: {
-		backgroundColor: "#F9FAFB",
-	},
-	// Totals Card
-	totalsCard: {
-		width: 300,
-		backgroundColor: "#FFFFFF",
-		borderWidth: 1,
-		borderColor: "#D1D5DB",
-		borderRadius: 4,
-		padding: 12,
-		alignSelf: "flex-end",
-	},
-	// Final Total Row
-	finalTotal: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-		paddingTop: 8,
-		borderTopWidth: 2,
-		borderTopColor: "#1F2937",
-		marginTop: 4,
-	},
-	// Notes Section
-	notes: {
-		marginTop: 16,
-		padding: 12,
-		backgroundColor: "#FEF3C7",
-		borderRadius: 4,
-		borderWidth: 1,
-		borderColor: "#FCD34D",
-	},
-});
+// Helper: Wrap numbers/dates in Unicode directional isolates
+// \u2066 (Left-to-Right Isolate) ... content ... \u2069 (Pop Directional Isolate)
+// This forces valid LTR rendering for numbers inside an RTL context
+export const formatLtrNumber = (value: string | number | null | undefined) => {
+	if (value === null || value === undefined) return "";
+	return `\u2066${value}\u2069`;
+};
 
 // Helper to safely format currency in RTL friendly way
 export const formatCurrency = (amount: number) => {
-	// e.g. "1,230.50 SAR" instead of just the number
-	return libFormatCurrency(amount).replace("SAR", "ر.س");
+	// e.g. "1,230.50 SAR" formatted by lib
+	// We wrap the whole string or just the number?
+	// Usually currency like "1,250.00 SAR" needs to be LTR isolated so distinct parts don't flip.
+	const formatted = libFormatCurrency(amount).replace("SAR", "ر.س");
+	return `\u2066${formatted}\u2069`; // Force LTR for the number+symbol grouping
 };
 
 export const safeText = (value: unknown): string => {

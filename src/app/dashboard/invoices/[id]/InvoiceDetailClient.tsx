@@ -380,9 +380,9 @@ export default function InvoiceDetailClient({
 										<span className="font-medium">رقم الفاتورة:</span>{" "}
 										{invoice.invoice_number || invoice.id}
 									</p>
-									<p>
+									<div className="flex flex-col gap-1">
 										<span className="font-medium">تاريخ الإصدار:</span>{" "}
-										<div className="flex flex-col gap-0.5 mt-1">
+										<div className="flex flex-col gap-0.5">
 											<span>{formatDate(invoice.issue_date)}</span>
 											{invoice.issue_date && (
 												<span className="text-gray-500 text-xs">
@@ -390,10 +390,10 @@ export default function InvoiceDetailClient({
 												</span>
 											)}
 										</div>
-									</p>
-									<p>
+									</div>
+									<div className="flex flex-col gap-1">
 										<span className="font-medium">تاريخ الاستحقاق:</span>{" "}
-										<div className="flex flex-col gap-0.5 mt-1">
+										<div className="flex flex-col gap-0.5">
 											<span>{formatDate(invoice.due_date)}</span>
 											{invoice.due_date && (
 												<span className="text-gray-500 text-xs">
@@ -401,7 +401,7 @@ export default function InvoiceDetailClient({
 												</span>
 											)}
 										</div>
-									</p>
+									</div>
 									<p>
 										<span className="font-medium">الحالة:</span>{" "}
 										<span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
