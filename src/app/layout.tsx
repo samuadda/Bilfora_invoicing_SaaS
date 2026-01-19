@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/components/providers/QueryProvider";
 import { MotionProvider } from "@/components/providers/MotionProvider";
+import { Analytics } from "@vercel/analytics/next"
 
 const vazirmatn = Vazirmatn({
 	subsets: ["arabic"],
