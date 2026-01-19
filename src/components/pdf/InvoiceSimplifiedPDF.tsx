@@ -72,7 +72,7 @@ export function InvoiceSimplifiedPDF({
 						</View>
 
 						<View style={{ marginTop: 12, alignItems: 'flex-start' }}>
-							<Text style={s.textSm}>تاريخ الإصدار: {formatDate(invoice.issue_date)}</Text>
+							<Text style={s.textSm}>تاريخ الإصدار: {issueDate}</Text>
 							<Text style={[s.textXs, s.textSecondary]}>{hijriDate}</Text>
 						</View>
 					</View>
