@@ -45,6 +45,7 @@ export default function RootLayout({
 						<MotionProvider>
 							{children}
 							<Toaster />
+							<Analytics />
 						</MotionProvider>
 					</QueryProvider>
 				</ThemeProvider>

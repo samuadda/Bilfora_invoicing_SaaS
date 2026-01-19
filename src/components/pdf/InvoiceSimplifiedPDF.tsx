@@ -1,8 +1,9 @@
+/* eslint-disable jsx-a11y/alt-text */
 "use client";
 
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { InvoiceWithClientAndItems, Client, InvoiceItem } from "@/types/database";
-import { baseStyles as s, safeText, formatCurrency, formatDate } from "./sharedStyles";
+import { premiumStyles as s, safeText, formatCurrency, formatDate } from "./sharedStyles";
 import { convertToHijri } from "@/lib/dateConvert";
 
 interface SellerInfo {
@@ -101,8 +102,8 @@ export function InvoiceSimplifiedPDF({
 								<>
 									<Text style={[s.bold, s.textPrimary]}>{safeText(client.name)}</Text>
 									<Text style={s.textSm}>{safeText(client.address)}</Text>
-									{client.vat_number && (
-										<Text style={s.textSm}>الرقم الضريبي: {safeText(client.vat_number)}</Text>
+									{client.tax_number && (
+										<Text style={s.textSm}>الرقم الضريبي: {safeText(client.tax_number)}</Text>
 									)}
 								</>
 							) : (
@@ -177,6 +178,6 @@ export function InvoiceSimplifiedPDF({
 				</View>
 
 			</Page>
-		</Document>
+		</Document >
 	);
 }
