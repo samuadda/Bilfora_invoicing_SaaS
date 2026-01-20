@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Loader2, Printer, ArrowLeft, AlertCircle } from "lucide-react";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import Link from "next/link";
 import { m } from "framer-motion";
-import { InvoicePDFRenderer } from "@/components/pdf/InvoicePDFRenderer";
-import { generateZatcaTLVBase64 } from "@/components/pdf/zatcaQr";
 import { convertToHijri } from "@/lib/dateConvert";
 import type {
 	Client,
@@ -51,8 +48,8 @@ export default function InvoiceDetailClient({
 	invoiceSettings,
 	isSettingsReady,
 }: InvoiceDetailClientProps) {
-	const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-	const [qrWarning, setQrWarning] = useState<string | null>(null);
+	/* const [qrDataUrl, setQrDataUrl] = useState<string | null>(null); */
+	/* const [qrWarning, setQrWarning] = useState<string | null>(null); */
 	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 	const [isDuplicating, setIsDuplicating] = useState(false);
 	const router = useRouter();
@@ -143,92 +140,14 @@ export default function InvoiceDetailClient({
 		return "أكمل بيانات المنشأة لتنزيل PDF";
 	};
 
-	useEffect(() => {
-		async function buildQr() {
-			if (!isTax) {
-				setQrWarning(null);
-				setQrDataUrl(null);
-				return;
-			}
-
-			// QR only needs to be strictly valid for Tax invoices
-			if (!isReadyForDownload) {
-				setQrWarning("أكمل بيانات المنشأة لإظهار QR");
-				setQrDataUrl(null);
-				return;
-			}
-
-			if (!invoiceSettings?.vat_number || !invoiceSettings?.seller_name) {
-				 return; 
-			}
-
-			try {
-				const QRCode = (await import("qrcode")).default;
-
-				const invoiceTotal = (invoice.total_amount ?? totals.total ?? 0).toFixed(2);
-				const vatTotal = (invoice.vat_amount ?? totals.vat ?? 0).toFixed(2);
-
-				const issueDateIso = invoice.issue_date
-					? new Date(invoice.issue_date).toISOString()
-					: new Date().toISOString();
-
-				const sellerInfo = {
-					sellerName: invoiceSettings.seller_name,
-					vatNumber: invoiceSettings.vat_number,
-					timestamp: issueDateIso,
-					invoiceTotal,
-					vatTotal,
-				};
-
-				const tlvBase64 = generateZatcaTLVBase64(sellerInfo);
-				if (!tlvBase64) {
-					setQrDataUrl(null);
-					setQrWarning("أكمل بيانات المنشأة لإظهار QR");
-					return;
-				}
-
-				const dataUrl = await QRCode.toDataURL(tlvBase64, {
-					margin: 0,
-				});
-				setQrWarning(null);
-				setQrDataUrl(dataUrl);
-			} catch (err) {
-				console.error("Error generating QR code:", err);
-				setQrWarning("تعذر إنشاء رمز QR");
-				setQrDataUrl(null);
-			}
-		}
-
-		buildQr();
-	}, [
-		invoice.issue_date,
-		invoice.total_amount,
-		invoice.vat_amount,
-		invoiceSettings,
-		isReadyForDownload,
-		isTax,
-		totals.total,
-		totals.vat,
-	]);
+	/* Removed QR generation effect */
 
 	const getTitle = () => {
 		if (isCredit) return "إشعار دائن";
 		return getInvoiceTypeLabel(invoiceType);
 	};
 
-	const pdfDoc = useMemo(() => {
-		if (!isReadyForDownload || !invoiceSettings) return null;
 
-		return (
-			<InvoicePDFRenderer
-				invoice={invoice}
-				client={client}
-				items={items}
-				qrDataUrl={qrDataUrl}
-				invoiceSettings={invoiceSettings}
-			/>
-		);
-	}, [client, invoice, invoiceSettings, isReadyForDownload, items, qrDataUrl]);
 
 	const handleDuplicate = async () => {
 		if (isDuplicating) return;
@@ -258,6 +177,8 @@ export default function InvoiceDetailClient({
 			setIsDuplicating(false);
 		}
 	};
+
+	/* Removed handlePrint */
 
 	return (
 		<>
@@ -313,32 +234,21 @@ export default function InvoiceDetailClient({
 									نسخ
 								</Button>
 
-								{pdfDoc ? (
-									<PDFDownloadLink
-										document={pdfDoc}
-										fileName={`invoice-${invoice.invoice_number || invoice.id}.pdf`}
+								{isReadyForDownload ? (
+									<a
+										href={`/api/invoices/${invoice.id}/pdf`}
+										target="_blank"
 										className="inline-flex items-center gap-2 px-4 py-2 bg-[#7f2dfb] text-white rounded-lg hover:bg-[#6b1fd9] transition-colors"
 									>
-										{({ loading }) =>
-											loading ? (
-												<>
-													<Loader2 className="w-4 h-4 animate-spin" />
-													جاري التحميل...
-												</>
-											) : (
-												<>
-													<Printer className="w-4 h-4" />
-													تحميل PDF
-												</>
-											)
-										}
-									</PDFDownloadLink>
+										<Printer className="w-4 h-4" />
+										تحميل PDF
+									</a>
 								) : (
 									<button
 										disabled
 										className="inline-flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed"
 									>
-										<Loader2 className="w-4 h-4 animate-spin" />
+										<Printer className="w-4 h-4" />
 										{isSettingsReady
 											? "جاري التحميل..."
 											: getMissingSettingsMessage()}
@@ -354,13 +264,13 @@ export default function InvoiceDetailClient({
 								<AlertCircle className="mt-0.5 h-5 w-5" />
 								<div>
 									<p className="font-semibold">
-										{isTax 
-											? "أكمل بيانات المنشأة لإظهار QR وتنزيل PDF" 
+										{isTax
+											? "أكمل بيانات المنشأة لإظهار QR وتنزيل PDF"
 											: "أكمل بيانات المنشأة لتنزيل PDF"}
 									</p>
 									<p className="text-sm text-amber-800">
-										{isTax 
-											? "الرجاء إضافة اسم المنشأة والرقم الضريبي في إعدادات الفواتير." 
+										{isTax
+											? "الرجاء إضافة اسم المنشأة والرقم الضريبي في إعدادات الفواتير."
 											: "الرجاء إضافة اسم المنشأة في إعدادات الفواتير."}
 									</p>
 									<div className="mt-2">
@@ -373,11 +283,11 @@ export default function InvoiceDetailClient({
 									</div>
 								</div>
 							</div>
-							{qrWarning && isTax && (
+							{/* {qrWarning && isTax && (
 								<p className="mt-2 text-sm font-medium text-amber-900">
 									{qrWarning}
 								</p>
-							)}
+							)} */}
 						</div>
 					)}
 
