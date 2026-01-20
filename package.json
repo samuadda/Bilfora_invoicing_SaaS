@@ -14,7 +14,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@react-pdf/renderer": "^4.3.1",
     "@sentry/nextjs": "^10.33.0",
-    "@sparticuz/chromium-min": "^143.0.4",
+    "@sparticuz/chromium": "^143.0.4",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.53.0",
     "@tabler/icons-react": "^3.31.0",

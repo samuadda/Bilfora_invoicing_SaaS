@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
-	serverExternalPackages: ["@sparticuz/chromium-min", "puppeteer-core"],
+	serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
 };
 
 export default withSentryConfig(nextConfig, {
