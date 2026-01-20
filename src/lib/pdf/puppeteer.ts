@@ -1,31 +1,32 @@
 import chromium from "@sparticuz/chromium-min";
 import puppeteer from "puppeteer-core";
+import fs from "node:fs";
 
 export async function getBrowser() {
-    let executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
-    );
+    const isProd = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 
-    if (process.env.NODE_ENV === "development") {
-        // Attempt to use local Chrome in development
-        if (process.platform === "win32") {
-            executablePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-        } else if (process.platform === "darwin") {
-            executablePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-        } else {
-            // Linux fallback (or use puppeteer full if installed)
-            executablePath = "/usr/bin/google-chrome";
-        }
+    let executablePath: string | undefined;
+
+    if (isProd) {
+        executablePath = await chromium.executablePath();
+    } else {
+        // Dev: try common Chrome paths, but only if they exist
+        const candidates =
+            process.platform === "win32"
+                ? ["C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"]
+                : process.platform === "darwin"
+                    ? ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
+                    : ["/usr/bin/google-chrome", "/usr/bin/chromium-browser", "/usr/bin/chromium"];
+
+        executablePath = candidates.find((p) => fs.existsSync(p));
+        // If undefined, puppeteer will try defaults / will error clearly
     }
 
-    console.log("Puppeteer: NODE_ENV=", process.env.NODE_ENV);
-    console.log("Puppeteer: Executable Path=", executablePath);
-
     return puppeteer.launch({
-        args: process.env.NODE_ENV === "production" ? chromium.args : [],
-        defaultViewport: { width: 1920, height: 1080 },
+        args: isProd ? chromium.args : ["--no-sandbox", "--disable-setuid-sandbox"],
         executablePath,
         headless: true,
+        defaultViewport: { width: 1280, height: 720 },
     });
 }
 
@@ -33,24 +34,20 @@ export async function generatePdf(html: string) {
     const browser = await getBrowser();
     try {
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: "networkidle0" });
+        page.setDefaultTimeout(30000);
+        page.setDefaultNavigationTimeout(30000);
+
+        // No external assets -> "load" is more reliable than networkidle0
+        await page.setContent(html, { waitUntil: "load" });
         await page.emulateMediaType("screen");
 
-        const pdfBuffer = await page.pdf({
+        return await page.pdf({
             format: "A4",
             printBackground: true,
-            margin: {
-                top: "18mm",
-                right: "16mm",
-                bottom: "18mm",
-                left: "16mm",
-            },
+            margin: { top: "18mm", right: "16mm", bottom: "18mm", left: "16mm" },
+            preferCSSPageSize: true,
         });
-
-        return pdfBuffer;
     } finally {
-        if (browser) {
-            await browser.close();
-        }
+        await browser.close();
     }
 }

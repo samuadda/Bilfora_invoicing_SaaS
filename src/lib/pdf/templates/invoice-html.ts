@@ -37,6 +37,7 @@ export function generateInvoiceHtml(
     const subtotal = Number(invoice.subtotal || 0);
     const vat = Number(invoice.vat_amount || 0);
 
+    // Using TTF format matching the downloaded files
     const fontStyles = fonts ? `
         @font-face {
             font-family: 'Cairo';
@@ -51,8 +52,7 @@ export function generateInvoiceHtml(
             font-style: normal;
         }
     ` : `
-        /* Fallback if no fonts provided (not recommended for Arabic) */
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+        /* No external fallback to prevent network drift */
     `;
 
     return `
@@ -71,12 +71,13 @@ export function generateInvoiceHtml(
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
+            font-family: 'Cairo', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
             margin: 0;
             padding: 0;
             color: var(--text-dark);
             font-size: 14px;
             line-height: 1.5;
+            background: white;
         }
 
         .header {
@@ -127,12 +128,30 @@ export function generateInvoiceHtml(
             color: var(--text-gray);
         }
 
-        /* LTR isolation for numbers/dates */
+        /* Utils for direction and alignment */
         .ltr-iso {
             direction: ltr;
             unicode-bidi: isolate;
-            font-family: sans-serif; /* Optional: distinct font for nums */
             text-align: left;
+            white-space: nowrap;
+        }
+
+        .num {
+            direction: ltr;
+            unicode-bidi: isolate;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .qty, .idx {
+            direction: ltr;
+            unicode-bidi: isolate;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .desc {
+            text-align: right;
         }
 
         table {
@@ -145,11 +164,15 @@ export function generateInvoiceHtml(
             display: table-header-group;
         }
 
+        tfoot {
+            display: table-footer-group;
+        }
+
         th {
             background-color: var(--primary);
             color: white;
             padding: 12px;
-            text-align: right; /* Default for RTL */
+            text-align: center;
             font-weight: 600;
         }
 
@@ -162,16 +185,6 @@ export function generateInvoiceHtml(
         tr {
             break-inside: avoid;
             page-break-inside: avoid;
-        }
-
-        /* Number columns alignment */
-        .col-num {
-            text-align: center;
-        }
-        
-        .col-total {
-            text-align: left; /* Align LTR numbers left visually in RTL context if preferred, or keep right */
-             direction: ltr;
         }
 
         .totals-section {
@@ -207,13 +220,17 @@ export function generateInvoiceHtml(
             padding-top: 1rem;
         }
         
-        /* Description text wrapping */
         .desc-cell {
             max-width: 300px;
             word-break: break-word;
             overflow-wrap: anywhere;
         }
 
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        
         @media print {
             body {
                 background: white;
@@ -229,7 +246,6 @@ export function generateInvoiceHtml(
             <div style="margin-top: 0.5rem; color: #6b7280;"># <span class="ltr-iso">${safe(invoice.invoice_number)}</span></div>
         </div>
         <div class="logo-area">
-            <!-- Placeholder for Logo if available, using text for now -->
             Bilfora
         </div>
     </div>
@@ -239,9 +255,8 @@ export function generateInvoiceHtml(
             <h3>المورد (Seller)</h3>
             <div class="meta-row">
                 <span class="meta-label">الاسم:</span>
-                <span>${safe("اسم المنشأة")}</span> <!-- TODO: Pass settings -->
+                <span>${safe("اسم المنشأة")}</span>
             </div>
-             <!-- Add VAT Number etc here from settings -->
         </div>
         
         <div class="meta-box">
@@ -276,27 +291,30 @@ export function generateInvoiceHtml(
     <table>
         <thead>
             <tr>
+                <th style="width: 15%">الإجمالي</th>
+                ${isTax ? '<th style="width: 15%">الضريبة</th>' : ''}
+                <th style="width: 15%">سعر الوحدة</th>
+                <th style="width: 10%">الكمية</th>
+                <th style="width: 40%" class="desc">الوصف</th>
                 <th style="width: 5%">#</th>
-                <th style="width: 40%">الوصف</th>
-                <th style="width: 10%" class="col-num">الكمية</th>
-                <th style="width: 15%" class="col-num">سعر الوحدة</th>
-                ${isTax ? '<th style="width: 15%" class="col-num">الضريبة</th>' : ''}
-                <th style="width: 15%" class="col-total">الإجمالي</th>
             </tr>
         </thead>
         <tbody>
             ${items.map((item, i) => {
         const qty = Number(item.quantity) || 0;
         const unitPrice = Number(item.unit_price) || 0;
-        const lineTotal = qty * unitPrice; // Simplified logic, should match production logic
+        const lineTotalRaw = qty * unitPrice;
+        const taxAmount = isTax ? (invoice.tax_rate ? lineTotalRaw * (invoice.tax_rate / 100) : 0) : 0;
+        const lineTotal = isTax ? lineTotalRaw + taxAmount : lineTotalRaw;
+
         return `
                 <tr>
-                    <td>${i + 1}</td>
-                    <td class="desc-cell">${safe(item.description)}</td>
-                    <td class="col-num ltr-iso">${qty}</td>
-                    <td class="col-num ltr-iso">${formatCurrency(unitPrice)}</td>
-                     ${isTax ? `<td class="col-num ltr-iso">${invoice.tax_rate}%</td>` : ''}
-                    <td class="col-total ltr-iso">${formatCurrency(item.total ? Number(item.total) : lineTotal)}</td>
+                    <td class="num">${formatCurrency(item.total ? Number(item.total) : lineTotal)}</td>
+                    ${isTax ? `<td class="num">${formatCurrency(taxAmount)}</td>` : ''}
+                    <td class="num">${formatCurrency(unitPrice)}</td>
+                    <td class="qty">${qty}</td>
+                    <td class="desc-cell desc">${safe(item.description)}</td>
+                    <td class="idx">${i + 1}</td>
                 </tr>
                 `;
     }).join('')}
@@ -320,7 +338,6 @@ export function generateInvoiceHtml(
         </div>
     </div>
 
-    <!-- Notes -->
     ${invoice.notes ? `
     <div style="margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
         <strong>ملاحظات:</strong>
