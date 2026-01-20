@@ -95,6 +95,67 @@ export const premiumStyles = StyleSheet.create({
 		alignItems: "flex-start", // Actually, for English/Arabic mixed, sometimes Left align is nicer for the Left block.
 		width: "48%",
 	},
+	headerLeft: {
+		flexDirection: "column",
+		alignItems: "flex-start",
+		width: "55%", // Adjusted for Tax Invoice (Layout: Left + Right)
+	},
+	headerRight: {
+		width: "40%",
+		alignItems: "flex-end", // Visually Right?
+	},
+	qrContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	qrImage: {
+		width: 80, 
+		height: 80,
+	},
+	qrLabel: {
+		fontSize: 8,
+		marginTop: 4, 
+		textAlign: "center",
+	},
+
+	// Standard PDF Legacy Styles (Aliases/Polyfills)
+	logoSection: { marginBottom: 10 },
+	logoPlaceholder: { width: 80, height: 80, backgroundColor: "#E2E8F0", justifyContent: "center", alignItems: "center", borderRadius: 8, marginBottom: 8 },
+	logoText: { fontSize: 12, fontWeight: "bold", color: "#64748B" },
+	companyName: { fontSize: 12, fontWeight: "bold", color: "#0F172A", marginBottom: 4 },
+	companyInfo: { gap: 2 },
+	companyInfoRow: { fontSize: 9, color: "#64748B" },
+	
+	invoiceInfo: { marginTop: 20, marginBottom: 20 },
+	invoiceDetails: { gap: 4 },
+	invoiceDetailRow: { fontSize: 9, color: "#64748B" },
+	
+	section: { marginBottom: 20 },
+	sectionTitle: { fontSize: 10, fontWeight: "bold", color: "#94A3B8", marginBottom: 8, textAlign: "right" },
+	clientInfo: { gap: 2 },
+	clientName: { fontSize: 10, fontWeight: "bold", color: "#0F172A" },
+	clientDetailRow: { fontSize: 9, color: "#64748B" },
+	
+	// Table Cells (Explicit widths for Standard PDF)
+	indexCell: { width: "5%", textAlign: "right" },
+	descriptionCell: { width: "35%", textAlign: "right" },
+	quantityCell: { width: "10%", textAlign: "center" },
+	unitPriceCell: { width: "15%", textAlign: "right" },
+	taxRateCell: { width: "10%", textAlign: "center" },
+	taxAmountCell: { width: "10%", textAlign: "right" },
+	totalCell: { width: "15%", textAlign: "right", fontWeight: "bold" },
+	
+	finalTotal: {
+		flexDirection: "row-reverse",
+		justifyContent: "space-between",
+		backgroundColor: "#F1F5F9",
+		paddingVertical: 12,
+		paddingHorizontal: 16,
+		borderTopWidth: 2,
+		borderTopColor: "#CBD5E1",
+	},
+	notes: { marginTop: 20, paddingTop: 10, borderTopWidth: 1, borderTopColor: "#E2E8F0" },
+
 
 	// Invoice Title
 	invoiceTitle: {
@@ -113,6 +174,12 @@ export const premiumStyles = StyleSheet.create({
 		color: "#0f172a",
 		marginTop: 8,
 		alignSelf: "flex-start", // Visually Left
+	},
+	invoiceMeta: {
+		fontSize: 9,
+		color: "#64748b",
+		marginTop: 2,
+		textAlign: "left",
 	},
 
 	// Grid System
@@ -140,6 +207,42 @@ export const premiumStyles = StyleSheet.create({
 	cardContent: {
 		flexDirection: "column",
 		gap: 2,
+	},
+
+	// Info Sections (Missing)
+	infoSection: {
+		marginBottom: 20,
+	},
+	infoSectionTitle: {
+		fontSize: 10,
+		fontWeight: "bold",
+		color: "#94a3b8",
+		marginBottom: 8,
+		textAlign: "right",
+	},
+	infoBox: {
+		backgroundColor: "#F8FAFC",
+		borderRadius: 6,
+		padding: 12,
+		borderWidth: 1,
+		borderColor: "#E2E8F0",
+	},
+	infoRow: {
+		flexDirection: "row-reverse",
+		marginBottom: 4,
+		alignItems: "flex-start",
+	},
+	infoLabel: {
+		fontSize: 9,
+		color: "#64748b",
+		width: "30%",
+		textAlign: "right",
+	},
+	infoValue: {
+		fontSize: 9,
+		color: "#0f172a",
+		width: "70%",
+		textAlign: "right",
 	},
 
 	// Table (The critical part)
@@ -194,6 +297,23 @@ export const premiumStyles = StyleSheet.create({
 	colQty: { width: "10%", textAlign: "center" }, // Center Qty usually looks better
 	colPrice: { width: "20%", textAlign: "right" }, // Prices Right aligned
 	colTotal: { width: "20%", textAlign: "right", fontWeight: "bold" },
+	
+	// Detailed Invoice Columns (Credit Note) - Sum must be 100%
+	// Index (5%) + Total (20%) = 25% used. 75% remaining.
+	colDescription: { width: "30%", textAlign: "right" },
+	colQuantity: { width: "10%", textAlign: "center" },
+	colUnitPrice: { width: "12%", textAlign: "right" },
+	colTaxRate: { width: "8%", textAlign: "center" },
+	colTaxAmount: { width: "15%", textAlign: "right" },
+	
+	// Simple Table Columns
+	colDescSimple: { width: "40%", textAlign: "right" },
+	colQtySimple: { width: "15%", textAlign: "center" },
+	colPriceSimple: { width: "20%", textAlign: "right" },
+	
+	tableRowAlt: { backgroundColor: "#F8FAFC" },
+	tableCellNumber: { fontSize: 9, textAlign: "right" },
+	tableCellCenter: { textAlign: "center" },
 
 	// Totals Layout
 	totalsContainer: {
@@ -256,6 +376,45 @@ export const premiumStyles = StyleSheet.create({
 		fontWeight: "bold",
 		color: "#012d46",
 		textAlign: "left",
+	},
+	
+	// Totals (Alternate names used in components)
+	totalsSection: {
+		flexDirection: "row", // Align to left via flex-start
+		marginTop: 20,
+		justifyContent: "flex-start", // visual left
+	},
+	totalsBox: {
+		width: "45%", // slightly wider
+		backgroundColor: "#F8FAFC",
+		borderRadius: 6,
+		padding: 12,
+		borderWidth: 1,
+		borderColor: "#E2E8F0",
+	},
+	totalDivider: {
+		height: 1,
+		backgroundColor: "#E2E8F0",
+		marginVertical: 8,
+	},
+	
+	// Notes
+	notesSection: {
+		marginTop: 20,
+		paddingTop: 10,
+		borderTopWidth: 1,
+		borderTopColor: "#E2E8F0",
+	},
+	notesLabel: {
+		fontSize: 9,
+		fontWeight: "bold",
+		marginBottom: 4,
+		textAlign: "right",
+	},
+	notesText: {
+		fontSize: 9, 
+		color: "#64748b",
+		textAlign: "right",
 	},
 
 	// Footer
