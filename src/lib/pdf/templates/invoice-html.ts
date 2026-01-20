@@ -29,12 +29,31 @@ function formatDate(dateStr?: string | null) {
 export function generateInvoiceHtml(
     invoice: InvoiceWithClientAndItems,
     client: Client | null,
-    items: InvoiceItem[]
+    items: InvoiceItem[],
+    fonts?: { regular: string; bold: string }
 ) {
     const isTax = invoice.invoice_type === 'standard_tax' || invoice.invoice_type === 'simplified_tax';
     const total = Number(invoice.total_amount || 0);
     const subtotal = Number(invoice.subtotal || 0);
     const vat = Number(invoice.vat_amount || 0);
+
+    const fontStyles = fonts ? `
+        @font-face {
+            font-family: 'Cairo';
+            src: url(data:font/ttf;base64,${fonts.regular}) format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Cairo';
+            src: url(data:font/ttf;base64,${fonts.bold}) format('truetype');
+            font-weight: 700;
+            font-style: normal;
+        }
+    ` : `
+        /* Fallback if no fonts provided (not recommended for Arabic) */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+    `;
 
     return `
 <!DOCTYPE html>
@@ -43,7 +62,7 @@ export function generateInvoiceHtml(
     <meta charset="UTF-8">
     <title>Invoice #${safe(invoice.invoice_number)}</title>
     <style>
-        /* @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap'); */
+        ${fontStyles}
 
         :root {
             --primary: #7f2dfb;

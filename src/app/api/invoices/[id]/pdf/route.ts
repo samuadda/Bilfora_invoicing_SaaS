@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getInvoiceForPdf } from "@/services/invoice-service";
 import { generateInvoiceHtml } from "@/lib/pdf/templates/invoice-html";
 import { generatePdf } from "@/lib/pdf/puppeteer";
+import path from "path";
+import fs from "fs";
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -34,9 +36,30 @@ export async function GET(request: NextRequest, props: Props) {
         return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
     }
 
+
+    // ... previous imports
+
     try {
+        // Read fonts (cached in memory in production ideally, but FS here is fine for serverless if not exceeding limits)
+        const fontPathRegular = path.join(process.cwd(), 'public', 'fonts', 'Cairo-Regular.ttf');
+        const fontPathBold = path.join(process.cwd(), 'public', 'fonts', 'Cairo-Bold.ttf');
+
+        let fonts = undefined;
+        try {
+            if (fs.existsSync(fontPathRegular) && fs.existsSync(fontPathBold)) {
+                fonts = {
+                    regular: fs.readFileSync(fontPathRegular).toString('base64'),
+                    bold: fs.readFileSync(fontPathBold).toString('base64'),
+                };
+            } else {
+                console.warn("Fonts not found at:", fontPathRegular);
+            }
+        } catch (fontError) {
+            console.error("Failed to load fonts:", fontError);
+        }
+
         // 3. Generate HTML
-        const html = generateInvoiceHtml(data.invoice, data.client, data.items);
+        const html = generateInvoiceHtml(data.invoice, data.client, data.items, fonts);
 
         // 4. Generate PDF
         const pdfBuffer = await generatePdf(html);
