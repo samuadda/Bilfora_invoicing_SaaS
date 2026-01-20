@@ -129,6 +129,20 @@ export default function InvoiceDetailClient({
 		};
 	}, [invoice, items, isNonTax, isCredit, taxRate, payments]);
 
+	// Robust check for download readiness
+	const isReadyForDownload = useMemo(() => {
+		if (!invoiceSettings?.seller_name) return false;
+		// For tax invoices, VAT number is mandatory
+		if (isTax && !invoiceSettings?.vat_number) return false;
+		return true;
+	}, [invoiceSettings, isTax]);
+
+	const getMissingSettingsMessage = () => {
+		if (!invoiceSettings?.seller_name) return "أكمل اسم المنشأة لتنزيل PDF";
+		if (isTax && !invoiceSettings?.vat_number) return "أكمل الرقم الضريبي لتنزيل PDF";
+		return "أكمل بيانات المنشأة لتنزيل PDF";
+	};
+
 	useEffect(() => {
 		async function buildQr() {
 			if (!isTax) {
@@ -137,10 +151,15 @@ export default function InvoiceDetailClient({
 				return;
 			}
 
-			if (!isSettingsReady || !invoiceSettings?.seller_name || !invoiceSettings.vat_number) {
+			// QR only needs to be strictly valid for Tax invoices
+			if (!isReadyForDownload) {
 				setQrWarning("أكمل بيانات المنشأة لإظهار QR");
 				setQrDataUrl(null);
 				return;
+			}
+
+			if (!invoiceSettings?.vat_number || !invoiceSettings?.seller_name) {
+				 return; 
 			}
 
 			try {
@@ -186,7 +205,7 @@ export default function InvoiceDetailClient({
 		invoice.total_amount,
 		invoice.vat_amount,
 		invoiceSettings,
-		isSettingsReady,
+		isReadyForDownload,
 		isTax,
 		totals.total,
 		totals.vat,
@@ -198,7 +217,7 @@ export default function InvoiceDetailClient({
 	};
 
 	const pdfDoc = useMemo(() => {
-		if (!isSettingsReady || !invoiceSettings) return null;
+		if (!isReadyForDownload || !invoiceSettings) return null;
 
 		return (
 			<InvoicePDFRenderer
@@ -209,7 +228,7 @@ export default function InvoiceDetailClient({
 				invoiceSettings={invoiceSettings}
 			/>
 		);
-	}, [client, invoice, invoiceSettings, isSettingsReady, items, qrDataUrl]);
+	}, [client, invoice, invoiceSettings, isReadyForDownload, items, qrDataUrl]);
 
 	const handleDuplicate = async () => {
 		if (isDuplicating) return;
@@ -322,21 +341,27 @@ export default function InvoiceDetailClient({
 										<Loader2 className="w-4 h-4 animate-spin" />
 										{isSettingsReady
 											? "جاري التحميل..."
-											: "أكمل بيانات المنشأة لتنزيل PDF"}
+											: getMissingSettingsMessage()}
 									</button>
 								)}
 							</div>
 						</div>
 					</div>
 
-					{!isSettingsReady && (
+					{!isReadyForDownload && (
 						<div className="no-print mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
 							<div className="flex items-start gap-2">
 								<AlertCircle className="mt-0.5 h-5 w-5" />
 								<div>
-									<p className="font-semibold">أكمل بيانات المنشأة لإظهار QR وتنزيل PDF</p>
+									<p className="font-semibold">
+										{isTax 
+											? "أكمل بيانات المنشأة لإظهار QR وتنزيل PDF" 
+											: "أكمل بيانات المنشأة لتنزيل PDF"}
+									</p>
 									<p className="text-sm text-amber-800">
-										الرجاء إضافة اسم المنشأة والرقم الضريبي في إعدادات الفواتير.
+										{isTax 
+											? "الرجاء إضافة اسم المنشأة والرقم الضريبي في إعدادات الفواتير." 
+											: "الرجاء إضافة اسم المنشأة في إعدادات الفواتير."}
 									</p>
 									<div className="mt-2">
 										<Link
@@ -348,7 +373,7 @@ export default function InvoiceDetailClient({
 									</div>
 								</div>
 							</div>
-							{qrWarning && (
+							{qrWarning && isTax && (
 								<p className="mt-2 text-sm font-medium text-amber-900">
 									{qrWarning}
 								</p>
