@@ -14,11 +14,11 @@ function safe(str?: string | null) {
 }
 
 function formatCurrency(amount: number) {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "SAR",
+    const val = new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(amount);
+    return `<span style="font-weight:700">${val}</span> <span style="font-weight:400; font-size: 0.8em; color: #6b7280;">SAR</span>`;
 }
 
 function formatDate(dateStr?: string | null) {
@@ -76,14 +76,14 @@ export function generateInvoiceHtml(
             padding: 0;
             color: var(--text-dark);
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.4;
             background: white;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: center;
             margin-bottom: 2rem;
             border-bottom: 2px solid #e5e7eb;
             padding-bottom: 1rem;
@@ -106,13 +106,13 @@ export function generateInvoiceHtml(
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .meta-box h3 {
             color: var(--primary);
-            font-size: 16px;
-            margin-bottom: 0.5rem;
+            font-size: 15px;
+            margin-bottom: 0.25rem;
             border-bottom: 1px solid #e5e7eb;
             padding-bottom: 0.25rem;
         }
@@ -121,11 +121,13 @@ export function generateInvoiceHtml(
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.25rem;
+            align-items: center;
         }
 
         .meta-label {
             font-weight: 600;
             color: var(--text-gray);
+            font-size: 13px;
         }
 
         /* Utils for direction and alignment */
@@ -158,12 +160,13 @@ export function generateInvoiceHtml(
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 2rem;
+            direction: rtl;
         }
 
         thead {
             display: table-header-group;
         }
-
+        
         tfoot {
             display: table-footer-group;
         }
@@ -171,13 +174,14 @@ export function generateInvoiceHtml(
         th {
             background-color: var(--primary);
             color: white;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             font-weight: 600;
+            font-size: 13px;
         }
 
         td {
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid #e5e7eb;
             color: var(--text-gray);
         }
@@ -189,7 +193,7 @@ export function generateInvoiceHtml(
 
         .totals-section {
             width: 50%;
-            margin-right: auto; /* Push to left in RTL */
+            margin-right: auto;
             background-color: #f9fafb;
             padding: 1.5rem;
             border-radius: 8px;
@@ -241,12 +245,12 @@ export function generateInvoiceHtml(
 <body>
 
     <div class="header">
-        <div>
-            <h1 class="invoice-title">فاتورة ضريبية</h1>
-            <div style="margin-top: 0.5rem; color: #6b7280;"># <span class="ltr-iso">${safe(invoice.invoice_number)}</span></div>
-        </div>
         <div class="logo-area">
             Bilfora
+        </div>
+        <div>
+            <h1 class="invoice-title">فاتورة ضريبية</h1>
+            <div style="margin-top: 0.25rem; color: #6b7280; text-align: left;"># <span class="ltr-iso">${safe(invoice.invoice_number)}</span></div>
         </div>
     </div>
 

@@ -1,6 +1,9 @@
 "use client";
 
+
 import { useMemo, useState } from "react";
+import { INVOICE_TOKENS } from "@/lib/invoice-design/tokens";
+
 import { Loader2, Printer, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { m } from "framer-motion";
@@ -302,193 +305,431 @@ export default function InvoiceDetailClient({
 					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
-						className="print-invoice bg-white rounded-lg shadow-sm p-6 md:p-8"
+						className="print-invoice bg-white shadow-sm"
+						style={{
+							borderRadius: INVOICE_TOKENS.radius,
+							color: INVOICE_TOKENS.textDark,
+							padding: '2rem', // Match PDF padding roughly
+						}}
 					>
-						{/* Invoice Info */}
-						<div className="grid md:grid-cols-2 gap-6 mb-8">
-							<div>
-								<h3 className="text-lg font-semibold text-[#012d46] mb-4">
-									معلومات الفاتورة
-								</h3>
-								<div className="space-y-2 text-gray-600">
-									<p>
-										<span className="font-medium">رقم الفاتورة:</span>{" "}
-										{invoice.invoice_number || invoice.id}
-									</p>
-									<div className="flex flex-col gap-1">
-										<span className="font-medium">تاريخ الإصدار:</span>{" "}
-										<div className="flex flex-col gap-0.5">
-											<span>{formatDate(invoice.issue_date)}</span>
-											{invoice.issue_date && (
-												<span className="text-gray-500 text-xs">
-													الموافق: {convertToHijri(invoice.issue_date).formattedHijri}
-												</span>
-											)}
-										</div>
-									</div>
-									<div className="flex flex-col gap-1">
-										<span className="font-medium">تاريخ الاستحقاق:</span>{" "}
-										<div className="flex flex-col gap-0.5">
-											<span>{formatDate(invoice.due_date)}</span>
-											{invoice.due_date && (
-												<span className="text-gray-500 text-xs">
-													الموافق: {convertToHijri(invoice.due_date).formattedHijri}
-												</span>
-											)}
-										</div>
-									</div>
-									<p>
-										<span className="font-medium">الحالة:</span>{" "}
-										<span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-											{invoice.status}
-										</span>
-									</p>
-								</div>
+						{/* HEADER (Matches PDF) */}
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								marginBottom: INVOICE_TOKENS.spacing.gapLg,
+								borderBottom: `2px solid ${INVOICE_TOKENS.border}`,
+								paddingBottom: "1rem",
+							}}
+						>
+							<div
+								style={{
+									fontSize: "24px",
+									fontWeight: "bold",
+									color: INVOICE_TOKENS.primary,
+								}}
+							>
+								Bilfora
 							</div>
-
 							<div>
-								<h3 className="text-lg font-semibold text-[#012d46] mb-4">
-									معلومات العميل
-								</h3>
-								<div className="space-y-2 text-gray-600">
-									<p className="font-medium text-[#012d46]">
-										{client?.name ?? "-"}
-									</p>
-									{client?.company_name && <p>الشركة: {client.company_name}</p>}
-									{client?.email && <p>البريد: {client.email}</p>}
-									{client?.phone && <p>الهاتف: {client.phone}</p>}
-									{client?.tax_number && <p>الرقم الضريبي: {client.tax_number}</p>}
+								<h1
+									style={{
+										fontSize: INVOICE_TOKENS.headings.h1.size,
+										fontWeight: INVOICE_TOKENS.headings.h1.weight,
+										color: INVOICE_TOKENS.textDark,
+										margin: 0,
+									}}
+								>
+									{getTitle()}
+								</h1>
+								<div
+									style={{
+										marginTop: "0.25rem",
+										color: "#6b7280",
+										textAlign: "left",
+										direction: "ltr",
+									}}
+								>
+									# {invoice.invoice_number || invoice.id}
 								</div>
 							</div>
 						</div>
 
-						{/* Items Table */}
-						<div className="mb-8">
-							<h3 className="text-lg font-semibold text-[#012d46] mb-4">تفاصيل الفاتورة</h3>
-							<div className="overflow-x-auto">
-								<table className="w-full border-collapse">
-									<thead>
-										<tr className="bg-[#7f2dfb] text-white">
-											<th className="p-3 text-right text-sm font-semibold">#</th>
-											<th className="p-3 text-right text-sm font-semibold">الوصف</th>
-											<th className="p-3 text-center text-sm font-semibold">الكمية</th>
-											<th className="p-3 text-left text-sm font-semibold">
-												سعر الوحدة {isTax ? "(بدون ضريبة)" : ""}
-											</th>
-											{isTax && (
-												<>
-													<th className="p-3 text-center text-sm font-semibold">نسبة الضريبة</th>
-													<th className="p-3 text-left text-sm font-semibold">مبلغ الضريبة</th>
-												</>
-											)}
-											<th className="p-3 text-left text-sm font-semibold">
-												الإجمالي {isTax ? "(شامل الضريبة)" : ""}
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{items.map((item, index) => {
-											const qty = Number(item.quantity) || 0;
-											const unit = Number(item.unit_price) || 0;
-											const lineNet = qty * unit;
-											const lineVat = isNonTax ? 0 : lineNet * (taxRate / 100);
-											const lineTotal = isCredit ? -(lineNet + lineVat) : lineNet + lineVat;
-
-											return (
-												<tr
-													key={item.id || index}
-													className="border-b border-gray-200 hover:bg-gray-50"
-												>
-													<td className="p-3 text-right text-sm">{index + 1}</td>
-													<td className="p-3 text-right text-sm">{item.description || "-"}</td>
-													<td className="p-3 text-center text-sm">{qty}</td>
-													<td className="p-3 text-left text-sm">{formatCurrency(unit)}</td>
-													{isTax && (
-														<>
-															<td className="p-3 text-center text-sm">{taxRate}%</td>
-															<td className="p-3 text-left text-sm">
-																{formatCurrency(lineVat)}
-															</td>
-														</>
-													)}
-													<td className="p-3 text-left text-sm font-medium">
-														{formatCurrency(lineTotal)}
-													</td>
-												</tr>
-											);
-										})}
-									</tbody>
-								</table>
+						{/* META GRID (Matches PDF) */}
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "1fr 1fr",
+								gap: INVOICE_TOKENS.spacing.gapLg,
+								marginBottom: "1.5rem",
+							}}
+						>
+							{/* Seller */}
+							<div>
+								<h3
+									style={{
+										color: INVOICE_TOKENS.primary,
+										fontSize: INVOICE_TOKENS.headings.h3.size,
+										marginBottom: "0.25rem",
+										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
+										paddingBottom: "0.25rem",
+										fontWeight: 600,
+									}}
+								>
+									المورد (Seller)
+								</h3>
+								<div className="flex justify-between items-center mb-1">
+									<span className="font-semibold text-gray-500 text-[13px]">
+										الاسم:
+									</span>
+									<span>اسم المنشأة</span> {/* TODO: Use settings */}
+								</div>
 							</div>
-						</div>
 
-						{/* Totals */}
-						<div className="flex justify-end">
-							<div className="totals-section w-full md:w-96 space-y-2 p-4 rounded-lg">
-								{isTax ? (
+							{/* Buyer */}
+							<div>
+								<h3
+									style={{
+										color: INVOICE_TOKENS.primary,
+										fontSize: INVOICE_TOKENS.headings.h3.size,
+										marginBottom: "0.25rem",
+										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
+										paddingBottom: "0.25rem",
+										fontWeight: 600,
+									}}
+								>
+									العميل (Buyer)
+								</h3>
+								{client ? (
 									<>
-										<div className="flex justify-between text-gray-600">
-											<span>المجموع الفرعي (بدون ضريبة):</span>
-											<span className="font-medium">{formatCurrency(totals.subtotal)}</span>
+										<div className="flex justify-between items-center mb-1">
+											<span className="font-semibold text-gray-500 text-[13px]">
+												الاسم:
+											</span>
+											<span>{client.name}</span>
 										</div>
-										<div className="flex justify-between text-gray-600">
-											<span>مجموع الضريبة ({taxRate}%):</span>
-											<span className="font-medium">{formatCurrency(totals.vat)}</span>
-										</div>
-										<div className="border-t border-gray-300 pt-2 mt-2 space-y-2">
-											<div className="flex justify-between text-lg font-bold text-[#012d46]">
-												<span>{isCredit ? "إشعار دائن:" : "الإجمالي المستحق:"}</span>
-												<span>{formatCurrency(totals.total)}</span>
+										{client.company_name && (
+											<div className="flex justify-between items-center mb-1">
+												<span className="font-semibold text-gray-500 text-[13px]">
+													الشركة:
+												</span>
+												<span>{client.company_name}</span>
 											</div>
-											{totals.paid > 0 && (
-												<>
-													<div className="flex justify-between text-green-600 font-medium">
-														<span>المدفوع:</span>
-														<span>{formatCurrency(totals.paid)}</span>
-													</div>
-													<div className="flex justify-between text-red-600 font-bold">
-														<span>المتبقي:</span>
-														<span>{formatCurrency(totals.outstanding)}</span>
-													</div>
-												</>
-											)}
-										</div>
+										)}
 									</>
 								) : (
-									<div className="space-y-2">
-										<div className="flex justify-between text-lg font-bold text-[#012d46]">
-											<span>{isCredit ? "إشعار دائن:" : "المجموع:"}</span>
-											<span>{formatCurrency(totals.total)}</span>
-										</div>
-										{totals.paid > 0 && (
-											<>
-												<div className="flex justify-between text-green-600 font-medium">
-													<span>المدفوع:</span>
-													<span>{formatCurrency(totals.paid)}</span>
-												</div>
-												<div className="flex justify-between text-red-600 font-bold">
-													<span>المتبقي:</span>
-													<span>{formatCurrency(totals.outstanding)}</span>
-												</div>
-											</>
-										)}
-									</div>
+									<div>عميل نقدي</div>
 								)}
 							</div>
 						</div>
 
-						{/* Notes */}
+						{/* DATES METADATA */}
+						<div
+							style={{
+								display: "grid",
+								gridTemplateColumns: "1fr 1fr",
+								gap: INVOICE_TOKENS.spacing.gapLg,
+								marginBottom: "1.5rem",
+							}}
+						>
+							<div>
+								<h3
+									style={{
+										color: INVOICE_TOKENS.primary,
+										fontSize: INVOICE_TOKENS.headings.h3.size,
+										marginBottom: "0.25rem",
+										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
+										paddingBottom: "0.25rem",
+										fontWeight: 600,
+									}}
+								>
+									تفاصيل الفاتورة
+								</h3>
+								<div className="flex justify-between items-center mb-1">
+									<span className="font-semibold text-gray-500 text-[13px]">
+										تاريخ الإصدار:
+									</span>
+									<span className="ltr-iso">{formatDate(invoice.issue_date)}</span>
+								</div>
+								<div className="flex justify-between items-center mb-1">
+									<span className="font-semibold text-gray-500 text-[13px]">
+										تاريخ الاستحقاق:
+									</span>
+									<span className="ltr-iso">{formatDate(invoice.due_date)}</span>
+								</div>
+							</div>
+						</div>
+
+						{/* TABLE (Matches PDF) */}
+						<div className="mb-8 overflow-x-auto">
+							<table style={{ width: "100%", borderCollapse: "collapse", direction: 'rtl' }}>
+								<thead>
+									<tr>
+										<th
+											style={{
+												backgroundColor: INVOICE_TOKENS.primary,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "15%",
+											}}
+										>
+											الإجمالي
+										</th>
+										{isTax && (
+											<th
+												style={{
+													backgroundColor: INVOICE_TOKENS.primary,
+													color: "white",
+													padding: INVOICE_TOKENS.table.cellPadding,
+													textAlign: "center",
+													fontSize: "13px",
+													width: "15%",
+												}}
+											>
+												الضريبة
+											</th>
+										)}
+										<th
+											style={{
+												backgroundColor: INVOICE_TOKENS.primary,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "15%",
+											}}
+										>
+											سعر الوحدة
+										</th>
+										<th
+											style={{
+												backgroundColor: INVOICE_TOKENS.primary,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "10%",
+											}}
+										>
+											الكمية
+										</th>
+										<th
+											className="desc"
+											style={{
+												backgroundColor: INVOICE_TOKENS.primary,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "right", // Desc right aligned
+												fontSize: "13px",
+												width: "40%",
+											}}
+										>
+											الوصف
+										</th>
+										<th
+											style={{
+												backgroundColor: INVOICE_TOKENS.primary,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "5%",
+											}}
+										>
+											#
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{items.map((item, index) => {
+										const qty = Number(item.quantity) || 0;
+										const unit = Number(item.unit_price) || 0;
+										const lineTotalRaw = qty * unit;
+										const taxAmount = isTax
+											? invoice.tax_rate
+												? lineTotalRaw * (invoice.tax_rate / 100)
+												: 0
+											: 0;
+										const lineTotal = isTax
+											? lineTotalRaw + taxAmount
+											: lineTotalRaw;
+
+										return (
+											<tr
+												key={item.id || index}
+												style={{ borderBottom: `1px solid ${INVOICE_TOKENS.border}` }}
+											>
+												<td
+													className="num"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "left",
+														direction: "ltr",
+													}}
+												>
+													{formatCurrency(lineTotal)}
+												</td>
+												{isTax && (
+													<td
+														className="num"
+														style={{
+															padding: INVOICE_TOKENS.table.cellPadding,
+															color: INVOICE_TOKENS.textGray,
+															textAlign: "left",
+															direction: "ltr",
+														}}
+													>
+														{formatCurrency(taxAmount)}
+													</td>
+												)}
+												<td
+													className="num"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "left",
+														direction: "ltr",
+													}}
+												>
+													{formatCurrency(unit)}
+												</td>
+												<td
+													className="qty"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "center",
+														direction: "ltr",
+													}}
+												>
+													{qty}
+												</td>
+												<td
+													className="desc"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "right",
+													}}
+												>
+													{item.description || "-"}
+												</td>
+												<td
+													className="idx"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "center",
+														direction: "ltr",
+													}}
+												>
+													{index + 1}
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</div>
+
+						{/* TOTALS (Matches PDF) */}
+						<div
+							className="totals-section"
+							style={{
+								width: "50%",
+								marginRight: "auto", // Right aligned in RTL (means Left visually on screen if direction is RTL? No, margin-right: auto pushes it to the LEFT in RTL layout)
+								// Wait, PDF says margin-right: auto. In RTL, margin-right refers to the physical right? 
+								// In RTL, "margin-right: auto" pushes the element to the LEFT side of the container. 
+								// Correct, because "margin-inline-start: auto" would push it to the end (left). 
+								// Let's stick to PDF CSS logic.
+								backgroundColor: INVOICE_TOKENS.bgSoft,
+								padding: "1.5rem",
+								borderRadius: "8px",
+								marginLeft: "0",
+							}}
+						>
+							<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "15px" }}>
+								<span>المجموع (Subtotal):</span>
+								<span className="ltr-iso" style={{ direction: 'ltr' }}>{formatCurrency(totals.subtotal)}</span>
+							</div>
+							{isTax && (
+								<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "15px" }}>
+									<span>الضريبة (VAT):</span>
+									<span className="ltr-iso" style={{ direction: 'ltr' }}>{formatCurrency(totals.vat)}</span>
+								</div>
+							)}
+							<div
+								style={{
+									display: "flex",
+									justifyContent: "space-between",
+									marginBottom: "0.5rem",
+									fontWeight: 800,
+									fontSize: "18px",
+									color: INVOICE_TOKENS.textDark,
+									borderTop: `2px solid ${INVOICE_TOKENS.border}`,
+									paddingTop: "1rem",
+									marginTop: "0.5rem",
+								}}
+							>
+								<span>الإجمالي (Total):</span>
+								<span className="ltr-iso" style={{ direction: 'ltr' }}>{formatCurrency(totals.total)}</span>
+							</div>
+
+							{/* Payment status additions (not in PDF but useful for dashboard) */}
+							{totals.paid > 0 && (
+								<>
+									<div className="flex justify-between text-green-600 font-medium text-sm mt-2">
+										<span>المدفوع:</span>
+										<span style={{ direction: 'ltr' }}>{formatCurrency(totals.paid)}</span>
+									</div>
+									<div className="flex justify-between text-red-600 font-bold text-sm">
+										<span>المتبقي:</span>
+										<span style={{ direction: 'ltr' }}>{formatCurrency(totals.outstanding)}</span>
+									</div>
+								</>
+							)}
+						</div>
+
+						{/* NOTES (Matches PDF) */}
 						{invoice.notes && (
-							<div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-								<h4 className="font-semibold text-yellow-900 mb-2">ملاحظات:</h4>
-								<p className="text-yellow-800 text-sm">{invoice.notes}</p>
+							<div
+								style={{
+									marginTop: "2rem",
+									borderTop: `1px solid ${INVOICE_TOKENS.border}`,
+									paddingTop: "1rem",
+								}}
+							>
+								<strong>ملاحظات:</strong>
+								<p style={{ whiteSpace: "pre-wrap", color: INVOICE_TOKENS.textGray, marginTop: '0.5rem' }}>
+									{invoice.notes}
+								</p>
 							</div>
 						)}
 
-						{/* Payment History */}
+						{/* Footer (Matches PDF) */}
+						<div
+							style={{
+								marginTop: "3rem",
+								textAlign: "center",
+								color: "#9ca3af",
+								fontSize: "12px",
+								borderTop: `1px solid ${INVOICE_TOKENS.border}`,
+								paddingTop: "1rem",
+							}}
+						>
+							Generated by Bilfora
+						</div>
+
+						{/* Dashboard-only widgets (Payments) */}
 						{payments.length > 0 && (
-							<div className="mt-8">
-								<h3 className="text-lg font-semibold text-[#012d46] mb-4">سجل الدفعات</h3>
+							<div className="mt-8 pt-8 border-t border-gray-100 no-print">
+								<h3 className="text-lg font-semibold text-[#012d46] mb-4">
+									سجل الدفعات
+								</h3>
 								<InvoicePaymentsList payments={payments} />
 							</div>
 						)}
