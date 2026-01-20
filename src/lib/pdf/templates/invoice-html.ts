@@ -73,7 +73,7 @@ export function generateInvoiceHtml(
         body {
             font-family: 'Cairo', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 50px;
             color: var(--text-dark);
             font-size: 14px;
             line-height: 1.4;
