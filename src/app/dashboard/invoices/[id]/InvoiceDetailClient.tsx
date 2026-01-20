@@ -19,7 +19,7 @@ import type { InvoiceSettings } from "@/features/settings/schemas/invoiceSetting
 import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 import { PaymentRecordingModal } from "@/components/payments/PaymentRecordingModal";
 import { InvoicePaymentsList } from "@/components/payments/InvoicePaymentsList";
-import { Button } from "@/components/ui/Button";
+
 import { CreditCard, Copy } from "lucide-react";
 import { duplicateInvoiceAction } from "@/actions/invoices";
 import { useRouter } from "next/navigation";
@@ -291,19 +291,18 @@ export default function InvoiceDetailClient({
 							</div>
 							<div className="flex gap-3 items-center">
 								{invoice.status !== "paid" && invoice.status !== "cancelled" && (
-									<Button
+									<button
 										onClick={() => setIsPaymentModalOpen(true)}
-										className="gap-2 bg-green-600 hover:bg-green-700"
+										className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
 									>
 										<CreditCard className="w-4 h-4" />
 										تسجيل دفعة
-									</Button>
+									</button>
 								)}
-								<Button
-									variant="secondary"
+								<button
 									onClick={handleDuplicate}
 									disabled={isDuplicating}
-									className="gap-2"
+									className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
 								>
 									{isDuplicating ? (
 										<Loader2 className="w-4 h-4 animate-spin" />
@@ -311,7 +310,7 @@ export default function InvoiceDetailClient({
 										<Copy className="w-4 h-4" />
 									)}
 									نسخ
-								</Button>
+								</button>
 
 								{pdfDoc ? (
 									<PDFDownloadLink
