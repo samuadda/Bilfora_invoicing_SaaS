@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 // ExcelJS is dynamically imported in exportClients to reduce bundle size
 import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import QuickClientModal from "@/components/QuickClientModal";
 
 const statusConfig = {
 	active: { label: "نشط", className: "bg-green-50 text-green-700 border-green-100" },
@@ -97,6 +98,7 @@ export default function ClientsPage() {
 	const [statusFilter, setStatusFilter] = useState<AdvancedFilter>("all");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showModal, setShowModal] = useState(false);
+	const [showQuickAddModal, setShowQuickAddModal] = useState(false);
 	const [editingClient, setEditingClient] = useState<Client | null>(null);
 	const [saving, setSaving] = useState(false);
 	const [formData, setFormData] = useState<Partial<Client>>({});
@@ -251,9 +253,7 @@ export default function ClientsPage() {
 	};
 
 	const openAddModal = () => {
-		setEditingClient(null);
-		setFormData({ status: "active" });
-		setShowModal(true);
+		setShowQuickAddModal(true);
 	};
 
 	const openEditModal = (client: Client) => {
@@ -853,9 +853,16 @@ export default function ClientsPage() {
 				)}
 			</m.div>
 
-			{/* Add/Edit Modal */}
+			{/* Quick Add Modal */}
+			<QuickClientModal
+				isOpen={showQuickAddModal}
+				onClose={() => setShowQuickAddModal(false)}
+				onSuccess={loadClients}
+			/>
+
+			{/* Edit Modal */}
 			<AnimatePresence>
-				{showModal && (
+				{showModal && editingClient && (
 					<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 						<m.div
 							initial={{ opacity: 0 }}
@@ -873,7 +880,7 @@ export default function ClientsPage() {
 							<div className="p-6 border-b border-gray-100 bg-gray-50/50">
 								<div className="flex items-center justify-between">
 									<h2 className="text-xl font-bold text-gray-900">
-										{editingClient ? "تعديل بيانات العميل" : "إضافة عميل جديد"}
+										تعديل بيانات العميل
 									</h2>
 									<button
 										onClick={() => setShowModal(false)}

@@ -31,6 +31,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <div className="relative">
         <select
           ref={ref}
+          lang="en"
           className={cn(baseClass, className)}
           {...props}
         >

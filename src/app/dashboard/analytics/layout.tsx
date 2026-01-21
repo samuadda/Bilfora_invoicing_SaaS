@@ -39,7 +39,7 @@ export default function AnalyticsLayout({
 	const to = searchParams.get("to");
 
 	const currentRangeLabel = useMemo(() => {
-		if (from && to) return `${new Date(from).toLocaleDateString("ar-SA")} – ${new Date(to).toLocaleDateString("ar-SA")}`;
+		if (from && to) return `${new Date(from).toLocaleDateString("en-GB")} – ${new Date(to).toLocaleDateString("en-GB")}`;
 		return "نطاق زمني";
 	}, [from, to]);
 
@@ -87,7 +87,7 @@ export default function AnalyticsLayout({
 		if (!dateString) return '-';
 		try {
 			const date = new Date(dateString);
-			return date.toLocaleDateString('ar-SA', {
+			return date.toLocaleDateString('en-GB', {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit'
@@ -117,7 +117,7 @@ export default function AnalyticsLayout({
 					['تقرير التحليلات', ''],
 					['نطاق التصدير', `${from ? formatDate(from) : 'غير محدد'} - ${to ? formatDate(to) : 'غير محدد'}`],
 					['تاريخ التصدير', formatDate(new Date().toISOString())],
-					['وقت التصدير', new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })],
+					['وقت التصدير', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })],
 					[''],
 					['البيانات', 'القيمة'],
 					['إجمالي الإيرادات', 'يتم حسابها من البيانات'],
@@ -179,7 +179,7 @@ export default function AnalyticsLayout({
 					['تقرير الفواتير', ''],
 					['نطاق التصدير', `${from ? formatDate(from) : 'الكل'} - ${to ? formatDate(to) : 'الآن'}`],
 					['تاريخ التصدير', formatDate(new Date().toISOString())],
-					['وقت التصدير', new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })],
+					['وقت التصدير', new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })],
 					['عدد الفواتير', data.length.toString()],
 					['']
 				];

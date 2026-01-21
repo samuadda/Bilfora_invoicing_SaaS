@@ -18,6 +18,7 @@ export type Database = {
                 Row: {
                     address: string | null
                     city: string | null
+                    commercial_registration: string | null
                     company_name: string | null
                     created_at: string
                     deleted_at: string | null
@@ -34,6 +35,7 @@ export type Database = {
                 Insert: {
                     address?: string | null
                     city?: string | null
+                    commercial_registration?: string | null
                     company_name?: string | null
                     created_at?: string
                     deleted_at?: string | null
@@ -50,6 +52,7 @@ export type Database = {
                 Update: {
                     address?: string | null
                     city?: string | null
+                    commercial_registration?: string | null
                     company_name?: string | null
                     created_at?: string
                     deleted_at?: string | null

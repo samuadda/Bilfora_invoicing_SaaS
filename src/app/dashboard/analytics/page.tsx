@@ -352,7 +352,7 @@ function AnalyticsContent() {
 				const [year, month] = key.split("-");
 				const date = new Date(parseInt(year), parseInt(month) - 1);
 				return {
-					name: date.toLocaleDateString("ar-SA-u-nu-latn", {
+					name: date.toLocaleDateString("en-US", {
 						month: "short",
 						year: "numeric",
 					}),

@@ -190,6 +190,40 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Force English/Western numerals on all form inputs */
+  input,
+  select,
+  textarea,
+  input[type="date"],
+  input[type="number"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"],
+  input[type="week"] {
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+    /* Use system UI font to ensure Western numerals display correctly */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* Force English numerals in date picker calendar popups (WebKit) */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field {
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+  }
+
+  /* Force English numerals on number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    font-variant-numeric: lining-nums tabular-nums;
+  }
 }
 
 @layer utilities {

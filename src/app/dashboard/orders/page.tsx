@@ -458,13 +458,13 @@ export default function OrdersPage() {
 	};
 
 	const formatCurrency = (amount: number) =>
-		new Intl.NumberFormat("ar-SA", {
+		new Intl.NumberFormat("en-US", {
 			style: "currency",
 			currency: "SAR",
 		}).format(amount);
 
 	const formatDate = (dateString: string) =>
-		new Date(dateString).toLocaleDateString("ar-SA");
+		new Date(dateString).toLocaleDateString("en-GB");
 
 	if (loading) {
 		return (

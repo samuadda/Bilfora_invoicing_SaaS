@@ -40,8 +40,8 @@ export function convertToHijri(dateString: string): DateDisplay {
 		year: "numeric",
 	});
 
-	// Format Hijri date (DD/MM/YYYY هـ)
-	const hijriDate = date.toLocaleDateString("ar-SA-u-ca-islamic", {
+	// Format Hijri date (DD/MM/YYYY هـ) with Western numerals
+	const hijriDate = date.toLocaleDateString("ar-SA-u-ca-islamic-nu-latn", {
 		day: "2-digit",
 		month: "2-digit",
 		year: "numeric",

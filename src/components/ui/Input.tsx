@@ -32,6 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         ref={ref}
+        lang="en"
         className={cn(baseClass, sizeClass, className)}
         {...props}
       />
