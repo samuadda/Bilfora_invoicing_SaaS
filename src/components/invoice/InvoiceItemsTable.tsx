@@ -6,8 +6,8 @@ import {
     Heading,
     Button,
     Input,
-    Select,
 } from "@/components/ui";
+import { Combobox } from "@/components/ui/combobox";
 import { layout } from "@/lib/ui/tokens";
 import type { CreateInvoiceItemInput, Product } from "@/types/database";
 
@@ -67,23 +67,24 @@ export function InvoiceItemsTable({
                                 المنتج / الوصف
                             </label>
                             <div className={layout.stack.tight}>
-                                <Select
-                                    onChange={(e) => {
-                                        const p = products.find((pr) => pr.id === e.target.value);
-                                        if (p) {
+                                <Combobox
+                                    options={products.map((p) => ({
+                                        value: p.id,
+                                        label: `${p.name} (${p.unit_price} ريال)`,
+                                    }))}
+                                    value={products.find(p => p.name === item.description)?.id || ""}
+                                    onChange={(val) => {
+                                        const p = products.find((pr) => pr.id === val);
+                                        if (p && p.name !== item.description) {
                                             onItemChange(index, "description", p.name);
                                             onItemChange(index, "unit_price", p.unit_price);
                                         }
                                     }}
+                                    placeholder="اختر منتجاً (اختياري)"
+                                    searchPlaceholder="بحث عن منتج..."
                                     className="text-xs"
-                                >
-                                    <option value="">اختر منتجاً (اختياري)</option>
-                                    {products.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.name} ({p.unit_price} ريال)
-                                        </option>
-                                    ))}
-                                </Select>
+                                    emptyText="لا يوجد منتجات"
+                                />
                                 <Input
                                     value={item.description}
                                     onChange={(e) =>

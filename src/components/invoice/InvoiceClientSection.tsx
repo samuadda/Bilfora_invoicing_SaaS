@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { User, Phone, Mail, Loader2 } from "lucide-react";
+import { User, Phone, Mail, Loader2, Building2 } from "lucide-react";
 import { m } from "framer-motion";
 import {
     Heading,
     Card,
     Button,
     Input,
-    Select,
     Field,
     FormRow,
 } from "@/components/ui";
+import { Combobox } from "@/components/ui/combobox";
 import { layout } from "@/lib/ui/tokens";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/types/database";
@@ -138,20 +138,18 @@ export function InvoiceClientSection({
             </div>
 
             {!showNewCustomerForm ? (
-                <Select
-                    name="client_id"
+                <Combobox
+                    options={clients.map((c) => ({
+                        value: c.id,
+                        label: c.name + (c.company_name ? ` (${c.company_name})` : ""),
+                        icon: c.company_name ? <Building2 size={14} /> : <User size={14} />,
+                    }))}
                     value={selectedClientId}
-                    onChange={(e) => onClientChange(e.target.value)}
-                    required
-                >
-                    <option value="">اختر العميل</option>
-                    {clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                            {client.name}{" "}
-                            {client.company_name ? `(${client.company_name})` : ""}
-                        </option>
-                    ))}
-                </Select>
+                    onChange={(val) => onClientChange(val)}
+                    placeholder="اختر العميل"
+                    searchPlaceholder="بحث عن عميل..."
+                    emptyText="لا يوجد عملاء بهذا الاسم"
+                />
             ) : (
                 <m.div
                     initial={{ opacity: 0, y: -10 }}

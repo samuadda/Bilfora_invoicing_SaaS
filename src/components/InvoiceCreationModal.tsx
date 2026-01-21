@@ -28,6 +28,7 @@ import {
 	Text,
 	Button,
 } from "@/components/ui";
+import { format } from "date-fns";
 import { layout } from "@/lib/ui/tokens";
 import { formatCurrency } from "@/lib/formatters";
 import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection";
@@ -133,6 +134,14 @@ export default function InvoiceCreationModal({
 			items: prev.items.map((item, i) =>
 				i === index ? { ...item, [field]: value } : item,
 			),
+		}));
+	};
+
+	const handleDateChange = (field: "issue_date" | "due_date", date: Date | undefined) => {
+		if (!date) return;
+		setInvoiceFormData((prev) => ({
+			...prev,
+			[field]: format(date, "yyyy-MM-dd"), // Format for backend/storage
 		}));
 	};
 
@@ -312,6 +321,7 @@ export default function InvoiceCreationModal({
 								<InvoiceDetailsForm
 									formData={invoiceFormData}
 									onChange={handleInvoiceInputChange}
+									onDateChange={handleDateChange}
 									onTypeChange={(newType) => {
 										setInvoiceFormData((prev) => ({
 											...prev,

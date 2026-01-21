@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { getButtonClass } from "@/lib/ui/tokens";
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode, forwardRef } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -30,20 +30,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  * <Button variant="secondary" size="sm">Small Button</Button>
  * ```
  */
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   children,
   variant = "primary",
   size = "md",
   pill = false,
   className,
   ...props
-}: ButtonProps) {
+}, ref) => {
   const baseClass = getButtonClass(variant, size, pill ? "pill" : "default");
 
   return (
-    <button className={cn(baseClass, className)} {...props}>
+    <button ref={ref} className={cn(baseClass, className)} {...props}>
       {children}
     </button>
   );
-}
+});
+Button.displayName = "Button";
 
