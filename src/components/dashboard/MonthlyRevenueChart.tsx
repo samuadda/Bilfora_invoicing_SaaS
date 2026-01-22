@@ -16,7 +16,7 @@ interface MonthlyRevenueChartProps {
 	data: DailyRevenue[];
 }
 
-import { formatCurrency } from "@/lib/formatters";
+import { Price } from "@/components/ui";
 
 export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) {
 
@@ -29,14 +29,14 @@ export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) 
 					<div className="space-y-1">
 						<div className="flex items-center gap-2">
 							<div className="w-2 h-2 rounded-full bg-brand-primary" />
-							<span className="font-medium">
-								الإجمالي: {formatCurrency(payload[0].value)}
+							<span className="font-medium flex items-center gap-1">
+								الإجمالي: <Price amount={payload[0].value} size="xs" className="text-white" />
 							</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<div className="w-2 h-2 rounded-full bg-green-500" />
-							<span className="font-medium">
-								المحصل: {formatCurrency(payload[1]?.value || 0)}
+							<span className="font-medium flex items-center gap-1">
+								المحصل: <Price amount={payload[1]?.value || 0} size="xs" className="text-white" />
 							</span>
 						</div>
 					</div>

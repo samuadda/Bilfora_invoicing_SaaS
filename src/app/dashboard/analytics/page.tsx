@@ -26,7 +26,7 @@ import { InvoiceWithClientAndItems } from "@/types/database";
 import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text, Button } from "@/components/ui";
+import { Heading, Text, Button, Price } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import AnalyticsFiltersComponent, { AnalyticsFilters } from "@/components/filters/AnalyticsFilters";
 import KPICard from "@/components/analytics/KPICard";
@@ -652,7 +652,7 @@ function AnalyticsContent() {
 			<div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4", layout.gap.standard)}>
 				<KPICard
 					title="إجمالي الإيرادات"
-					value={formatCurrency(stats.totalRevenue)}
+					value={<Price amount={stats.totalRevenue} size="xl" />}
 					icon={DollarSign}
 					color="green"
 					trend={{
@@ -704,19 +704,19 @@ function AnalyticsContent() {
 				/>
 				<KPICard
 					title="أعلى فاتورة"
-					value={formatCurrency(stats.highestInvoice)}
+					value={<Price amount={stats.highestInvoice} size="xl" />}
 					icon={ArrowUpRight}
 					color="green"
 				/>
 				<KPICard
 					title="أقل فاتورة"
-					value={formatCurrency(stats.lowestInvoice)}
+					value={<Price amount={stats.lowestInvoice} size="xl" />}
 					icon={ArrowDownRight}
 					color="blue"
 				/>
 				<KPICard
 					title="متوسط قيمة الفاتورة"
-					value={formatCurrency(stats.avgInvoiceValue)}
+					value={<Price amount={stats.avgInvoiceValue} size="xl" />}
 					icon={TrendingUp}
 					color="pink"
 				/>

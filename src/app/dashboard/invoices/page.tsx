@@ -42,9 +42,9 @@ import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text, Card, Button, Input, Select } from "@/components/ui";
+import { Heading, Text, Card, Button, Input, Select, Price } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatDate } from "@/lib/formatters";
 import { Pagination } from "@/components/ui/pagination";
 
 const statusConfig = {
@@ -546,19 +546,19 @@ function InvoicesContent() {
 				/>
 				<StatsCard
 					title="المبلغ المستحق"
-					value={formatCurrency(stats.outstandingAmount)}
+					value={<Price amount={stats.outstandingAmount} size="lg" />}
 					icon={Clock}
 					color="purple"
 				/>
 				<StatsCard
 					title="المبلغ المحصل"
-					value={formatCurrency(stats.paidAmount)}
+					value={<Price amount={stats.paidAmount} size="lg" />}
 					icon={CheckCircle}
 					color="green"
 				/>
 				<StatsCard
 					title="مستحق خلال ٧ أيام"
-					value={formatCurrency(stats.dueIn7DaysAmount)}
+					value={<Price amount={stats.dueIn7DaysAmount} size="lg" />}
 					icon={Calendar}
 					color="indigo"
 				/>
@@ -961,11 +961,7 @@ function InvoicesContent() {
 											</div>
 										</td>
 										<td className="px-6 py-4 whitespace-nowrap">
-											<span className="font-bold text-gray-900">
-												{formatCurrency(
-													invoice.total_amount
-												)}
-											</span>
+											<Price amount={invoice.total_amount} size="sm" className="font-bold text-gray-900" />
 										</td>
 										<td className="px-6 py-4 whitespace-nowrap">
 											<div className="flex flex-col gap-1">
@@ -1288,7 +1284,7 @@ function InvoicesContent() {
 
 interface StatsCardProps {
 	title: string;
-	value: string | number;
+	value: React.ReactNode;
 	icon: React.ComponentType<{
 		size?: number;
 		strokeWidth?: number;

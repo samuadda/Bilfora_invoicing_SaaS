@@ -37,7 +37,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
-import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton, Price } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
 type SortOption = "newest" | "oldest" | "price-high" | "price-low";
@@ -444,8 +444,6 @@ export default function ProductsPage() {
 
 	const formatPrice = (price: number) =>
 		new Intl.NumberFormat("en-US", {
-			style: "currency",
-			currency: "SAR",
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 2,
 		}).format(price);
@@ -510,7 +508,7 @@ export default function ProductsPage() {
 				/>
 				<StatsCard
 					title="متوسط السعر"
-					value={formatPrice(stats.avgPrice)}
+					value={<Price amount={stats.avgPrice} size="xl" />}
 					icon={CircleDollarSign}
 					color="indigo"
 					delay={0.4}
@@ -811,9 +809,7 @@ export default function ProductsPage() {
 													)}
 												</td>
 												<td className="p-5">
-													<span className="font-bold text-gray-900 text-sm">
-														{formatPrice(Number(p.unit_price))}
-													</span>
+													<Price amount={Number(p.unit_price)} size="sm" className="text-gray-900" />
 												</td>
 												<td className="p-5 text-center">
 													<span

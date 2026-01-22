@@ -3,9 +3,8 @@
 import { m } from "framer-motion";
 import { DollarSign, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { MonthlyStats } from "@/hooks/useInvoiceStats";
-import { Card, Text, Heading } from "@/components/ui";
+import { Card, Text, Heading, Price } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
-import { formatCurrency } from "@/lib/formatters";
 
 interface MonthlyStatsCardsProps {
 	stats: MonthlyStats;
@@ -17,21 +16,21 @@ export default function MonthlyStatsCards({
 	const cards = [
 		{
 			title: "إجمالي الفواتير",
-			value: formatCurrency(stats.totalInvoiced),
+			value: <Price amount={stats.totalInvoiced} size="xl" />,
 			icon: DollarSign,
 			color: "blue",
 			delay: 0.1,
 		},
 		{
 			title: "المحصل",
-			value: formatCurrency(stats.collected),
+			value: <Price amount={stats.collected} size="xl" />,
 			icon: CheckCircle,
 			color: "green",
 			delay: 0.2,
 		},
 		{
 			title: "المستحقات",
-			value: formatCurrency(stats.outstanding),
+			value: <Price amount={stats.outstanding} size="xl" />,
 			icon: Clock,
 			color: "orange",
 			delay: 0.3,
@@ -84,4 +83,3 @@ export default function MonthlyStatsCards({
 		</div>
 	);
 }
-

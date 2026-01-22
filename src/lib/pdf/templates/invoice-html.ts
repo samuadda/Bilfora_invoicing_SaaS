@@ -33,10 +33,11 @@ function formatCurrency(amount: number, large = false) {
     const iconColor = large ? "0f172a" : "94a3b8"; // Primary for large, muted for regular
     const iconDataUri = getSarIconDataUri(iconColor);
 
+    // Icon on LEFT of number (symbol first, then value)
     if (large) {
-        return `<span style="display:inline-flex;align-items:center;gap:6px;direction:ltr;"><span class="total-amount">${val}</span><img src="${iconDataUri}" style="width:${iconSize};height:auto;vertical-align:middle;" alt="SAR"/></span>`;
+        return `<span style="display:inline-flex;align-items:center;gap:6px;direction:ltr;"><img src="${iconDataUri}" style="width:${iconSize};height:auto;vertical-align:middle;" alt="SAR"/><span class="total-amount">${val}</span></span>`;
     }
-    return `<span style="display:inline-flex;align-items:center;gap:4px;direction:ltr;"><span style="font-weight:600;">${val}</span><img src="${iconDataUri}" style="width:${iconSize};height:auto;vertical-align:middle;opacity:0.6;" alt="SAR"/></span>`;
+    return `<span style="display:inline-flex;align-items:center;gap:4px;direction:ltr;"><img src="${iconDataUri}" style="width:${iconSize};height:auto;vertical-align:middle;opacity:0.6;" alt="SAR"/><span style="font-weight:600;">${val}</span></span>`;
 }
 
 

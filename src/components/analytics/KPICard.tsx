@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface KPICardProps {
 	title: string;
-	value: string | number;
+	value: React.ReactNode;
 	icon: LucideIcon;
 	color: "purple" | "blue" | "green" | "pink" | "orange" | "red" | "indigo";
 	trend?: {

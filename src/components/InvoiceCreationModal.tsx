@@ -30,7 +30,6 @@ import {
 } from "@/components/ui";
 import { format } from "date-fns";
 import { layout } from "@/lib/ui/tokens";
-import { formatCurrency } from "@/lib/formatters";
 import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection";
 import { InvoiceDetailsForm } from "@/components/invoice/InvoiceDetailsForm";
 import { InvoiceItemsTable } from "@/components/invoice/InvoiceItemsTable";
@@ -337,14 +336,12 @@ export default function InvoiceCreationModal({
 									onItemChange={handleInvoiceItemChange}
 									onAddItem={addInvoiceItem}
 									onRemoveItem={removeInvoiceItem}
-									formatCurrency={formatCurrency}
 								/>
 
 								<InvoiceSummary
 									items={invoiceFormData.items}
 									taxRate={invoiceFormData.tax_rate || 0}
 									invoiceType={invoiceFormData.invoice_type}
-									formatCurrency={formatCurrency}
 								/>
 							</form>
 						</div>

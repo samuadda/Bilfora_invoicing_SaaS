@@ -6,7 +6,8 @@ import { InvoiceWithClient, InvoiceStatus } from "@/types/database";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { convertToHijri } from "@/lib/dateConvert";
-import { formatCurrency, formatDate } from "@/lib/formatters";
+import { formatDate } from "@/lib/formatters";
+import { Price } from "@/components/ui";
 
 interface RecentInvoicesListProps {
 	invoices: InvoiceWithClient[];
@@ -78,9 +79,7 @@ export default function RecentInvoicesList({
 									</div>
 								</div>
 								<div className="flex items-center gap-3 flex-shrink-0">
-									<span className="text-sm font-bold text-gray-900">
-										{formatCurrency(Number(invoice.total_amount || 0))}
-									</span>
+									<Price amount={Number(invoice.total_amount || 0)} size="sm" className="text-gray-900" />
 									<ArrowLeft
 										size={16}
 										className="text-gray-400 group-hover:text-brand-primary transition-colors"

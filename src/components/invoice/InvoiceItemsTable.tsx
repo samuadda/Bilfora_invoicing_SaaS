@@ -6,6 +6,7 @@ import {
     Heading,
     Button,
     Input,
+    Price,
 } from "@/components/ui";
 import { Combobox } from "@/components/ui/combobox";
 import { layout } from "@/lib/ui/tokens";
@@ -17,7 +18,6 @@ interface InvoiceItemsTableProps {
     onItemChange: (index: number, field: keyof CreateInvoiceItemInput, value: string | number) => void;
     onAddItem: () => void;
     onRemoveItem: (index: number) => void;
-    formatCurrency: (val: number) => string;
 }
 
 export function InvoiceItemsTable({
@@ -26,7 +26,6 @@ export function InvoiceItemsTable({
     onItemChange,
     onAddItem,
     onRemoveItem,
-    formatCurrency,
 }: InvoiceItemsTableProps) {
     return (
         <div className={layout.stack.standard}>
@@ -134,10 +133,12 @@ export function InvoiceItemsTable({
 
                         <div className="col-span-4 md:col-span-3 space-y-1">
                             <label className="text-xs font-medium text-gray-500">الإجمالي</label>
-                            <div className="w-full h-[38px] flex items-center px-3 bg-gray-100 rounded-xl text-sm font-semibold text-gray-700">
-                                {formatCurrency(
-                                    (Number(item.quantity) || 0) * (Number(item.unit_price) || 0)
-                                )}
+                            <div className="w-full h-[38px] flex items-center px-3 bg-gray-100 rounded-xl">
+                                <Price
+                                    amount={(Number(item.quantity) || 0) * (Number(item.unit_price) || 0)}
+                                    size="sm"
+                                    className="text-gray-700"
+                                />
                             </div>
                         </div>
                     </m.div>

@@ -71,10 +71,10 @@ export function Price({
             )}
             style={{ direction: "ltr", unicodeBidi: "isolate" }}
         >
-            <span className="font-semibold tabular-nums">{formattedAmount}</span>
             {showIcon && (
                 <SarIcon className={cn(iconSizeClasses[size], "flex-shrink-0")} />
             )}
+            <span className="font-semibold tabular-nums">{formattedAmount}</span>
         </span>
     );
 }

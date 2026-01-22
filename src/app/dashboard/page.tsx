@@ -15,9 +15,9 @@ import RecentInvoicesList from "@/components/dashboard/RecentInvoicesList";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Heading, Text, Card, Button } from "@/components/ui";
+import { Heading, Text, Card, Button, Price } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { formatCurrency } from "@/lib/formatters";
+
 import { layout } from "@/lib/ui/tokens";
 
 export default function DashboardPage() {
@@ -209,11 +209,11 @@ export default function DashboardPage() {
 									</div>
 									<Text variant="body-small" className="font-medium">متوسط الفاتورة</Text>
 								</div>
-								<Text variant="body-small" className="font-bold">
-									{stats.totalInvoices > 0
-										? formatCurrency(stats.totalInvoiced / stats.totalInvoices)
-										: formatCurrency(0)}
-								</Text>
+								<Price
+									amount={stats.totalInvoices > 0 ? stats.totalInvoiced / stats.totalInvoices : 0}
+									size="sm"
+									className="font-bold"
+								/>
 							</div>
 						</div>
 						{stats.overdueCount > 0 && (
