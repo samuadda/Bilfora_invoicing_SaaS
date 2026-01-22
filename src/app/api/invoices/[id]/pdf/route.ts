@@ -59,7 +59,7 @@ export async function GET(request: NextRequest, props: Props) {
         }
 
         // 3. Generate HTML
-        const html = generateInvoiceHtml(data.invoice, data.client, data.items, fonts);
+        const html = generateInvoiceHtml(data.invoice, data.client, data.items, fonts, data.seller);
 
         // 4. Generate PDF
         const pdfBuffer = await generatePdf(html);

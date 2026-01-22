@@ -34,7 +34,7 @@ export default async function InvoicePreviewPage(props: {
     const data = await getInvoiceForPdf(invoiceId, user.id);
     if (!data) redirect("/404"); // Or return notFound() which typically renders the 404 page
 
-    const { invoice, client, items } = data;
+    const { invoice, client, items, seller } = data;
 
     // Load fonts server-side (same method as route.ts)
     let fonts = undefined;
@@ -47,7 +47,7 @@ export default async function InvoicePreviewPage(props: {
         console.error("Preview: Failed to load fonts", e);
     }
 
-    const html = generateInvoiceHtml(invoice, client, items, fonts);
+    const html = generateInvoiceHtml(invoice, client, items, fonts, seller);
 
     // Optional: overlay debug outlines via a tiny injected style tag.
     const debug = searchParams.debug === "1";
