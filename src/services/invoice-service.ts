@@ -10,6 +10,8 @@ export interface SellerProfile {
     address?: string | null;
     phone?: string | null;
     email?: string | null;
+    iban?: string | null;
+    bank_name?: string | null;
 }
 
 export async function getInvoiceForPdf(invoiceId: string, userId: string) {

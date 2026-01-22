@@ -22,6 +22,9 @@ export { Select } from "./Select";
 export { Card } from "./Card";
 export { Button } from "./Button";
 
+// Data Display
+export { Price } from "./Price";
+
 // Utilities
 export { cn } from "@/lib/utils";
 
