@@ -72,7 +72,15 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-[#7f2dfb]/10 aria-selected:text-[#7f2dfb] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      // Base styles - ensure clickable and visible text
+      "relative flex cursor-pointer pointer-events-auto select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+      // Text color - ensure it's dark and visible
+      "text-gray-900",
+      // Hover and selected states
+      "hover:bg-[#7f2dfb]/10 hover:text-[#7f2dfb]",
+      "aria-selected:bg-[#7f2dfb]/10 aria-selected:text-[#7f2dfb]",
+      // Only disable if explicitly disabled
+      "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
       className
     )}
     {...props}
@@ -127,17 +135,17 @@ export function Combobox({
           className={cn(
             "w-full rounded-xl border border-gray-200 bg-white text-sm px-4 py-2.5 transition-all outline-none flex items-center justify-between text-gray-900 group hover:border-[#7f2dfb]/50",
             "focus:border-[#7f2dfb] focus:ring-2 focus:ring-[#7f2dfb]/20",
-             disabled && "opacity-50 cursor-not-allowed",
+            disabled && "opacity-50 cursor-not-allowed",
             className
           )}
         >
           <span className={cn(!value && "text-gray-500", "truncate flex items-center gap-2")}>
-             {value ? (
-               <>
-                 {selectedOption?.icon && <span className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors">{selectedOption.icon}</span>}
-                 {selectedOption?.label}
-               </>
-             ) : placeholder}
+            {value ? (
+              <>
+                {selectedOption?.icon && <span className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors">{selectedOption.icon}</span>}
+                {selectedOption?.label}
+              </>
+            ) : placeholder}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </button>
@@ -147,7 +155,7 @@ export function Combobox({
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-             {options.map((option) => (
+            {options.map((option) => (
               <CommandItem
                 key={option.value}
                 value={option.label}
