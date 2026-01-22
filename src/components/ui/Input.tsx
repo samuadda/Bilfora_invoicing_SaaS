@@ -34,11 +34,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ? "px-4 py-3 text-base"
           : "";
 
-    // Auto-apply nums-eng for numeric input types
+    // Auto-apply nums-eng for numeric input types (right-aligned for RTL)
     const isNumericType = type && NUMERIC_INPUT_TYPES.includes(type);
-    const numericClass = isNumericType
-      ? (type === "number" ? "nums-eng-center" : "nums-eng")
-      : "";
+    // Use nums-eng (right-aligned) for all numeric types by default
+    // Components can override with nums-eng-center via className if needed
+    const numericClass = isNumericType ? "nums-eng" : "";
 
     return (
       <input

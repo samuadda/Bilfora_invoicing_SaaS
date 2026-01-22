@@ -67,11 +67,11 @@ export function InvoiceDetailsForm({
                             <Button
                                 variant="secondary"
                                 className={cn(
-                                    "w-full justify-start text-left font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none",
+                                    "w-full justify-end text-right font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none flex-row-reverse",
                                     !formData.issue_date && "text-muted-foreground"
                                 )}
                             >
-                                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                                <CalendarIcon className="ml-2 h-4 w-4 text-gray-500" />
                                 {formData.issue_date ? format(parseDate(formData.issue_date)!, "dd/MM/yyyy") : <span>اختر تاريخ</span>}
                             </Button>
                         </PopoverTrigger>
@@ -102,11 +102,11 @@ export function InvoiceDetailsForm({
                             <Button
                                 variant="secondary"
                                 className={cn(
-                                    "w-full justify-start text-left font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none",
+                                    "w-full justify-end text-right font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none flex-row-reverse",
                                     !formData.due_date && "text-muted-foreground"
                                 )}
                             >
-                                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
+                                <CalendarIcon className="ml-2 h-4 w-4 text-gray-500" />
                                 {formData.due_date ? format(parseDate(formData.due_date)!, "dd/MM/yyyy") : <span>اختر تاريخ</span>}
                             </Button>
                         </PopoverTrigger>

@@ -109,7 +109,7 @@ export function InvoiceItemsTable({
                                         parseInt(e.target.value) || 1
                                     )
                                 }
-                                className="text-center"
+                                className="nums-eng-center"
                                 required
                             />
                         </div>

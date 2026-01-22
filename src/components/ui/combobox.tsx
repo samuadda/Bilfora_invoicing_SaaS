@@ -133,13 +133,17 @@ export function Combobox({
           aria-controls="combobox-list"
           disabled={disabled}
           className={cn(
-            "w-full rounded-xl border border-gray-200 bg-white text-sm px-4 py-2.5 transition-all outline-none flex items-center justify-between text-gray-900 group hover:border-[#7f2dfb]/50",
+            // Base styles
+            "w-full rounded-xl border border-gray-200 bg-white text-sm px-4 py-2.5 transition-all outline-none",
+            // RTL alignment: flex-row-reverse puts icon on left, text-right for text alignment
+            "flex items-center justify-between flex-row-reverse text-right",
+            "text-gray-900 group hover:border-[#7f2dfb]/50",
             "focus:border-[#7f2dfb] focus:ring-2 focus:ring-[#7f2dfb]/20",
             disabled && "opacity-50 cursor-not-allowed",
             className
           )}
         >
-          <span className={cn(!value && "text-gray-500", "truncate flex items-center gap-2")}>
+          <span className={cn(!value && "text-gray-500", "truncate flex items-center gap-2 flex-row-reverse")}>
             {value ? (
               <>
                 {selectedOption?.icon && <span className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors">{selectedOption.icon}</span>}
