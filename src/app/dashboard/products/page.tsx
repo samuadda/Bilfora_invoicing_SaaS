@@ -442,11 +442,6 @@ export default function ProductsPage() {
 		}
 	};
 
-	const formatPrice = (price: number) =>
-		new Intl.NumberFormat("en-US", {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2,
-		}).format(price);
 
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString("en-GB");

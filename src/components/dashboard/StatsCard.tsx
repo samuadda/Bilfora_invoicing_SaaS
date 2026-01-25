@@ -5,7 +5,7 @@ import { Card, Text, Heading } from "@/components/ui";
 
 interface StatsCardProps {
     title: string;
-    value: string | number;
+    value: string | number | React.ReactNode;
     icon: LucideIcon;
     trend?: string;
     color: "purple" | "blue" | "green" | "orange" | "red" | "indigo";
