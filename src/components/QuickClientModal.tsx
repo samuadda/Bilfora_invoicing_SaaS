@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText, ChevronDown } from "lucide-react";
+import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Heading, Text } from "@/components/ui";
 import { m, AnimatePresence } from "framer-motion";
 

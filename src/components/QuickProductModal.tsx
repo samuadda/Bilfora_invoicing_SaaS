@@ -23,15 +23,7 @@ export const productSchema = z.object({
 
 export type ProductFormData = z.infer<typeof productSchema>;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// UNIT PRESETS FOR AGENCIES
-// ─────────────────────────────────────────────────────────────────────────────
-const UNIT_PRESETS = [
-	{ value: "ساعة", label: "ساعة (Hour)" },
-	{ value: "يوم", label: "يوم (Day)" },
-	{ value: "مشروع", label: "مشروع (Project)" },
-	{ value: "شهر", label: "شهر (Month)" },
-] as const;
+
 
 interface QuickProductModalProps {
 	isOpen: boolean;
@@ -485,7 +477,7 @@ export default function QuickProductModal({
 															onClick={() => setIsCategoryDropdownOpen(false)} // Just closes, value is already typed
 															className="w-full px-4 py-2 text-sm text-right text-[#7f2dfb] bg-purple-50 font-medium"
 														>
-															إضافة "{form.category}" كفئة جديدة
+															إضافة &quot;{form.category}&quot; كفئة جديدة
 														</button>
 													)
 												)}
