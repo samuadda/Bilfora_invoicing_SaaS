@@ -16,7 +16,8 @@ export { Heading, Text, Label } from "./typography";
 export { Field } from "./Field";
 export { FormRow } from "./FormRow";
 export { Input } from "./Input";
-export { Select } from "./Select";
+// export { Select } from "./Select"; // Deprecated
+export * from "./custom-select";
 
 // Surfaces
 export { Card } from "./Card";

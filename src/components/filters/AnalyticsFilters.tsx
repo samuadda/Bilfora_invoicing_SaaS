@@ -6,6 +6,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { InvoiceStatus } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 
 export interface AnalyticsFilters {
 	customerId: string | "all";
@@ -156,18 +157,22 @@ export default function AnalyticsFiltersComponent({
 									<label className="block text-sm font-medium text-gray-700 mb-2">
 										العميل
 									</label>
-									<select
+									<Select
 										value={filters.customerId}
-										onChange={(e) => updateFilter("customerId", e.target.value)}
-										className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-100 text-sm"
+										onValueChange={(val) => updateFilter("customerId", val)}
 									>
-										<option value="all">جميع العملاء</option>
-										{clients.map((client) => (
-											<option key={client.id} value={client.id}>
-												{client.name}
-											</option>
-										))}
-									</select>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="جميع العملاء" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع العملاء</SelectItem>
+											{clients.map((client) => (
+												<SelectItem key={client.id} value={client.id}>
+													{client.name}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
 
 								{/* Status Filter */}
@@ -175,18 +180,22 @@ export default function AnalyticsFiltersComponent({
 									<label className="block text-sm font-medium text-gray-700 mb-2">
 										حالة الفاتورة
 									</label>
-									<select
+									<Select
 										value={filters.status}
-										onChange={(e) => updateFilter("status", e.target.value)}
-										className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-100 text-sm"
+										onValueChange={(val) => updateFilter("status", val)}
 									>
-										<option value="all">جميع الحالات</option>
-										<option value="paid">مدفوعة</option>
-										<option value="overdue">متأخرة</option>
-										<option value="sent">مرسلة</option>
-										<option value="draft">مسودة</option>
-										<option value="cancelled">ملغية</option>
-									</select>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="جميع الحالات" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع الحالات</SelectItem>
+											<SelectItem value="paid">مدفوعة</SelectItem>
+											<SelectItem value="overdue">متأخرة</SelectItem>
+											<SelectItem value="sent">مرسلة</SelectItem>
+											<SelectItem value="draft">مسودة</SelectItem>
+											<SelectItem value="cancelled">ملغية</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 
 								{/* Amount Range */}
@@ -231,18 +240,22 @@ export default function AnalyticsFiltersComponent({
 									<label className="block text-sm font-medium text-gray-700 mb-2">
 										المنتج / الخدمة
 									</label>
-									<select
+									<Select
 										value={filters.productId}
-										onChange={(e) => updateFilter("productId", e.target.value)}
-										className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-100 text-sm"
+										onValueChange={(val) => updateFilter("productId", val)}
 									>
-										<option value="all">جميع المنتجات</option>
-										{products.map((product) => (
-											<option key={product.id} value={product.id}>
-												{product.name}
-											</option>
-										))}
-									</select>
+										<SelectTrigger className="w-full">
+											<SelectValue placeholder="جميع المنتجات" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع المنتجات</SelectItem>
+											{products.map((product) => (
+												<SelectItem key={product.id} value={product.id}>
+													{product.name}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
 							</div>
 

@@ -2,6 +2,13 @@
 
 import { useMemo, useRef, useState } from "react";
 import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem
+} from "@/components/ui";
+import {
 	Mail,
 	MessageSquare,
 	Bell,
@@ -321,16 +328,19 @@ export default function NotificationsPage() {
 					<div className="space-y-2">
 						<label className="text-sm font-bold text-gray-700 block">تكرار التنبيهات</label>
 						<div className="relative">
-							<select
+							<Select
 								value={state.frequency}
-								onChange={(e) => setState((s) => ({ ...s, frequency: e.target.value as Frequency }))}
-								className="w-full appearance-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+								onValueChange={(val) => setState((s) => ({ ...s, frequency: val as Frequency }))}
 							>
-								<option value="immediate">فوري (ينصح به)</option>
-								<option value="daily">ملخص يومي</option>
-								<option value="weekly">ملخص أسبوعي</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="immediate">فوري (ينصح به)</SelectItem>
+									<SelectItem value="daily">ملخص يومي</SelectItem>
+									<SelectItem value="weekly">ملخص أسبوعي</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 

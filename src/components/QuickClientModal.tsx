@@ -7,6 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText, ChevronDown } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 import { m, AnimatePresence } from "framer-motion";
 
 // ── ZATCA Tax Number Validation ─────────────────────────────────────────────
@@ -98,6 +99,7 @@ export default function QuickClientModal({
 		register,
 		handleSubmit,
 		watch,
+		setValue,
 		reset,
 		formState: { errors },
 	} = useForm<ClientFormData>({
@@ -311,17 +313,21 @@ export default function QuickClientModal({
 								<div className="flex gap-2">
 									{/* Country Code Selector */}
 									<div className="relative w-32 shrink-0">
-										<select
-											{...register("phone_prefix")}
-											className={`${inputBaseClasses} ${inputNormalClasses} appearance-none pr-3 pl-8 cursor-pointer`}
+										<Select
+											value={watch("phone_prefix")}
+											onValueChange={(val) => setValue("phone_prefix", val)}
 										>
-											{COUNTRY_CODES.map((c) => (
-												<option key={c.code} value={c.code}>
-													{c.flag} {c.code}
-												</option>
-											))}
-										</select>
-										<ChevronDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+											<SelectTrigger className="w-full h-[42px] px-3">
+												<SelectValue placeholder="+966" />
+											</SelectTrigger>
+											<SelectContent>
+												{COUNTRY_CODES.map((c) => (
+													<SelectItem key={c.code} value={c.code}>
+														{c.flag} {c.code}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
 									</div>
 									{/* Phone Number */}
 									<div className="relative flex-1">

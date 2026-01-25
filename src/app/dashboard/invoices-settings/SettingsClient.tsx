@@ -23,6 +23,7 @@ import { m } from "framer-motion";
 import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 
 interface SettingsClientProps {
 	initialSettings: InvoiceSettings | null;
@@ -36,10 +37,10 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 	const [prefix, setPrefix] = useState(initialSettings?.numbering_prefix ?? "INV-");
 	const [nextNumber] = useState(101); // Not in schema currently? We'll ignore for now or add to schema if needed. Schema has 'numbering_prefix' only.
 	// Note: 'next_invoice_number' might be in a sequence table, not settings. We'll disable this field or just keep it UI only for now if not in schema.
-	
+
 	const [dueDays, setDueDays] = useState(30); // Not in schema?
 	// Schema has: vat_rate, currency, timezone, etc.
-	
+
 	// Map schema fields to state
 	const [vatNumber, setVatNumber] = useState(initialSettings?.vat_number ?? "");
 	const [crNumber, setCrNumber] = useState(initialSettings?.cr_number ?? "");
@@ -47,10 +48,10 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 	const [addressLine, setAddressLine] = useState(initialSettings?.address_line1 ?? "");
 	const [city, setCity] = useState(initialSettings?.city ?? "");
 	const [sellerName, setSellerName] = useState(initialSettings?.seller_name ?? "");
-	
+
 	const [iban, setIban] = useState(initialSettings?.iban ?? "");
 	const [footerNote, setFooterNote] = useState(initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا");
-	
+
 	// Format tax rate: 0.15 -> 15
 	const [taxRate, setTaxRate] = useState(
 		initialSettings?.default_vat_rate ? initialSettings.default_vat_rate * 100 : 15
@@ -401,16 +402,19 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
 								size={18}
 							/>
-							<select
+							<Select
 								value={template}
-								onChange={(e) => setTemplate(e.target.value as "classic" | "compact" | "modern")}
-								className="w-full appearance-none rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm"
+								onValueChange={(val) => setTemplate(val as "classic" | "compact" | "modern")}
 							>
-								<option value="classic">كلاسيكي</option>
-								<option value="compact">مضغوط</option>
-								<option value="modern">عصري</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full h-11">
+									<SelectValue placeholder="اختر القالب" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="classic">كلاسيكي</SelectItem>
+									<SelectItem value="compact">مضغوط</SelectItem>
+									<SelectItem value="modern">عصري</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -475,7 +479,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 					</div>
 				</div>
 				<div className="flex justify-end mt-8">
-					<button 
+					<button
 						onClick={handleSave}
 						disabled={isLoading}
 						className="px-8 py-3 rounded-xl bg-[#7f2dfb] text-white text-base font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"

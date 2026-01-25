@@ -17,6 +17,7 @@ import {
 	DialogDescription,
 } from "@/components/dialog";
 import { Eye, EyeClosed, ArrowLeft, Check, Smartphone, Laptop, ChevronDown } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 
 const Form = () => {
 	const [formData, setFormData] = useState({
@@ -348,18 +349,17 @@ const Form = () => {
 										)}
 									</button>
 								</div>
-								
+
 								{formData.password && (
 									<div className="mt-2 flex items-center gap-2">
 										<div className="flex gap-1 flex-1">
 											{[1, 2, 3, 4].map((level) => (
 												<div
 													key={level}
-													className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
-														level <= passwordStrength.strength
+													className={`h-1 flex-1 rounded-full transition-colors duration-300 ${level <= passwordStrength.strength
 															? passwordStrength.color
 															: "bg-gray-200"
-													}`}
+														}`}
 												/>
 											))}
 										</div>
@@ -381,18 +381,23 @@ const Form = () => {
 									نوع الحساب
 								</label>
 								<div className="relative">
-									<select
-										name="gender"
-										id="gender"
+									<Select
 										value={formData.gender}
-										onChange={handleChange}
-										className="block w-full appearance-none rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6"
+										onValueChange={(val) => {
+											setFormData(prev => ({ ...prev, gender: val }));
+											setErrors(prev => ({ ...prev, gender: "" }));
+											setGeneralError("");
+										}}
 									>
-										<option value="male">فرد (ذكر)</option>
-										<option value="female">فرد (أنثى)</option>
-										<option value="institute">منشأة / شركة</option>
-									</select>
-									<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+										<SelectTrigger className="w-full h-[46px] rounded-xl border-gray-300 focus:ring-[#7f2dfb]">
+											<SelectValue placeholder="اختر الجنس" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="male">فرد (ذكر)</SelectItem>
+											<SelectItem value="female">فرد (أنثى)</SelectItem>
+											<SelectItem value="institute">منشأة / شركة</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 							</div>
 						</div>
@@ -439,7 +444,7 @@ const Form = () => {
 
 				<div className="relative z-10 w-full max-w-lg">
 					<div className="grid grid-cols-2 gap-4 mb-8">
-						<m.div 
+						<m.div
 							initial={{ opacity: 0, x: -20 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ delay: 0.2 }}
@@ -451,7 +456,7 @@ const Form = () => {
 							<h3 className="text-white font-bold mb-1">تطبيق جوال</h3>
 							<p className="text-white/60 text-sm">أدر فواتيرك من أي مكان وفي أي وقت.</p>
 						</m.div>
-						<m.div 
+						<m.div
 							initial={{ opacity: 0, x: 20 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ delay: 0.3 }}
@@ -464,7 +469,7 @@ const Form = () => {
 							<p className="text-white/60 text-sm">تقارير وتحليلات متقدمة لنمو أعمالك.</p>
 						</m.div>
 					</div>
-					
+
 					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}

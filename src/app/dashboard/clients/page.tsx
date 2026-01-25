@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 // ExcelJS is dynamically imported in exportClients to reduce bundle size
-import { Heading, Text, Card, Button as UIButton } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import QuickClientModal from "@/components/QuickClientModal";
 
@@ -641,19 +641,22 @@ export default function ClientsPage() {
 					</div>
 					<div className="flex items-center gap-3 w-full lg:w-auto">
 						<div className="relative flex-1 lg:flex-none min-w-[180px]">
-							<select
+							<Select
 								value={statusFilter}
-								onChange={(e) => setStatusFilter(e.target.value as AdvancedFilter)}
-								className="w-full appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 text-sm pr-10"
+								onValueChange={(val) => setStatusFilter(val as AdvancedFilter)}
 							>
-								<option value="all">جميع الحالات</option>
-								<option value="active-only">نشط فقط</option>
-								<option value="inactive-only">غير نشط</option>
-								<option value="has-overdue">لديه فواتير متأخرة</option>
-								<option value="no-invoices">لم تصدر له فواتير بعد</option>
-								<option value="new-clients">عملاء جدد (آخر 30 يوم)</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="جميع الحالات" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">جميع الحالات</SelectItem>
+									<SelectItem value="active-only">نشط فقط</SelectItem>
+									<SelectItem value="inactive-only">غير نشط</SelectItem>
+									<SelectItem value="has-overdue">لديه فواتير متأخرة</SelectItem>
+									<SelectItem value="no-invoices">لم تصدر له فواتير بعد</SelectItem>
+									<SelectItem value="new-clients">عملاء جدد (آخر 30 يوم)</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 						<button
 							type="button"
@@ -814,19 +817,23 @@ export default function ClientsPage() {
 					<div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/30">
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-gray-600">عدد العناصر في الصفحة:</span>
-							<select
-								value={pageSize}
-								onChange={(e) => {
-									setPageSize(Number(e.target.value));
+							<Select
+								value={String(pageSize)}
+								onValueChange={(val) => {
+									setPageSize(Number(val));
 									setCurrentPage(1);
 								}}
-								className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100"
 							>
-								<option value={10}>10</option>
-								<option value={20}>20</option>
-								<option value={25}>25</option>
-								<option value={50}>50</option>
-							</select>
+								<SelectTrigger className="w-[70px] h-8">
+									<SelectValue placeholder={String(pageSize)} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="10">10</SelectItem>
+									<SelectItem value="20">20</SelectItem>
+									<SelectItem value="25">25</SelectItem>
+									<SelectItem value="50">50</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 						<div className="flex items-center gap-2">
 							<button

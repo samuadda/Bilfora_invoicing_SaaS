@@ -23,6 +23,7 @@ import {
 	OrderStatus,
 	Client,
 } from "@/types/database";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 
 const statusConfig = {
 	pending: {
@@ -616,38 +617,42 @@ export default function OrdersPage() {
 
 						{showFilters && (
 							<>
-								<select
-									value={statusFilter}
-									onChange={(e) =>
-										setStatusFilter(
-											e.target.value as
-											| OrderStatus
-											| "all"
-										)
-									}
-									className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
-								>
-									<option value="all">جميع الحالات</option>
-									<option value="pending">معلق</option>
-									<option value="processing">
-										قيد المعالجة
-									</option>
-									<option value="completed">مكتمل</option>
-									<option value="cancelled">ملغي</option>
-								</select>
+								<div className="w-48">
+									<Select
+										value={statusFilter}
+										onValueChange={(val) =>
+											setStatusFilter(val as OrderStatus | "all")
+										}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="جميع الحالات" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع الحالات</SelectItem>
+											<SelectItem value="pending">معلق</SelectItem>
+											<SelectItem value="processing">قيد المعالجة</SelectItem>
+											<SelectItem value="completed">مكتمل</SelectItem>
+											<SelectItem value="cancelled">ملغي</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
 
-								<select
-									value={dateFilter}
-									onChange={(e) =>
-										setDateFilter(e.target.value)
-									}
-									className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200"
-								>
-									<option value="all">جميع التواريخ</option>
-									<option value="today">اليوم</option>
-									<option value="week">آخر أسبوع</option>
-									<option value="month">آخر شهر</option>
-								</select>
+								<div className="w-48">
+									<Select
+										value={dateFilter}
+										onValueChange={(val) => setDateFilter(val)}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="جميع التواريخ" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع التواريخ</SelectItem>
+											<SelectItem value="today">اليوم</SelectItem>
+											<SelectItem value="week">آخر أسبوع</SelectItem>
+											<SelectItem value="month">آخر شهر</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
 							</>
 						)}
 					</div>
@@ -807,18 +812,22 @@ export default function OrdersPage() {
 					<div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/30">
 						<div className="flex items-center gap-2">
 							<span className="text-sm text-gray-600">عدد العناصر في الصفحة:</span>
-							<select
-								value={pageSize}
-								onChange={(e) => {
-									setPageSize(Number(e.target.value));
+							<Select
+								value={String(pageSize)}
+								onValueChange={(val) => {
+									setPageSize(Number(val));
 									setCurrentPage(1);
 								}}
-								className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100"
 							>
-								<option value={10}>10</option>
-								<option value={25}>25</option>
-								<option value={50}>50</option>
-							</select>
+								<SelectTrigger className="w-[70px] h-8">
+									<SelectValue placeholder={String(pageSize)} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="10">10</SelectItem>
+									<SelectItem value="25">25</SelectItem>
+									<SelectItem value="50">50</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 						<div className="flex items-center gap-2">
 							<button

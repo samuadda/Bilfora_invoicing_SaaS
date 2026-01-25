@@ -37,7 +37,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
-import { Heading, Text, Card, Button as UIButton, Price } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 
 type SortOption = "newest" | "oldest" | "price-high" | "price-low";
@@ -600,75 +600,85 @@ export default function ProductsPage() {
 						<div className="flex flex-wrap gap-3">
 							{/* Status Filter */}
 							<div className="relative">
-								<select
+								<Select
 									value={statusFilter}
-									onChange={(e) =>
-										setStatusFilter(
-											e.target.value as "all" | ProductStatus
-										)
+									onValueChange={(val) =>
+										setStatusFilter(val as "all" | ProductStatus)
 									}
-									className="appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 text-sm pr-10 min-w-[140px]"
 								>
-									<option value="all">جميع الحالات</option>
-									<option value="active">نشط</option>
-									<option value="inactive">معطّل</option>
-								</select>
-								<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+									<SelectTrigger className="w-[140px]">
+										<SelectValue placeholder="الحالة" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="all">جميع الحالات</SelectItem>
+										<SelectItem value="active">نشط</SelectItem>
+										<SelectItem value="inactive">معطّل</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
 
 							{/* Category Filter */}
 							{categories.length > 0 && (
 								<div className="relative">
-									<select
+									<Select
 										value={categoryFilter}
-										onChange={(e) => setCategoryFilter(e.target.value)}
-										className="appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 text-sm pr-10 min-w-[140px]"
+										onValueChange={(val) => setCategoryFilter(val)}
 									>
-										<option value="all">جميع الفئات</option>
-										{categories.map((cat) => (
-											<option key={cat} value={cat}>
-												{cat}
-											</option>
-										))}
-									</select>
-									<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+										<SelectTrigger className="w-[140px]">
+											<SelectValue placeholder="الفئة" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع الفئات</SelectItem>
+											{categories.map((cat) => (
+												<SelectItem key={cat} value={cat}>
+													{cat}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
 							)}
 
 							{/* Unit Filter */}
 							{units.length > 0 && (
 								<div className="relative">
-									<select
+									<Select
 										value={unitFilter}
-										onChange={(e) => setUnitFilter(e.target.value)}
-										className="appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 text-sm pr-10 min-w-[140px]"
+										onValueChange={(val) => setUnitFilter(val)}
 									>
-										<option value="all">جميع الوحدات</option>
-										{units.map((unit) => (
-											<option key={unit} value={unit}>
-												{unit}
-											</option>
-										))}
-									</select>
-									<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+										<SelectTrigger className="w-[140px]">
+											<SelectValue placeholder="الوحدة" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="all">جميع الوحدات</SelectItem>
+											{units.map((unit) => (
+												<SelectItem key={unit} value={unit}>
+													{unit}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
 								</div>
 							)}
 
 							{/* Sort */}
 							<div className="relative">
-								<select
+								<Select
 									value={sortOption}
-									onChange={(e) =>
-										setSortOption(e.target.value as SortOption)
+									onValueChange={(val) =>
+										setSortOption(val as SortOption)
 									}
-									className="appearance-none px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 text-sm pr-10 min-w-[160px]"
 								>
-									<option value="newest">الأحدث أولاً</option>
-									<option value="oldest">الأقدم أولاً</option>
-									<option value="price-high">الأعلى سعراً</option>
-									<option value="price-low">الأقل سعراً</option>
-								</select>
-								<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+									<SelectTrigger className="w-[160px]">
+										<SelectValue placeholder="ترتيب حسب" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="newest">الأحدث أولاً</SelectItem>
+										<SelectItem value="oldest">الأقدم أولاً</SelectItem>
+										<SelectItem value="price-high">الأعلى سعراً</SelectItem>
+										<SelectItem value="price-low">الأقل سعراً</SelectItem>
+									</SelectContent>
+								</Select>
 							</div>
 						</div>
 					</div>
@@ -880,18 +890,22 @@ export default function ProductsPage() {
 							<div className="p-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50/30">
 								<div className="flex items-center gap-2">
 									<span className="text-sm text-gray-600">عدد العناصر في الصفحة:</span>
-									<select
-										value={pageSize}
-										onChange={(e) => {
-											setPageSize(Number(e.target.value));
+									<Select
+										value={String(pageSize)}
+										onValueChange={(val) => {
+											setPageSize(Number(val));
 											setCurrentPage(1);
 										}}
-										className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100"
 									>
-										<option value={10}>10</option>
-										<option value={25}>25</option>
-										<option value={50}>50</option>
-									</select>
+										<SelectTrigger className="w-[70px] h-8">
+											<SelectValue placeholder={String(pageSize)} />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="10">10</SelectItem>
+											<SelectItem value="25">25</SelectItem>
+											<SelectItem value="50">50</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 								<div className="flex items-center gap-2">
 									<button

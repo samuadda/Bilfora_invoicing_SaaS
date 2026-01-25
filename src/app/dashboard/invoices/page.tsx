@@ -42,7 +42,7 @@ import { getInvoiceTypeLabel } from "@/lib/invoiceTypeLabels";
 import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text, Card, Button, Input, Select, Price } from "@/components/ui";
+import { Heading, Text, Card, Button, Input, Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Price } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
 import { formatDate } from "@/lib/formatters";
 import { Pagination } from "@/components/ui/pagination";
@@ -677,82 +677,103 @@ function InvoicesContent() {
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={statusFilter}
-								onChange={(e) =>
+								onValueChange={(val) =>
 									setStatusFilter(
-										e.target.value as InvoiceStatus | "all"
+										val as InvoiceStatus | "all"
 									)
 								}
 							>
-								<option value="all">جميع الحالات</option>
-								<option value="draft">مسودة</option>
-								<option value="sent">مرسلة</option>
-								<option value="paid">مدفوعة</option>
-								<option value="cancelled">ملغية</option>
-								<option value="overdue">متأخرة</option>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="جميع الحالات" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">جميع الحالات</SelectItem>
+									<SelectItem value="draft">مسودة</SelectItem>
+									<SelectItem value="sent">مرسلة</SelectItem>
+									<SelectItem value="paid">مدفوعة</SelectItem>
+									<SelectItem value="cancelled">ملغية</SelectItem>
+									<SelectItem value="overdue">متأخرة</SelectItem>
+								</SelectContent>
 							</Select>
 						</div>
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={documentKindFilter}
-								onChange={(e) =>
+								onValueChange={(val) =>
 									setDocumentKindFilter(
-										e.target.value as
+										val as
 										| "all"
 										| "invoice"
 										| "credit_note"
 									)
 								}
 							>
-								<option value="all">الكل</option>
-								<option value="invoice">فواتير</option>
-								<option value="credit_note">
-									إشعارات دائنة
-								</option>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="النوع" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">الكل</SelectItem>
+									<SelectItem value="invoice">فواتير</SelectItem>
+									<SelectItem value="credit_note">إشعارات دائنة</SelectItem>
+								</SelectContent>
 							</Select>
 						</div>
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={dateFilter}
-								onChange={(e) => setDateFilter(e.target.value as "all" | "today" | "week" | "month")}
+								onValueChange={(val) => setDateFilter(val as "all" | "today" | "week" | "month")}
 							>
-								<option value="all">كل الوقت</option>
-								<option value="today">اليوم</option>
-								<option value="week">هذا الأسبوع</option>
-								<option value="month">هذا الشهر</option>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="الوقت" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">كل الوقت</SelectItem>
+									<SelectItem value="today">اليوم</SelectItem>
+									<SelectItem value="week">هذا الأسبوع</SelectItem>
+									<SelectItem value="month">هذا الشهر</SelectItem>
+								</SelectContent>
 							</Select>
 						</div>
 						{clientsData.length > 0 && (
 							<div className="relative flex-1 lg:flex-none min-w-[140px]">
 								<Select
 									value={clientFilter}
-									onChange={(e) =>
-										setClientFilter(e.target.value)
+									onValueChange={(val) =>
+										setClientFilter(val)
 									}
 								>
-									<option value="all">كل العملاء</option>
-									{clientsData.map((client) => (
-										<option key={client.id} value={client.name}>
-											{client.name}
-										</option>
-									))}
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="العميل" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="all">كل العملاء</SelectItem>
+										{clientsData.map((client) => (
+											<SelectItem key={client.id} value={client.id}>
+												{client.name}
+											</SelectItem>
+										))}
+									</SelectContent>
 								</Select>
 							</div>
 						)}
 						<div className="relative flex-1 lg:flex-none min-w-[140px]">
 							<Select
 								value={amountFilter}
-								onChange={(e) =>
+								onValueChange={(val) =>
 									setAmountFilter(
-										e.target.value as AmountFilter
+										val as AmountFilter
 									)
 								}
 							>
-								<option value="all">كل المبالغ</option>
-								<option value="under-1000">أقل من 1,000</option>
-								<option value="1000-5000">
-									من 1,000 إلى 5,000
-								</option>
-								<option value="over-5000">أكثر من 5,000</option>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="المبلغ" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">كل المبالغ</SelectItem>
+									<SelectItem value="under-1000">أقل من 1,000</SelectItem>
+									<SelectItem value="1000-5000">من 1,000 إلى 5,000</SelectItem>
+									<SelectItem value="over-5000">أكثر من 5,000</SelectItem>
+								</SelectContent>
 							</Select>
 						</div>
 						<Button
@@ -1153,18 +1174,22 @@ function InvoicesContent() {
 							<span className="text-sm text-gray-600">
 								عدد العناصر في الصفحة:
 							</span>
-							<select
-								value={pageSize}
-								onChange={(e) => {
-									setPageSize(Number(e.target.value));
+							<Select
+								value={String(pageSize)}
+								onValueChange={(val) => {
+									setPageSize(Number(val));
 									setCurrentPage(1);
 								}}
-								className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100"
 							>
-								<option value={10}>10</option>
-								<option value={25}>25</option>
-								<option value={50}>50</option>
-							</select>
+								<SelectTrigger className="w-[70px] h-8">
+									<SelectValue placeholder={String(pageSize)} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="10">10</SelectItem>
+									<SelectItem value="25">25</SelectItem>
+									<SelectItem value="50">50</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 						<div className="flex items-center gap-2">
 							<button

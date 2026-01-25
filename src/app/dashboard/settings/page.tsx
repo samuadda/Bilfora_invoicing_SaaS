@@ -18,7 +18,7 @@ import {
 	ChevronDown
 } from "lucide-react";
 import { m } from "framer-motion";
-import { Heading } from "@/components/ui";
+import { Heading, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 
 interface InvoiceItem {
 	id: string;
@@ -260,23 +260,19 @@ export default function SettingsPage() {
 						تكرار الإشعارات
 					</label>
 					<div className="relative w-full md:w-64">
-						<select
+						<Select
 							value={frequency}
-							onChange={(e) =>
-								setFrequency(
-									e.target.value as
-									| "immediate"
-									| "daily"
-									| "weekly"
-								)
-							}
-							className="w-full appearance-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+							onValueChange={(val) => setFrequency(val as "immediate" | "daily" | "weekly")}
 						>
-							<option value="immediate">فوري</option>
-							<option value="daily">ملخص يومي</option>
-							<option value="weekly">ملخص أسبوعي</option>
-						</select>
-						<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="immediate">فوري</SelectItem>
+								<SelectItem value="daily">ملخص يومي</SelectItem>
+								<SelectItem value="weekly">ملخص أسبوعي</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 			</m.div>
@@ -302,15 +298,18 @@ export default function SettingsPage() {
 								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
 								size={18}
 							/>
-							<select
+							<Select
 								value={language}
-								onChange={(e) => setLanguage(e.target.value)}
-								className="w-full appearance-none rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+								onValueChange={(val) => setLanguage(val)}
 							>
-								<option value="ar">العربية</option>
-								<option value="en">English</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="ar">العربية</SelectItem>
+									<SelectItem value="en">English</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -322,16 +321,19 @@ export default function SettingsPage() {
 								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
 								size={18}
 							/>
-							<select
+							<Select
 								value={currency}
-								onChange={(e) => setCurrency(e.target.value)}
-								className="w-full appearance-none rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+								onValueChange={(val) => setCurrency(val)}
 							>
-								<option value="SAR">SAR</option>
-								<option value="USD">USD</option>
-								<option value="EUR">EUR</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="SAR">SAR</SelectItem>
+									<SelectItem value="USD">USD</SelectItem>
+									<SelectItem value="EUR">EUR</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 					<div className="space-y-2">
@@ -343,16 +345,19 @@ export default function SettingsPage() {
 								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
 								size={18}
 							/>
-							<select
+							<Select
 								value={timezone}
-								onChange={(e) => setTimezone(e.target.value)}
-								className="w-full appearance-none rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+								onValueChange={(val) => setTimezone(val)}
 							>
-								<option value="auto">تلقائي</option>
-								<option value="Asia/Riyadh">Asia/Riyadh</option>
-								<option value="UTC">UTC</option>
-							</select>
-							<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="auto">تلقائي</SelectItem>
+									<SelectItem value="Asia/Riyadh">Asia/Riyadh</SelectItem>
+									<SelectItem value="UTC">UTC</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 				</div>
