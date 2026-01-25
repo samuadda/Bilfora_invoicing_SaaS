@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { User, Phone, Mail, Loader2, Building2 } from "lucide-react";
-import { m } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
     Heading,
     Card,
@@ -16,6 +16,7 @@ import { layout } from "@/lib/ui/tokens";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/types/database";
 import { supabase } from "@/lib/supabase";
+import { clientSchema } from "@/lib/schemas/client";
 
 interface InvoiceClientSectionProps {
     clients: Client[];
@@ -33,13 +34,18 @@ export function InvoiceClientSection({
     const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
     const [savingCustomer, setSavingCustomer] = useState(false);
     const [newCustomerError, setNewCustomerError] = useState<string | null>(null);
+
+    // Form State
+    const [clientType, setClientType] = useState<"individual" | "organization">("individual");
     const [newCustomerData, setNewCustomerData] = useState({
         name: "",
         email: "",
         phone: "",
-        company_name: "",
         tax_number: "",
+        address: "",
     });
+
+    const isOrganization = clientType === "organization";
 
     const toggleNewCustomerForm = () => {
         setShowNewCustomerForm(!showNewCustomerForm);
@@ -48,14 +54,17 @@ export function InvoiceClientSection({
                 name: "",
                 email: "",
                 phone: "",
-                company_name: "",
                 tax_number: "",
+                address: "",
             });
+            setClientType("individual");
             setNewCustomerError(null);
         }
     };
 
-    const handleNewCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNewCustomerChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setNewCustomerData((prev) => ({
             ...prev,
@@ -68,31 +77,55 @@ export function InvoiceClientSection({
             setSavingCustomer(true);
             setNewCustomerError(null);
 
+            // Validation using Zod Schema
+            // Construct the object to match the schema
+            const clientPayload = {
+                client_type: clientType,
+                name: newCustomerData.name,
+                phone: newCustomerData.phone,
+                email: newCustomerData.email || undefined, // Zod optional expects undefined or missing, but empty string handled by .or(z.literal("")) in schema if set up that way.
+                // My schema: email: z.string().email().optional().or(z.literal(""))
+                // So empty string is fine.
+                tax_number: newCustomerData.tax_number,
+                address: newCustomerData.address,
+            };
+
+            const result = clientSchema.safeParse(clientPayload);
+
+            if (!result.success) {
+                const firstError = result.error.issues[0]?.message;
+                setNewCustomerError(firstError || "يرجى التحقق من البيانات المدخلة");
+                return;
+            }
+
             const {
                 data: { user },
             } = await supabase.auth.getUser();
             if (!user) return;
 
-            if (!newCustomerData.name?.trim()) {
-                setNewCustomerError("اسم العميل مطلوب");
-                return;
-            }
-            if (!newCustomerData.phone?.trim()) {
-                setNewCustomerError("رقم الجوال مطلوب");
-                return;
-            }
+            // Prepare DB Payload
+            const dbPayload = {
+                user_id: user.id,
+                name: newCustomerData.name.trim(),
+                email: newCustomerData.email?.trim() || null,
+                phone: newCustomerData.phone?.trim() || null,
+                // If organization, company_name is the name. If individual, company_name is null usually,
+                // BUT the previous code mapped company_name field.
+                // QuickClientModal logic: company_name: isOrganization ? data.name : null
+                company_name: isOrganization ? newCustomerData.name.trim() : null,
+                tax_number: isOrganization && newCustomerData.tax_number ? newCustomerData.tax_number.trim() : null,
+                address: isOrganization ? newCustomerData.address.trim() : (newCustomerData.address?.trim() || null),
+                // City is not separated in this inline form, so we leave it null or try to extract?
+                // Request said "Make the Address <textarea>...". Inline form won't have city field.
+                // QuickClientModal sets city separately. Here we might skip it or just put everything in address.
+                // DB has 'address' column text. 'city' column text.
+                // I will leave city null for inline creation as it's not explicitly asked and simplifies UI.
+                status: "active",
+            };
 
             const { data: customerData, error: customerError } = await supabase
                 .from("clients")
-                .insert({
-                    user_id: user.id,
-                    name: newCustomerData.name.trim(),
-                    email: newCustomerData.email?.trim() || null,
-                    phone: newCustomerData.phone.trim(),
-                    company_name: newCustomerData.company_name?.trim() || null,
-                    tax_number: newCustomerData.tax_number?.trim() || null,
-                    status: "active",
-                })
+                .insert(dbPayload)
                 .select()
                 .single();
 
@@ -104,8 +137,6 @@ export function InvoiceClientSection({
 
             onClientCreated(customerData);
             setShowNewCustomerForm(false);
-
-            // Select the new client
             onClientChange(customerData.id);
 
         } catch (err) {
@@ -157,84 +188,137 @@ export function InvoiceClientSection({
                 >
                     <Card padding="standard">
                         {newCustomerError && (
-                            <div className="mb-4 text-sm text-red-600 font-medium">
+                            <div className="mb-4 text-sm text-red-600 font-medium bg-red-50 p-3 rounded-lg flex items-center gap-2">
+                                <span className="block w-1.5 h-1.5 rounded-full bg-red-600" />
                                 {newCustomerError}
                             </div>
                         )}
-                        <FormRow columns={2} gap="standard">
-                            <Field label="الاسم الكامل" required>
+
+                        {/* Client Type Toggle */}
+                        <div className="bg-gray-100 p-1 rounded-xl flex mb-4">
+                            <button
+                                type="button"
+                                onClick={() => setClientType("individual")}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all text-sm font-medium",
+                                    !isOrganization
+                                        ? "bg-white shadow-sm text-[#7f2dfb]"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <User size={16} />
+                                أفراد
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setClientType("organization")}
+                                className={cn(
+                                    "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all text-sm font-medium",
+                                    isOrganization
+                                        ? "bg-white shadow-sm text-[#7f2dfb]"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <Building2 size={16} />
+                                شركات (مؤسسات)
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            {/* Name Field */}
+                            <Field
+                                label={isOrganization ? "اسم المنشأة" : "الاسم الكامل"}
+                                required
+                            >
                                 <Input
                                     name="name"
                                     value={newCustomerData.name}
                                     onChange={handleNewCustomerChange}
-                                    placeholder="مثال: محمد السعدي"
-                                    required
+                                    placeholder={isOrganization ? "مثال: شركة الصفوة" : "مثال: عبدالله محمد"}
                                 />
                             </Field>
-                            <Field label="رقم الجوال" required>
-                                <div className="relative">
-                                    <Phone
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                        size={16}
-                                    />
-                                    <Input
-                                        name="phone"
-                                        value={newCustomerData.phone}
-                                        onChange={handleNewCustomerChange}
-                                        className="pr-9"
-                                        placeholder="05xxxxxxxx"
-                                        dir="ltr"
-                                        required
-                                    />
-                                </div>
-                            </Field>
-                        </FormRow>
 
-                        <Field label="البريد الإلكتروني" description="(اختياري)">
-                            <div className="relative">
-                                <Mail
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                                    size={16}
-                                />
-                                <Input
-                                    name="email"
-                                    type="email"
-                                    value={newCustomerData.email}
-                                    onChange={handleNewCustomerChange}
-                                    className="pr-9"
-                                    placeholder="example@domain.com"
-                                    dir="ltr"
-                                />
+                            {/* Contact Grid (50/50) */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <Field label="رقم الجوال" description="(اختياري)">
+                                    <div className="relative">
+                                        <Phone
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                            size={16}
+                                        />
+                                        <Input
+                                            name="phone"
+                                            value={newCustomerData.phone}
+                                            onChange={handleNewCustomerChange}
+                                            className="pr-9"
+                                            placeholder="05xxxxxxxx"
+                                            dir="ltr"
+                                        />
+                                    </div>
+                                </Field>
+                                <Field label="البريد الإلكتروني" description="(اختياري)">
+                                    <div className="relative">
+                                        <Mail
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                            size={16}
+                                        />
+                                        <Input
+                                            name="email"
+                                            type="email"
+                                            value={newCustomerData.email}
+                                            onChange={handleNewCustomerChange}
+                                            className="pr-9"
+                                            placeholder="mail@ex.com"
+                                            dir="ltr"
+                                        />
+                                    </div>
+                                </Field>
                             </div>
-                        </Field>
 
-                        <FormRow columns={2} gap="standard">
-                            <Field label="اسم الشركة" description="(اختياري)">
-                                <Input
-                                    name="company_name"
-                                    value={newCustomerData.company_name}
-                                    onChange={handleNewCustomerChange}
-                                    placeholder="مثال: شركة الريّان"
-                                />
-                            </Field>
-                            <Field label="الرقم الضريبي" description="(اختياري)">
-                                <Input
-                                    name="tax_number"
-                                    value={newCustomerData.tax_number}
-                                    onChange={handleNewCustomerChange}
-                                    placeholder="مثال: 310xxxxxxx"
-                                    dir="ltr"
-                                />
-                            </Field>
-                        </FormRow>
+                            {/* Organization Only Fields */}
+                            <AnimatePresence>
+                                {isOrganization && (
+                                    <m.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-4 overflow-hidden"
+                                    >
+                                        <Field label="العنوان الوطني" required>
+                                            <textarea
+                                                name="address"
+                                                rows={2}
+                                                value={newCustomerData.address}
+                                                onChange={handleNewCustomerChange}
+                                                className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-4 focus:ring-purple-100 transition-all text-sm resize-none"
+                                                placeholder="المدينة، الحي، الشارع..."
+                                            />
+                                        </Field>
 
-                        <div className="flex justify-end pt-2">
+                                        <Field label="الرقم الضريبي" required>
+                                            <Input
+                                                name="tax_number"
+                                                value={newCustomerData.tax_number}
+                                                onChange={handleNewCustomerChange}
+                                                placeholder="3xxxxxxxxxxxxxx3"
+                                                dir="ltr"
+                                                maxLength={15}
+                                            />
+                                            <p className="text-[10px] text-gray-400 mt-1">يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3</p>
+                                        </Field>
+                                    </m.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className="flex justify-end pt-4 border-t border-gray-50 mt-4">
                             <Button
                                 type="button"
                                 variant="primary"
                                 size="md"
                                 onClick={handleCreateNewCustomer}
                                 disabled={savingCustomer}
+                                className="w-full sm:w-auto"
                             >
                                 {savingCustomer && <Loader2 size={16} className="animate-spin ml-2" />}
                                 حفظ العميل
