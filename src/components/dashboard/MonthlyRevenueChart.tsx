@@ -1,98 +1,102 @@
 "use client";
 
-import {
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, Line, XAxis, YAxis } from "recharts";
 import { DailyRevenue } from "@/hooks/useInvoiceStats";
-import { colors } from "@/lib/ui/tokens";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface MonthlyRevenueChartProps {
-	data: DailyRevenue[];
+  data: DailyRevenue[];
 }
 
-import { Price } from "@/components/ui";
+const chartConfig = {
+  revenue: {
+    label: "الإجمالي",
+    color: "#7f2dfb", // Brand Primary
+  },
+  paid: {
+    label: "المحصل",
+    color: "#10b981", // Green 500
+  },
+} satisfies ChartConfig;
 
 export default function MonthlyRevenueChart({ data }: MonthlyRevenueChartProps) {
+  // Format data for chart
+  const chartData = data.map((item) => ({
+    day: item.day,
+    revenue: item.revenue,
+    paid: item.paid,
+  }));
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const CustomTooltip = ({ active, payload }: any) => {
-		if (active && payload && payload.length) {
-			return (
-				<div className="bg-gray-900 text-white p-3 rounded-xl shadow-xl border border-gray-800 text-sm">
-					<p className="font-bold mb-2">اليوم {payload[0].payload.day}</p>
-					<div className="space-y-1">
-						<div className="flex items-center gap-2">
-							<div className="w-2 h-2 rounded-full bg-brand-primary" />
-							<span className="font-medium flex items-center gap-1">
-								الإجمالي: <Price amount={payload[0].value} size="xs" className="text-white" />
-							</span>
-						</div>
-						<div className="flex items-center gap-2">
-							<div className="w-2 h-2 rounded-full bg-green-500" />
-							<span className="font-medium flex items-center gap-1">
-								المحصل: <Price amount={payload[1]?.value || 0} size="xs" className="text-white" />
-							</span>
-						</div>
-					</div>
-				</div>
-			);
-		}
-		return null;
-	};
-
-	// Format data for chart - show day numbers
-	const chartData = data.map((item) => ({
-		day: item.day,
-		revenue: item.revenue,
-		paid: item.paid,
-	}));
-
-	return (
-		<div className="h-[280px] w-full">
-			<ResponsiveContainer width="100%" height="100%">
-				<LineChart data={chartData} margin={{ top: 5, right: 10, left: -15, bottom: 20 }}>
-					<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-					<XAxis
-						dataKey="day"
-						axisLine={false}
-						tickLine={false}
-						tick={{ fill: "#6b7280", fontSize: 11 }}
-						dy={10}
-						interval={Math.floor(data.length / 7)} // Show ~7 labels
-					/>
-					<YAxis
-						axisLine={false}
-						tickLine={false}
-						tick={{ fill: "#9ca3af", fontSize: 11 }}
-						dx={-10}
-						tickFormatter={(value) => `${value / 1000}k`}
-					/>
-					<Tooltip content={<CustomTooltip />} />
-					<Line
-						type="monotone"
-						dataKey="revenue"
-						stroke={colors.brand.primary}
-						strokeWidth={3}
-						dot={{ r: 3, fill: colors.brand.primary }}
-						activeDot={{ r: 5 }}
-					/>
-					<Line
-						type="monotone"
-						dataKey="paid"
-						stroke="#10b981"
-						strokeWidth={2}
-						dot={{ r: 2, fill: "#10b981" }}
-						strokeDasharray="5 5"
-					/>
-				</LineChart>
-			</ResponsiveContainer>
-		</div>
-	);
+  return (
+    <ChartContainer config={chartConfig} className="h-[280px] w-full">
+      <AreaChart
+        accessibilityLayer
+        data={chartData}
+        margin={{
+          top: 5,
+          left: -15,
+          right: 10,
+          bottom: 20,
+        }}
+      >
+        <defs>
+          <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor="var(--color-revenue)"
+              stopOpacity={0.8}
+            />
+            <stop
+              offset="95%"
+              stopColor="var(--color-revenue)"
+              stopOpacity={0.1}
+            />
+          </linearGradient>
+        </defs>
+        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f3f4f6" />
+        <XAxis
+          dataKey="day"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={10}
+          tick={{ fill: "#6b7280", fontSize: 11 }}
+          interval={Math.floor(data.length / 7)}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickMargin={10}
+          tick={{ fill: "#9ca3af", fontSize: 11 }}
+          tickFormatter={(value) => `${value / 1000}k`}
+        />
+        <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        <Area
+          dataKey="revenue"
+          type="monotone"
+          fill="url(#fillRevenue)"
+          fillOpacity={0.4}
+          stroke="var(--color-revenue)"
+          strokeWidth={3}
+          activeDot={{ r: 6 }}
+        />
+        <Line
+          type="monotone"
+          dataKey="paid"
+          stroke="var(--color-paid)"
+          strokeWidth={2}
+          dot={false}
+          strokeDasharray="5 5"
+        />
+      </AreaChart>
+    </ChartContainer>
+  );
 }
 
