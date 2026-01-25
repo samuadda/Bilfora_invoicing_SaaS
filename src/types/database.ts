@@ -34,6 +34,8 @@ export type ProductStatus = "active" | "inactive";
 export type Product = Tables<"products"> & {
 	status?: ProductStatus; // Computed
 	sku?: string | null; // UI only
+	cost_price?: number; // Added for agency features
+	product_type?: "service" | "product" | string; // Added for agency features
 };
 
 export type Invoice = Tables<"invoices"> & {

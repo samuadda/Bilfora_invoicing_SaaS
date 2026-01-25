@@ -245,10 +245,12 @@ export default function DashboardPage() {
 				className="flex justify-center pt-2"
 			>
 				<Link href={analyticsUrl}>
-					<Button variant="secondary" className="inline-flex items-center gap-2">
-						<span>عرض التحليلات التفصيلية</span>
-						<ArrowRight size={16} />
-					</Button>
+					<button className="relative group bg-white border border-purple-100 hover:border-purple-200 shadow-sm hover:shadow-md hover:shadow-purple-100/30 text-gray-600 hover:text-purple-700 px-8 py-3.5 rounded-2xl transition-all duration-300 flex items-center gap-3">
+						<span className="font-medium">عرض التحليلات التفصيلية</span>
+						<div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 group-hover:text-purple-700 transition-colors duration-300">
+							<ArrowRight size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+						</div>
+					</button>
 				</Link>
 			</m.div>
 
