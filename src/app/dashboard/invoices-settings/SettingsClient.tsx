@@ -16,7 +16,6 @@ import {
 	QrCode,
 	Receipt,
 	Globe,
-	ChevronDown,
 	Loader2
 } from "lucide-react";
 import { m } from "framer-motion";

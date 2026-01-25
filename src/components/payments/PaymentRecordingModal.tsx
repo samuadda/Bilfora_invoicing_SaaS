@@ -3,7 +3,7 @@
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X, Loader2 } from "lucide-react";
-import { Button, Input, Select, Label } from "@/components/ui";
+import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label } from "@/components/ui";
 import { formatCurrency } from "@/lib/formatters";
 import { recordPaymentAction } from "@/actions/payments";
 import { useToast } from "@/components/ui/use-toast";
@@ -129,13 +129,18 @@ export function PaymentRecordingModal({
                                 <Label>طريقة الدفع</Label>
                                 <Select
                                     value={formData.payment_method}
-                                    onChange={(e) => handleChange("payment_method", e.target.value)}
+                                    onValueChange={(val) => handleChange("payment_method", val)}
                                 >
-                                    <option value="cash">نقداً</option>
-                                    <option value="transfer">تحويل بنكي</option>
-                                    <option value="card">بطاقة</option>
-                                    <option value="check">شيك</option>
-                                    <option value="other">أخرى</option>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="اختر طريقة الدفع" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="cash">نقداً</SelectItem>
+                                        <SelectItem value="transfer">تحويل بنكي</SelectItem>
+                                        <SelectItem value="card">بطاقة</SelectItem>
+                                        <SelectItem value="check">شيك</SelectItem>
+                                        <SelectItem value="other">أخرى</SelectItem>
+                                    </SelectContent>
                                 </Select>
                             </div>
                         </div>

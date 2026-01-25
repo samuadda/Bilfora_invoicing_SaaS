@@ -13,8 +13,7 @@ import {
 	Save,
 	AlertCircle,
 	CheckCircle,
-	Loader2,
-	ChevronDown
+	Loader2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {

@@ -20,8 +20,7 @@ import {
 	AlertTriangle,
 	Clock4,
 	Send,
-	RotateCcw,
-	ChevronDown
+	RotateCcw
 } from "lucide-react";
 import { m } from "framer-motion";
 

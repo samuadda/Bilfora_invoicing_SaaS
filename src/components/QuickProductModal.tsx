@@ -118,7 +118,7 @@ export default function QuickProductModal({
 		} else if (form.type === "product" && form.unit === "مشروع") {
 			setForm(prev => ({ ...prev, unit: "حبة" }));
 		}
-	}, [form.type]);
+	}, [form.type, form.unit]);
 
 	const resetForm = useCallback(() => {
 		setForm({

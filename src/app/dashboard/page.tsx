@@ -15,7 +15,7 @@ import RecentInvoicesList from "@/components/dashboard/RecentInvoicesList";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Heading, Text, Card, Button, Price } from "@/components/ui";
+import { Heading, Text, Card, Price } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 import { layout } from "@/lib/ui/tokens";

@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
@@ -124,6 +125,11 @@ function ChartTooltipContent({
 		indicator?: "line" | "dot" | "dashed"
 		nameKey?: string
 		labelKey?: string
+		payload?: any[]
+		label?: any
+		labelFormatter?: any
+		formatter?: any
+		color?: string
 	}) {
 	const { config } = useChart()
 

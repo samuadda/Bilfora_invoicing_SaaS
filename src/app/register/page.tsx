@@ -16,7 +16,7 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "@/components/dialog";
-import { Eye, EyeClosed, ArrowLeft, Check, Smartphone, Laptop, ChevronDown } from "lucide-react";
+import { Eye, EyeClosed, ArrowLeft, Check, Smartphone, Laptop } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 
 const Form = () => {

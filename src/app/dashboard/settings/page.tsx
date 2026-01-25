@@ -14,8 +14,7 @@ import {
 	ArrowDownRight,
 	Trash2,
 	Download,
-	Settings,
-	ChevronDown
+	Settings
 } from "lucide-react";
 import { m } from "framer-motion";
 import { Heading, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";

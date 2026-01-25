@@ -17,7 +17,6 @@ import {
 	XCircle,
 	Box,
 	CircleDollarSign,
-	ChevronDown,
 	Copy,
 	Check,
 	ChevronLeft,
