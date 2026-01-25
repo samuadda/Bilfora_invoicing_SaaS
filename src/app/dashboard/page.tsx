@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { ArrowRight, FileText, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
+ import { ArrowRight, FileText, TrendingUp, DollarSign, AlertCircle } from "lucide-react";
 import InvoiceCreationModal from "@/components/InvoiceCreationModal";
 import QuickClientModal from "@/components/QuickClientModal";
 import QuickProductModal from "@/components/QuickProductModal";
@@ -114,8 +114,8 @@ export default function DashboardPage() {
 				className={cn("flex flex-col md:flex-row md:items-center md:justify-between", layout.gap.standard)}
 			>
 				<div>
-					<Heading variant="h1">
-						مرحباً، {userName || "شريك النجاح"} 👋
+					<Heading variant="h1" className="flex items-center gap-3">
+						مرحباً، {userName || "شريك النجاح"} 
 					</Heading>
 					<Text variant="body-large" color="muted" className="mt-2">
 						إليك نظرة عامة على أداء أعمالك هذا الشهر

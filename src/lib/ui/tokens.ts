@@ -122,7 +122,7 @@ export const surface = {
   card: {
     default: "bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6",
     elevated: "bg-white/80 backdrop-blur-md rounded-2xl border border-white/50 shadow-xl p-5 sm:p-6",
-    hover: "hover:shadow-lg hover:border-purple-200/50 hover:-translate-y-1 transition-all duration-300",
+    hover: "hover:shadow-md transition-all duration-300",
   },
 } as const;
 

@@ -9,6 +9,12 @@ import {
     Price,
 } from "@/components/ui";
 import { Combobox } from "@/components/ui/combobox";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { layout } from "@/lib/ui/tokens";
 import type { CreateInvoiceItemInput, Product } from "@/types/database";
 
@@ -90,15 +96,26 @@ export function InvoiceItemsTable({
                                         />
                                     </div>
                                     {onAddNewProduct && (
-                                        <Button
-                                            type="button"
-                                            variant="secondary"
-                                            onClick={onAddNewProduct}
-                                            className="shrink-0 h-[42px] w-[42px] p-0 flex items-center justify-center bg-purple-50 text-[#7f2dfb] border-purple-100 hover:bg-purple-100"
-                                            title="إضافة منتج جديد"
-                                        >
-                                            <Plus size={20} />
-                                        </Button>
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={0}>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        type="button"
+                                                        variant="secondary"
+                                                        onClick={onAddNewProduct}
+                                                        className="shrink-0 h-[42px] w-[42px] p-0 flex items-center justify-center bg-purple-50 text-[#7f2dfb] border-purple-100 hover:bg-purple-100"
+                                                    >
+                                                        <Plus size={20} />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent
+                                                    side="top"
+                                                    className="bg-gray-900/95 backdrop-blur-sm text-white text-sm font-medium px-3 py-2 rounded-lg shadow-xl border-none"
+                                                >
+                                                    <p>إضافة منتج جديد</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     )}
                                 </div>
                                 <Input
