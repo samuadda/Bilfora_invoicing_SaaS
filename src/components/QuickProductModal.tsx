@@ -7,6 +7,8 @@ import { Loader2, AlertCircle, X, ChevronDown } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 
+import { Heading, Text } from "@/components/ui";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ZOD SCHEMA FOR VALIDATION
 // ─────────────────────────────────────────────────────────────────────────────
@@ -186,14 +188,17 @@ export default function QuickProductModal({
 						onClick={(e) => e.stopPropagation()}
 					>
 						{/* Header */}
-						<div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-l from-purple-50 to-white">
-							<h2 className="text-xl font-bold text-gray-900">
-								إضافة منتج / خدمة
-							</h2>
+						<div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
+							<div>
+								<Heading variant="h3">إضافة منتج / خدمة</Heading>
+								<Text variant="body-small" color="muted" className="mt-1">
+									أضف منتجًا أو خدمة جديدة لقائمة منتجاتك
+								</Text>
+							</div>
 							<button
 								type="button"
 								onClick={handleClose}
-								className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
+								className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-900"
 							>
 								<X size={24} />
 							</button>

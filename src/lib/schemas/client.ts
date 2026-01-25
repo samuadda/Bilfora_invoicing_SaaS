@@ -18,6 +18,7 @@ export const addressSchema = z.object({
 const baseClientSchema = z.object({
     name: z.string().min(2, "الاسم قصير جداً"),
     phone: z.string().optional().or(z.literal("")),
+    landline: z.string().optional().or(z.literal("")),
     email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
 });
 
@@ -35,8 +36,10 @@ export const organizationClientSchema = baseClientSchema.extend({
     client_type: z.literal("organization"),
     tax_number: z
         .string()
+        .optional()
+        .or(z.literal(""))
         .refine(
-            (val) => ZATCA_TAX_NUMBER_REGEX.test(val),
+            (val) => !val || ZATCA_TAX_NUMBER_REGEX.test(val),
             "الرقم الضريبي غير صحيح (يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3)"
         ),
     address: z.string().min(5, "العنوان الوطني مطلوب للمنشآت"), // Required for organization

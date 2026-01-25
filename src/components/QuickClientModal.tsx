@@ -7,7 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText, ChevronDown } from "lucide-react";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Heading, Text } from "@/components/ui";
 import { m, AnimatePresence } from "framer-motion";
 
 // ── ZATCA Tax Number Validation ─────────────────────────────────────────────
@@ -36,22 +36,14 @@ const COUNTRY_CODES = [
 ];
 
 // ── Zod Schema with Conditional Validation ──────────────────────────────────
-const addressSchema = z.object({
-	country: z.string().optional().or(z.literal("")),
-	city: z.string().optional().or(z.literal("")),
-	district: z.string().optional().or(z.literal("")),
-	street: z.string().optional().or(z.literal("")),
-	building_no: z.string().optional().or(z.literal("")),
-	postal_code: z.string().optional().or(z.literal("")),
-});
-
 const baseSchema = z.object({
 	client_type: z.enum(["individual", "organization"]),
 	name: z.string().min(2, "الاسم قصير جداً"),
 	phone_prefix: z.string(),
 	phone: z.string().optional().or(z.literal("")),
+	landline: z.string().optional().or(z.literal("")),
 	email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
-	address: addressSchema,
+	address: z.string().optional().or(z.literal("")),
 });
 
 const individualSchema = baseSchema.extend({
@@ -109,17 +101,11 @@ export default function QuickClientModal({
 			name: "",
 			phone_prefix: "+966",
 			phone: "",
+			landline: "",
 			email: "",
 			tax_number: "",
 			commercial_registration: "",
-			address: {
-				country: "السعودية",
-				city: "",
-				district: "",
-				street: "",
-				building_no: "",
-				postal_code: "",
-			},
+			address: "",
 		},
 	});
 
@@ -130,19 +116,6 @@ export default function QuickClientModal({
 		reset();
 		onClose();
 	}, [onClose, reset]);
-
-	// Format address for storage
-	const formatAddress = (addr: ClientFormData["address"]): string => {
-		const parts = [
-			addr.building_no && `مبنى ${addr.building_no}`,
-			addr.street,
-			addr.district,
-			addr.city,
-			addr.postal_code && `ص.ب ${addr.postal_code}`,
-			addr.country,
-		].filter(Boolean);
-		return parts.join("، ");
-	};
 
 	const onSubmit = async (data: ClientFormData) => {
 		try {
@@ -161,9 +134,6 @@ export default function QuickClientModal({
 			// Format full phone with prefix
 			const fullPhone = data.phone ? `${data.phone_prefix}${data.phone.replace(/^0+/, "")}` : null;
 
-			// Format full address string
-			const fullAddress = formatAddress(data.address);
-
 			const payload = {
 				user_id: user.id,
 				name: data.name.trim(),
@@ -171,11 +141,13 @@ export default function QuickClientModal({
 				phone: fullPhone,
 				company_name: isOrganization ? data.name.trim() : null,
 				tax_number: isOrganization && data.tax_number ? data.tax_number.trim() : null,
-				address: fullAddress || null,
-				city: data.address.city?.trim() || null,
+				address: data.address?.trim() || null,
+				city: null, // Simple form does not capture city separately
 				commercial_registration: isOrganization && data.commercial_registration
 					? data.commercial_registration.trim()
 					: null,
+				// Map landline to notes
+				notes: data.landline?.trim() ? `الهاتف: ${data.landline.trim()}` : null,
 				status: "active" as const,
 			};
 
@@ -224,22 +196,20 @@ export default function QuickClientModal({
 						onClick={(e) => e.stopPropagation()}
 					>
 						{/* Header */}
-						<div className="p-6 border-b border-gray-100 bg-gray-50/50 shrink-0">
-							<div className="flex items-center justify-between">
-								<h2 className="text-xl font-bold text-gray-900">
-									إضافة عميل جديد
-								</h2>
-								<button
-									type="button"
-									onClick={handleClose}
-									className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
-								>
-									<X size={24} />
-								</button>
+						<div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white">
+							<div>
+								<Heading variant="h3">إضافة عميل جديد</Heading>
+								<Text variant="body-small" color="muted" className="mt-1">
+									أضِف بيانات العميل الجديد لبدء إنشاء الفواتير بسهولة.
+								</Text>
 							</div>
-							<p className="text-sm text-gray-500 mt-1">
-								أضِف بيانات العميل الجديد لبدء إنشاء الفواتير بسهولة.
-							</p>
+							<button
+								type="button"
+								onClick={handleClose}
+								className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-900"
+							>
+								<X size={24} />
+							</button>
 						</div>
 
 						{/* Form - Scrollable */}
@@ -305,38 +275,54 @@ export default function QuickClientModal({
 								)}
 							</div>
 
-							{/* ── Phone Field with Country Code ────────────────────────── */}
-							<div>
-								<label className="block text-sm font-medium text-gray-700 mb-1.5">
-									رقم الجوال <span className="text-gray-400 font-normal">(اختياري)</span>
-								</label>
-								<div className="flex gap-2">
-									{/* Country Code Selector */}
-									<div className="relative w-32 shrink-0">
-										<Select
-											value={watch("phone_prefix")}
-											onValueChange={(val) => setValue("phone_prefix", val)}
-										>
-											<SelectTrigger className="w-full h-[42px] px-3">
-												<SelectValue placeholder="+966" />
-											</SelectTrigger>
-											<SelectContent>
-												{COUNTRY_CODES.map((c) => (
-													<SelectItem key={c.code} value={c.code}>
-														{c.flag} {c.code}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+							{/* ── Phone & Landline Row ──────────────────────────────────────── */}
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1.5">
+										رقم الجوال <span className="text-gray-400 font-normal">(اختياري)</span>
+									</label>
+									<div className="flex gap-2">
+										<div className="relative w-28 shrink-0">
+											<Select
+												value={watch("phone_prefix")}
+												onValueChange={(val) => setValue("phone_prefix", val)}
+											>
+												<SelectTrigger className="w-full h-[42px] px-2 text-sm">
+													<SelectValue placeholder="+966" />
+												</SelectTrigger>
+												<SelectContent>
+													{COUNTRY_CODES.map((c) => (
+														<SelectItem key={c.code} value={c.code}>
+															{c.flag} {c.code}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+										<div className="relative flex-1">
+											<Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+											<input
+												type="tel"
+												{...register("phone")}
+												className={`${inputBaseClasses} ${inputNormalClasses} pr-9 pl-4`}
+												placeholder="5xxxxxxxx"
+												dir="ltr"
+											/>
+										</div>
 									</div>
-									{/* Phone Number */}
-									<div className="relative flex-1">
-										<Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1.5">
+										رقم الهاتف <span className="text-gray-400 font-normal">(اختياري)</span>
+									</label>
+									<div className="relative">
+										<Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
 										<input
 											type="tel"
-											{...register("phone")}
-											className={`${inputBaseClasses} ${inputNormalClasses} pr-10 pl-4`}
-											placeholder="5xxxxxxxx"
+											{...register("landline")}
+											className={`${inputBaseClasses} ${inputNormalClasses} pr-9 pl-4`}
+											placeholder="011xxxxxxx"
 											dir="ltr"
 										/>
 									</div>
@@ -366,99 +352,23 @@ export default function QuickClientModal({
 								)}
 							</div>
 
-							{/* ── Address Section ────────────────────────────────────── */}
-							<div className="space-y-3">
-								<label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+							{/* ── Address Section (Simple) ────────────────────────────── */}
+							<div>
+								<label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-2">
 									<MapPin size={16} className="text-[#7f2dfb]" />
 									العنوان{" "}
 									{isOrganization ? (
-										<span className="text-red-500">*</span>
+										<span className="text-gray-400 font-normal">(اختياري)</span>
 									) : (
 										<span className="text-gray-400 font-normal">(اختياري)</span>
 									)}
 								</label>
-
-								{/* Country & City Row */}
-								<div className="grid grid-cols-2 gap-3">
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">الدولة</label>
-										<input
-											type="text"
-											{...register("address.country")}
-											className={`${inputBaseClasses} ${inputNormalClasses} px-3`}
-											placeholder="السعودية"
-										/>
-									</div>
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">
-											المدينة {isOrganization && <span className="text-red-500">*</span>}
-										</label>
-										<input
-											type="text"
-											{...register("address.city")}
-											className={`${inputBaseClasses} ${errors.address?.city ? inputErrorClasses : inputNormalClasses} px-3`}
-											placeholder="الرياض"
-										/>
-									</div>
-								</div>
-
-								{/* District & Street Row */}
-								<div className="grid grid-cols-2 gap-3">
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">الحي</label>
-										<input
-											type="text"
-											{...register("address.district")}
-											className={`${inputBaseClasses} ${inputNormalClasses} px-3`}
-											placeholder="حي النرجس"
-										/>
-									</div>
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">الشارع</label>
-										<input
-											type="text"
-											{...register("address.street")}
-											className={`${inputBaseClasses} ${inputNormalClasses} px-3`}
-											placeholder="شارع الملك فهد"
-										/>
-									</div>
-								</div>
-
-								{/* Building & Postal Code Row */}
-								<div className="grid grid-cols-2 gap-3">
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">رقم المبنى</label>
-										<input
-											type="text"
-											{...register("address.building_no")}
-											className={`${inputBaseClasses} ${inputNormalClasses} px-3`}
-											placeholder="1234"
-											dir="ltr"
-										/>
-									</div>
-									<div>
-										<label className="block text-xs text-gray-500 mb-1">الرمز البريدي</label>
-										<input
-											type="text"
-											{...register("address.postal_code")}
-											className={`${inputBaseClasses} ${inputNormalClasses} px-3`}
-											placeholder="12345"
-											dir="ltr"
-										/>
-									</div>
-								</div>
-
-								{isOrganization && (
-									<p className="text-xs text-gray-500">
-										مطلوب للفواتير الضريبية
-									</p>
-								)}
-								{errors.address?.city && (
-									<p className="text-xs text-red-600 flex items-center gap-1">
-										<AlertCircle size={12} />
-										{errors.address.city.message}
-									</p>
-								)}
+								<textarea
+									{...register("address")}
+									rows={2}
+									className={`${inputBaseClasses} ${inputNormalClasses} px-4 resize-none`}
+									placeholder="المدينة، الحي، الشارع..."
+								/>
 							</div>
 
 							{/* ── Organization-Only Fields ────────────────────────────── */}

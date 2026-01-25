@@ -1,61 +1,105 @@
 "use client"
 
 import * as React from "react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
-import { getButtonClass } from "@/lib/ui/tokens"
-
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 function Calendar({
-  className,
-  classNames,
-  showOutsideDays = true,
-  ...props
-}: CalendarProps) {
-  return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          getButtonClass("secondary", "sm", "default"),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell:
-          "text-gray-500 rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-        day: cn(
-          getButtonClass("ghost", "sm", "default"),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100 cursor-pointer pointer-events-auto"
-        ),
-        day_range_end: "day-range-end",
-        day_selected:
-          "bg-[#7f2dfb] text-white hover:bg-[#7f2dfb] hover:text-white focus:bg-[#7f2dfb] focus:text-white",
-        day_today: "bg-gray-100 text-gray-900",
-        day_outside:
-          "day-outside text-gray-500 opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray-500 aria-selected:opacity-30",
-        day_disabled: "text-gray-500 opacity-50",
-        day_range_middle:
-          "aria-selected:bg-gray-100 aria-selected:text-gray-900",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      {...props}
-    />
-  )
+	classNames,
+	...props
+}: React.ComponentProps<typeof DayPicker>) {
+	return (
+		<DayPicker
+			classNames={{
+				root: cn(
+					"relative size-fit select-none rounded-md border p-3 shadow-xs",
+					props.className
+				),
+				month: cn("m-0 space-y-1 text-center", classNames?.month),
+				month_caption: cn(
+					"flex h-8 items-center justify-center text-sm font-medium",
+					classNames?.month_caption
+				),
+				today: cn("bg-purple-50 text-[#7f2dfb] font-bold rounded-md", classNames?.today),
+				week: cn("flex justify-center py-0.5", classNames?.week),
+				day: cn(
+					"flex size-8 items-center justify-center rounded-md text-sm font-normal transition-colors hover:bg-purple-50 hover:text-[#7f2dfb] focus:bg-purple-50 focus:text-[#7f2dfb] focus:outline-none",
+					classNames?.day
+				),
+				day_button: cn(
+					"size-8 rounded-md focus:outline-hidden focus-visible:outline-[3px] focus-visible:outline-offset-1",
+					classNames?.day_button
+				),
+				weekdays: cn("flex justify-center", classNames?.weekdays),
+				weekday: cn(
+					"size-8 text-sm font-normal text-muted-foreground",
+					classNames?.weekday
+				),
+				outside: cn(
+					"text-muted-foreground/80 hover:text-muted-foreground/80! opacity-50",
+					classNames?.outside
+				),
+				selected: cn(
+					"bg-[#7f2dfb]! text-white! hover:bg-[#6b24d6]! focus:bg-[#6b24d6]!",
+					classNames?.selected
+				),
+				range_middle: cn(
+					"bg-purple-50! text-[#7f2dfb]! rounded-none first:rounded-l-md last:rounded-r-md hover:bg-purple-100! hover:text-[#7f2dfb]!",
+					classNames?.range_middle
+				),
+				range_start: cn(
+					props.mode === "range" &&
+						props.selected?.from?.getTime() !== props.selected?.to?.getTime()
+						? "not-last:rounded-r-none bg-purple-50! [&>button]:bg-[#7f2dfb]! [&>button]:text-white!"
+						: "",
+					classNames?.range_start
+				),
+				range_end: cn(
+					props.mode === "range" &&
+						props.selected?.from?.getTime() !== props.selected?.to?.getTime()
+						? "not-first:rounded-l-none bg-purple-50! [&>button]:bg-[#7f2dfb]! [&>button]:text-white!"
+						: "",
+					classNames?.range_end
+				),
+				disabled: cn(
+					"pointer-events-none text-muted-foreground opacity-50",
+					classNames?.disabled
+				),
+				hidden: cn("pointer-events-none", classNames?.hidden),
+				nav: cn("", classNames?.nav),
+				month_grid: cn("", classNames?.month_grid),
+			}}
+			components={{
+				NextMonthButton: (props) => (
+					<button
+						{...props}
+						className={cn(
+							"h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+							"absolute right-3",
+							classNames?.button_next
+						)}
+					>
+						<ChevronRightIcon className="size-4" />
+					</button>
+				),
+				PreviousMonthButton: (props) => (
+					<button
+						{...props}
+						className={cn(
+							"h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+							"absolute left-3",
+							classNames?.button_previous
+						)}
+					>
+						<ChevronLeftIcon className="size-4" />
+					</button>
+				),
+			}}
+			{...props}
+		/>
+	)
 }
-Calendar.displayName = "Calendar"
 
 export { Calendar }

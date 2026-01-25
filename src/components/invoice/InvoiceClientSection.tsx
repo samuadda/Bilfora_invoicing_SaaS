@@ -41,6 +41,7 @@ export function InvoiceClientSection({
         name: "",
         email: "",
         phone: "",
+        landline: "",
         tax_number: "",
         address: "",
     });
@@ -54,6 +55,7 @@ export function InvoiceClientSection({
                 name: "",
                 email: "",
                 phone: "",
+                landline: "",
                 tax_number: "",
                 address: "",
             });
@@ -83,6 +85,7 @@ export function InvoiceClientSection({
                 client_type: clientType,
                 name: newCustomerData.name,
                 phone: newCustomerData.phone,
+                landline: newCustomerData.landline,
                 email: newCustomerData.email || undefined, // Zod optional expects undefined or missing, but empty string handled by .or(z.literal("")) in schema if set up that way.
                 // My schema: email: z.string().email().optional().or(z.literal(""))
                 // So empty string is fine.
@@ -120,6 +123,8 @@ export function InvoiceClientSection({
                 // QuickClientModal sets city separately. Here we might skip it or just put everything in address.
                 // DB has 'address' column text. 'city' column text.
                 // I will leave city null for inline creation as it's not explicitly asked and simplifies UI.
+                // Map landline to notes
+                notes: newCustomerData.landline?.trim() ? `الهاتف: ${newCustomerData.landline.trim()}` : null,
                 status: "active",
             };
 
@@ -148,7 +153,7 @@ export function InvoiceClientSection({
     };
 
     return (
-        <Card background="subtle" padding="large">
+        <Card background="subtle" padding="large" hover={false}>
             <div className="flex items-center justify-between mb-4">
                 <div
                     className={cn(
@@ -186,7 +191,7 @@ export function InvoiceClientSection({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <Card padding="standard">
+                    <Card padding="standard" hover={false}>
                         {newCustomerError && (
                             <div className="mb-4 text-sm text-red-600 font-medium bg-red-50 p-3 rounded-lg flex items-center gap-2">
                                 <span className="block w-1.5 h-1.5 rounded-full bg-red-600" />
@@ -256,7 +261,23 @@ export function InvoiceClientSection({
                                         />
                                     </div>
                                 </Field>
-                                <Field label="البريد الإلكتروني" description="(اختياري)">
+                                <Field label="رقم الهاتف" description="(اختياري)">
+                                    <div className="relative">
+                                        <Phone
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                            size={16}
+                                        />
+                                        <Input
+                                            name="landline"
+                                            value={newCustomerData.landline}
+                                            onChange={handleNewCustomerChange}
+                                            className="pr-9"
+                                            placeholder="011xxxxxxx"
+                                            dir="ltr"
+                                        />
+                                    </div>
+                                </Field>
+                                <Field label="البريد الإلكتروني" description="(اختياري)" className="col-span-2">
                                     <div className="relative">
                                         <Mail
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -295,7 +316,7 @@ export function InvoiceClientSection({
                                             />
                                         </Field>
 
-                                        <Field label="الرقم الضريبي" required>
+                                        <Field label="الرقم الضريبي" description="(اختياري)">
                                             <Input
                                                 name="tax_number"
                                                 value={newCustomerData.tax_number}
@@ -304,7 +325,7 @@ export function InvoiceClientSection({
                                                 dir="ltr"
                                                 maxLength={15}
                                             />
-                                            <p className="text-[10px] text-gray-400 mt-1">يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3</p>
+                                            <p className="text-[10px] text-gray-400 mt-1">يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3 (إذا وجد)</p>
                                         </Field>
                                     </m.div>
                                 )}

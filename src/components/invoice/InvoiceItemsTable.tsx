@@ -18,6 +18,7 @@ interface InvoiceItemsTableProps {
     onItemChange: (index: number, field: keyof CreateInvoiceItemInput, value: string | number) => void;
     onAddItem: () => void;
     onRemoveItem: (index: number) => void;
+    onAddNewProduct?: () => void;
 }
 
 export function InvoiceItemsTable({
@@ -26,6 +27,7 @@ export function InvoiceItemsTable({
     onItemChange,
     onAddItem,
     onRemoveItem,
+    onAddNewProduct,
 }: InvoiceItemsTableProps) {
     return (
         <div className={layout.stack.standard}>
@@ -66,24 +68,39 @@ export function InvoiceItemsTable({
                                 المنتج / الوصف
                             </label>
                             <div className={layout.stack.tight}>
-                                <Combobox
-                                    options={products.map((p) => ({
-                                        value: p.id,
-                                        label: `${p.name} (${p.unit_price} ريال)`,
-                                    }))}
-                                    value={products.find(p => p.name === item.description)?.id || ""}
-                                    onChange={(val) => {
-                                        const p = products.find((pr) => pr.id === val);
-                                        if (p && p.name !== item.description) {
-                                            onItemChange(index, "description", p.name);
-                                            onItemChange(index, "unit_price", p.unit_price);
-                                        }
-                                    }}
-                                    placeholder="اختر منتجاً (اختياري)"
-                                    searchPlaceholder="بحث عن منتج..."
-                                    className="text-xs"
-                                    emptyText="لا يوجد منتجات"
-                                />
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <Combobox
+                                            options={products.map((p) => ({
+                                                value: p.id,
+                                                label: `${p.name} (${p.unit_price} ريال)`,
+                                            }))}
+                                            value={products.find(p => p.name === item.description)?.id || ""}
+                                            onChange={(val) => {
+                                                const p = products.find((pr) => pr.id === val);
+                                                if (p && p.name !== item.description) {
+                                                    onItemChange(index, "description", p.name);
+                                                    onItemChange(index, "unit_price", p.unit_price);
+                                                }
+                                            }}
+                                            placeholder="اختر منتجاً (اختياري)"
+                                            searchPlaceholder="بحث عن منتج..."
+                                            className="text-xs"
+                                            emptyText="لا يوجد منتجات"
+                                        />
+                                    </div>
+                                    {onAddNewProduct && (
+                                        <Button
+                                            type="button"
+                                            variant="secondary"
+                                            onClick={onAddNewProduct}
+                                            className="shrink-0 h-[42px] w-[42px] p-0 flex items-center justify-center bg-purple-50 text-[#7f2dfb] border-purple-100 hover:bg-purple-100"
+                                            title="إضافة منتج جديد"
+                                        >
+                                            <Plus size={20} />
+                                        </Button>
+                                    )}
+                                </div>
                                 <Input
                                     value={item.description}
                                     onChange={(e) =>
@@ -118,7 +135,7 @@ export function InvoiceItemsTable({
                             <Input
                                 type="number"
                                 min="0"
-                                step="0.01"
+                                step="1"
                                 value={item.unit_price}
                                 onChange={(e) =>
                                     onItemChange(

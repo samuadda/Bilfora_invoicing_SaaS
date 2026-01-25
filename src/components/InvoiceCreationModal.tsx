@@ -34,6 +34,7 @@ import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection"
 import { InvoiceDetailsForm } from "@/components/invoice/InvoiceDetailsForm";
 import { InvoiceItemsTable } from "@/components/invoice/InvoiceItemsTable";
 import { InvoiceSummary } from "@/components/invoice/InvoiceSummary";
+import QuickProductModal from "@/components/QuickProductModal";
 
 interface InvoiceCreationModalProps {
 	isOpen: boolean;
@@ -60,6 +61,7 @@ export default function InvoiceCreationModal({
 	// const [clients, setClients] = useState<Client[]>([]); // Replaced by hook
 	// const [products, setProducts] = useState<Product[]>([]); // Replaced by hook
 	const [saving, setSaving] = useState(false);
+	const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 	const [invoiceFormData, setInvoiceFormData] = useState<CreateInvoiceInput>({
 		client_id: "",
 		order_id: null,
@@ -255,6 +257,11 @@ export default function InvoiceCreationModal({
 		}));
 	};
 
+	const handleProductSuccess = () => {
+		queryClient.invalidateQueries({ queryKey: ["products"] });
+		setIsProductModalOpen(false);
+	};
+
 
 
 	return (
@@ -336,6 +343,7 @@ export default function InvoiceCreationModal({
 									onItemChange={handleInvoiceItemChange}
 									onAddItem={addInvoiceItem}
 									onRemoveItem={removeInvoiceItem}
+									onAddNewProduct={() => setIsProductModalOpen(true)}
 								/>
 
 								<InvoiceSummary
@@ -389,6 +397,11 @@ export default function InvoiceCreationModal({
 					</m.div>
 				</div>
 			)}
+			<QuickProductModal
+				isOpen={isProductModalOpen}
+				onClose={() => setIsProductModalOpen(false)}
+				onSuccess={handleProductSuccess}
+			/>
 		</AnimatePresence>
 	);
 }
