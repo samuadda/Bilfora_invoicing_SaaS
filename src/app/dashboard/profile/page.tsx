@@ -25,7 +25,7 @@ import {
 } from "@/types/database";
 import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
-import { Heading, Text } from "@/components/ui";
+import { Heading, Text, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 
 
 export default function ProfilePage() {
@@ -574,17 +574,22 @@ export default function ProfilePage() {
 									الجنس
 								</label>
 								<div className="relative">
-									<select
-										name="gender"
-										value={formData.gender}
-										onChange={handleInputChange}
-										className="w-full appearance-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
+									<Select
+										value={formData.gender || ""}
+										onValueChange={(val) => {
+											setFormData(prev => ({ ...prev, gender: val as Gender }));
+											setError(null);
+											setSuccess(null);
+										}}
 									>
-										<option value="">اختر الجنس</option>
-										<option value="male">ذكر</option>
-										<option value="female">أنثى</option>
-									</select>
-									<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+										<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+											<SelectValue placeholder="اختر الجنس" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="male">ذكر</SelectItem>
+											<SelectItem value="female">أنثى</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 							</div>
 							<div className="space-y-2">
@@ -592,17 +597,22 @@ export default function ProfilePage() {
 									نوع الحساب *
 								</label>
 								<div className="relative">
-									<select
-										name="account_type"
+									<Select
 										value={formData.account_type}
-										onChange={handleInputChange}
-										className="w-full appearance-none rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all bg-white"
-										required
+										onValueChange={(val) => {
+											setFormData(prev => ({ ...prev, account_type: val as AccountType }));
+											setError(null);
+											setSuccess(null);
+										}}
 									>
-										<option value="individual">فرد</option>
-										<option value="business">مؤسسة</option>
-									</select>
-									<ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+										<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="individual">فرد</SelectItem>
+											<SelectItem value="business">مؤسسة</SelectItem>
+										</SelectContent>
+									</Select>
 								</div>
 							</div>
 						</div>
