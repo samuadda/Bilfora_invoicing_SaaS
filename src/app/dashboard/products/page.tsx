@@ -509,15 +509,9 @@ export default function ProductsPage() {
 				</Card>
 			)}
 
-			{/* Filters & Table Container */}
-			<m.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.4 }}
-				className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
-			>
-				{/* Filters */}
-				<div className="p-6 border-b border-gray-100 bg-gray-50/30">
+			{/* Filters Card */}
+			<Card padding="standard">
+				<div className="flex flex-col lg:flex-row gap-4">
 					<div className="flex flex-col lg:flex-row gap-4">
 						{/* Search */}
 						<div className="relative flex-1">
@@ -618,8 +612,26 @@ export default function ProductsPage() {
 						</div>
 					</div>
 				</div>
+			</Card>
 
-				{/* Table */}
+			{/* Pagination Controls */}
+			{stats.total > 0 && (
+				<div className="flex items-center justify-between mt-4">
+					<Text variant="body-small" color="muted">
+						عرض {Math.min((currentPage - 1) * pageSize + 1, filteredProducts.length)} إلى {Math.min(currentPage * pageSize, filteredProducts.length)} من {filteredProducts.length} منتج
+					</Text>
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={setCurrentPage}
+						isLoading={loading}
+					/>
+				</div>
+			)}
+
+			{/* Table Card */}
+			<Card padding="none" className="overflow-hidden">
+				{/* Products Table */}
 				{filteredProducts.length === 0 ? (
 					<div className="flex flex-col items-center justify-center py-16 text-center">
 						<div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
@@ -869,7 +881,7 @@ export default function ProductsPage() {
 						)}
 					</>
 				)}
-			</m.div>
+			</Card>
 
 			{/* Add/Edit Modal */}
 			<QuickProductModal
