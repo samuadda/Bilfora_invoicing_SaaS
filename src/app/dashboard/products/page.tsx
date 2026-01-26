@@ -37,6 +37,7 @@ import {
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
 import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
+import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
 import QuickProductModal from "@/components/QuickProductModal";
 
@@ -391,9 +392,9 @@ export default function ProductsPage() {
 		selectedIds.size === paginatedProducts.length;
 
 	return (
-		<div className="space-y-8 pb-10">
+		<div className={cn("space-y-8 pb-10", layout.stack.large)}>
 			{/* Header */}
-			<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+			<div className={cn("flex flex-col gap-6 md:flex-row md:items-center md:justify-between", layout.gap.large)}>
 				<div>
 					<Heading variant="h1">
 						المنتجات والخدمات

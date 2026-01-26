@@ -25,6 +25,7 @@ import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 // ExcelJS is dynamically imported in exportClients to reduce bundle size
 import { Heading, Text, Card, Button as UIButton, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
+import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
 import QuickClientModal from "@/components/QuickClientModal";
 
@@ -499,9 +500,9 @@ export default function ClientsPage() {
 	}
 
 	return (
-		<div className="space-y-8 pb-10">
+		<div className={cn("space-y-8 pb-10", layout.stack.large)}>
 			{/* Header */}
-			<div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+			<div className={cn("flex flex-col gap-6 md:flex-row md:items-center md:justify-between", layout.gap.large)}>
 				<div>
 					<Heading variant="h1">العملاء</Heading>
 					<Text variant="body-large" color="muted" className="mt-2">إدارة قاعدة بيانات العملاء ومتابعة تفاصيلهم</Text>
@@ -620,15 +621,9 @@ export default function ClientsPage() {
 				</Card>
 			)}
 
-			{/* Filter & Table Container */}
-			<m.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.4 }}
-				className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
-			>
-				{/* Filters */}
-				<div className="p-6 border-b border-gray-100 flex flex-col lg:flex-row gap-4 items-center justify-between bg-gray-50/30">
+			{/* Filter Card */}
+			<Card padding="standard">
+				<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 					<div className="relative w-full lg:w-96">
 						<Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
 						<input
@@ -668,8 +663,25 @@ export default function ClientsPage() {
 						</button>
 					</div>
 				</div>
+			</Card>
 
-				{/* Clients Table */}
+			{/* Pagination Controls */}
+			{stats.total > 0 && (
+				<div className="flex items-center justify-between mt-4">
+					<Text variant="body-small" color="muted">
+						عرض {Math.min((currentPage - 1) * pageSize + 1, filteredClients.length)} إلى {Math.min(currentPage * pageSize, filteredClients.length)} من {filteredClients.length} عميل
+					</Text>
+					<Pagination
+						currentPage={currentPage}
+						totalPages={filteredTotalPages}
+						onPageChange={setCurrentPage}
+						isLoading={loading}
+					/>
+				</div>
+			)}
+
+			{/* Table Card */}
+			<Card padding="none" className="overflow-hidden">
 				<div className="overflow-x-auto">
 					<table className="w-full">
 						<thead className="bg-gray-50/50">
@@ -858,7 +870,7 @@ export default function ClientsPage() {
 						</div>
 					</div>
 				)}
-			</m.div>
+			</Card>
 
 			{/* Quick Add Modal */}
 			<QuickClientModal

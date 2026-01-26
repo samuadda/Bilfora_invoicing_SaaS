@@ -32,7 +32,7 @@ export function StatsCard({ title, value, icon: Icon, trend, color, delay = 0, i
             <Card
                 hover
                 className={cn(
-                    "relative overflow-hidden group hover:-translate-y-1",
+                    "relative overflow-hidden group",
                     isWarning && "border-orange-200 bg-orange-50/30"
                 )}
             >
