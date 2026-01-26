@@ -10,16 +10,20 @@ import { m, AnimatePresence } from "framer-motion";
 import { Heading, Text } from "@/components/ui";
 import { productSchema, type ProductFormValues } from "@/lib/schemas/product";
 
+import { Product } from "@/types/database";
+
 interface QuickProductModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	onSuccess?: () => void;
+	product?: Product | null; // Optional product for editing
 }
 
 export default function QuickProductModal({
 	isOpen,
 	onClose,
 	onSuccess,
+	product,
 }: QuickProductModalProps) {
 	const { toast } = useToast();
 	const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
@@ -51,6 +55,38 @@ export default function QuickProductModal({
 			price_includes_vat: false,
 		},
 	});
+
+	// Reset form when modal opens or product changes
+	useEffect(() => {
+		if (isOpen) {
+			if (product) {
+				const productType = product.product_type as "service" | "product";
+				const fallbackType = (product.unit === "ساعة" || product.unit === "مشروع" || product.unit === "يوم") ? "service" : "product";
+
+				reset({
+					type: productType || fallbackType,
+					name: product.name,
+					unit_price: Number(product.unit_price),
+					cost_price: Number(product.cost_price || 0),
+					unit: product.unit || "",
+					description: product.description || "",
+					category: product.category || "",
+					price_includes_vat: false, // Default to false or infer if needed
+				});
+			} else {
+				reset({
+					type: "service",
+					name: "",
+					unit_price: 0,
+					cost_price: 0,
+					unit: "مشروع",
+					description: "",
+					category: "",
+					price_includes_vat: false,
+				});
+			}
+		}
+	}, [isOpen, product, reset]);
 
 	const type = watch("type");
 	const unit = watch("unit");
@@ -105,14 +141,16 @@ export default function QuickProductModal({
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	// Auto-switch unit when type changes
+	// Auto-switch unit when type changes (Only for new products)
 	useEffect(() => {
-		if (type === "service" && unit === "حبة") {
-			setValue("unit", "مشروع");
-		} else if (type === "product" && unit === "مشروع") {
-			setValue("unit", "حبة");
+		if (!product) {
+			if (type === "service" && unit === "حبة") {
+				setValue("unit", "مشروع");
+			} else if (type === "product" && unit === "مشروع") {
+				setValue("unit", "حبة");
+			}
 		}
-	}, [type, unit, setValue]);
+	}, [type, unit, setValue, product]);
 
 	const handleClose = useCallback(() => {
 		reset();
@@ -149,13 +187,18 @@ export default function QuickProductModal({
 				product_type: data.type,
 			};
 
-			const { error } = await supabase.from("products").insert(payload);
+			const { error } = product
+				? await supabase
+					.from("products")
+					.update(payload)
+					.eq("id", product.id)
+				: await supabase.from("products").insert(payload);
 
 			if (error) throw error;
 
 			toast({
-				title: "تمت الإضافة",
-				description: `تم إضافة ${data.type === "service" ? "الخدمة" : "المنتج"} بنجاح`,
+				title: product ? "تم التحديث" : "تمت الإضافة",
+				description: `تم ${product ? "تحديث" : "إضافة"} ${data.type === "service" ? "الخدمة" : "المنتج"} بنجاح`,
 			});
 
 			handleClose();
@@ -204,9 +247,9 @@ export default function QuickProductModal({
 						{/* Header */}
 						<div className="flex items-center justify-between p-6 border-b border-gray-100 bg-white shrink-0">
 							<div>
-								<Heading variant="h3">إضافة {type === "service" ? "خدمة" : "منتج"} جديد</Heading>
+								<Heading variant="h3">{product ? "تعديل" : "إضافة"} {type === "service" ? "خدمة" : "منتج"} {product ? "" : "جديد"}</Heading>
 								<Text variant="body-small" color="muted" className="mt-1">
-									أضف تفاصيل {type === "service" ? "الخدمة" : "المنتج"} لقائمة الأسعار
+									{product ? "تعديل تفاصيل" : "أضف تفاصيل"} {type === "service" ? "الخدمة" : "المنتج"} لقائمة الأسعار
 								</Text>
 							</div>
 							<button
@@ -512,7 +555,7 @@ export default function QuickProductModal({
 										جاري الحفظ...
 									</>
 								) : (
-									"إضافة"
+									product ? "حفظ التعديلات" : "إضافة"
 								)}
 							</button>
 						</div>

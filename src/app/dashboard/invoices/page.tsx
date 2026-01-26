@@ -592,10 +592,10 @@ function InvoicesContent() {
 								size="sm"
 								onClick={() => handleBulkStatusChange("draft")}
 								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm"
+								className="h-8 px-2 text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm inline-flex items-center justify-center gap-1.5"
 								title="مسودة"
 							>
-								<FileText size={14} className="ml-1" />
+								<FileText size={14} />
 								مسودة
 							</Button>
 							<Button
@@ -603,10 +603,10 @@ function InvoicesContent() {
 								size="sm"
 								onClick={() => handleBulkStatusChange("sent")}
 								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm"
+								className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm inline-flex items-center justify-center gap-1.5"
 								title="مرسلة"
 							>
-								<Send size={14} className="ml-1" />
+								<Send size={14} />
 								مرسلة
 							</Button>
 							<Button
@@ -614,10 +614,10 @@ function InvoicesContent() {
 								size="sm"
 								onClick={() => handleBulkStatusChange("paid")}
 								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 shadow-sm"
+								className="h-8 px-2 text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 shadow-sm inline-flex items-center justify-center gap-1.5"
 								title="مدفوعة"
 							>
-								<CheckCircle size={14} className="ml-1" />
+								<CheckCircle size={14} />
 								مدفوعة
 							</Button>
 							<Button
@@ -625,10 +625,10 @@ function InvoicesContent() {
 								size="sm"
 								onClick={() => handleBulkStatusChange("cancelled")}
 								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-sm"
+								className="h-8 px-2 text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-sm inline-flex items-center justify-center gap-1.5"
 								title="ملغية"
 							>
-								<XCircle size={14} className="ml-1" />
+								<XCircle size={14} />
 								ملغية
 							</Button>
 						</div>

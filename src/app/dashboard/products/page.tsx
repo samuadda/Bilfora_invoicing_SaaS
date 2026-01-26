@@ -38,6 +38,7 @@ import {
 import { Button } from "@/components/dialogButton";
 import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
+import QuickProductModal from "@/components/QuickProductModal";
 
 type SortOption = "newest" | "oldest" | "price-high" | "price-low";
 
@@ -46,16 +47,7 @@ export default function ProductsPage() {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [showModal, setShowModal] = useState(false);
-	const [saving, setSaving] = useState(false);
 	const [editing, setEditing] = useState<Product | null>(null);
-	const [form, setForm] = useState<Partial<Product>>({
-		name: "",
-		unit_price: 0,
-		unit: "",
-		description: "",
-		category: "",
-	});
-	const [error, setError] = useState<string | null>(null);
 
 	// Filters & Search
 	const [searchTerm, setSearchTerm] = useState("");
@@ -207,39 +199,20 @@ export default function ProductsPage() {
 		load();
 	}, [load]);
 
+
+
 	const closeModal = useCallback(() => {
-		setForm({
-			name: "",
-			unit_price: 0,
-			unit: "",
-			description: "",
-			category: "",
-		});
-		setError(null);
 		setEditing(null);
 		setShowModal(false);
 	}, []);
 
 	const openNew = () => {
 		setEditing(null);
-		setForm({
-			name: "",
-			unit_price: 0,
-			unit: "",
-			description: "",
-			category: "",
-		});
-		setError(null);
 		setShowModal(true);
 	};
 
 	const openEdit = (product: Product) => {
 		setEditing(product);
-		setForm({
-			...product,
-			category: product.category || "",
-		});
-		setError(null);
 		setShowModal(true);
 	};
 
@@ -250,7 +223,15 @@ export default function ProductsPage() {
 
 			const { error } = await supabase.from("products").insert({
 				user_id: user.id,
-				name: `${product.name} (نسخة)`,
+				name: (() => {
+					let newName = `${product.name} (نسخة)`;
+					let counter = 2;
+					while (products.some((p) => p.name === newName)) {
+						newName = `${product.name} (نسخة ${counter})`;
+						counter++;
+					}
+					return newName;
+				})(),
 				description: product.description,
 				unit: product.unit,
 				unit_price: product.unit_price,
@@ -273,53 +254,7 @@ export default function ProductsPage() {
 		}
 	};
 
-	const submit = async () => {
-		try {
-			setSaving(true);
-			setError(null);
 
-			if (!form.name?.trim()) {
-				setError("اسم المنتج مطلوب");
-				return;
-			}
-
-			const { data: { user } } = await supabase.auth.getUser();
-			if (!user) {
-				setError("يجب تسجيل الدخول أولاً");
-				return;
-			}
-
-			const payload = {
-				user_id: user.id,
-				name: form.name.trim(),
-				description: form.description?.trim() || null,
-				unit: form.unit?.trim() || null,
-				unit_price: Number(form.unit_price) || 0,
-				active: editing ? editing.active : true,
-				category: form.category?.trim() || null,
-			};
-
-			const { error } = editing
-				? await supabase
-					.from("products")
-					.update(payload)
-					.eq("id", editing.id)
-				: await supabase.from("products").insert(payload);
-
-			if (error) throw error;
-
-			closeModal();
-			await load();
-			toast({
-				title: editing ? "تم التحديث" : "تمت الإضافة",
-				description: "تم حفظ بيانات المنتج بنجاح",
-			});
-		} catch (e: unknown) {
-			setError((e as Error).message || "حدث خطأ غير متوقع");
-		} finally {
-			setSaving(false);
-		}
-	};
 
 	const toggleProductStatus = async (id: string, currentStatus: boolean) => {
 		try {
@@ -535,7 +470,7 @@ export default function ProductsPage() {
 							size="sm"
 							onClick={() => handleBulkStatusChange(true)}
 							disabled={bulkActionLoading}
-							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 inline-flex items-center justify-center gap-2"
 						>
 							<CheckCircle2 size={16} />
 							تفعيل
@@ -545,7 +480,7 @@ export default function ProductsPage() {
 							size="sm"
 							onClick={() => handleBulkStatusChange(false)}
 							disabled={bulkActionLoading}
-							className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200"
+							className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 inline-flex items-center justify-center gap-2"
 						>
 							<XCircle size={16} />
 							تعطيل
@@ -555,7 +490,7 @@ export default function ProductsPage() {
 							size="sm"
 							onClick={() => setShowDeleteDialog(true)}
 							disabled={bulkActionLoading}
-							className="bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
+							className="bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 inline-flex items-center justify-center gap-2"
 						>
 							<Trash2 size={16} />
 							حذف
@@ -564,7 +499,7 @@ export default function ProductsPage() {
 							variant="ghost"
 							size="sm"
 							onClick={() => setSelectedIds(new Set())}
-							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200"
+							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 inline-flex items-center justify-center gap-2"
 						>
 							<X size={16} />
 							إلغاء
@@ -936,168 +871,12 @@ export default function ProductsPage() {
 			</m.div>
 
 			{/* Add/Edit Modal */}
-			<AnimatePresence>
-				{showModal && (
-					<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-						<m.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							className="fixed inset-0 bg-black/40 backdrop-blur-sm"
-							onClick={closeModal}
-						/>
-						<m.div
-							initial={{ opacity: 0, scale: 0.95, y: 20 }}
-							animate={{ opacity: 1, scale: 1, y: 0 }}
-							exit={{ opacity: 0, scale: 0.95, y: 20 }}
-							className="bg-white rounded-3xl w-full max-w-lg shadow-2xl z-10 overflow-hidden"
-						>
-							{/* Fixed Header */}
-							<div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-								<h2 className="text-xl font-bold text-gray-900">
-									{editing ? "تعديل المنتج" : "إضافة منتج جديد"}
-								</h2>
-								<button
-									type="button"
-									onClick={closeModal}
-									className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
-								>
-									<X size={24} />
-								</button>
-							</div>
-
-							{/* Error Display */}
-							{error && (
-								<div className="mx-6 mt-4 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3">
-									<AlertCircle size={20} className="text-red-600" />
-									<span className="text-red-700 text-sm font-medium">{error}</span>
-								</div>
-							)}
-
-							{/* Body */}
-							<div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
-								<div className="space-y-4">
-									<div className="space-y-2">
-										<label className="text-sm font-medium text-gray-700">
-											اسم المنتج *
-										</label>
-										<div className="relative">
-											<Box className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-											<input
-												type="text"
-												value={form.name || ""}
-												onChange={(e) =>
-													setForm((s) => ({ ...s, name: e.target.value }))
-												}
-												className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
-												placeholder="أدخل اسم المنتج"
-												required
-											/>
-										</div>
-									</div>
-
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-2">
-											<label className="text-sm font-medium text-gray-700">
-												السعر (ريال) *
-											</label>
-											<div className="relative">
-												<CircleDollarSign className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-												<input
-													type="number"
-													step="0.01"
-													min="0"
-													value={Number(form.unit_price || 0)}
-													onChange={(e) =>
-														setForm((s) => ({
-															...s,
-															unit_price: parseFloat(e.target.value) || 0,
-														}))
-													}
-													className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
-													placeholder="0.00"
-													required
-												/>
-											</div>
-										</div>
-										<div className="space-y-2">
-											<label className="text-sm font-medium text-gray-700">
-												الوحدة
-											</label>
-											<div className="relative">
-												<Tag className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-												<input
-													type="text"
-													value={form.unit || ""}
-													onChange={(e) =>
-														setForm((s) => ({ ...s, unit: e.target.value }))
-													}
-													className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
-													placeholder="قطعة، ساعة..."
-												/>
-											</div>
-										</div>
-									</div>
-
-									<div className="space-y-2">
-										<label className="text-sm font-medium text-gray-700">
-											الفئة
-										</label>
-										<input
-											type="text"
-											value={form.category || ""}
-											onChange={(e) =>
-												setForm((s) => ({ ...s, category: e.target.value }))
-											}
-											className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
-											placeholder="الفئة (اختياري)"
-										/>
-									</div>
-
-									<div className="space-y-2">
-										<label className="text-sm font-medium text-gray-700">
-											الوصف
-										</label>
-										<textarea
-											value={form.description || ""}
-											onChange={(e) =>
-												setForm((s) => ({ ...s, description: e.target.value }))
-											}
-											rows={3}
-											className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm resize-none"
-											placeholder="وصف المنتج أو الخدمة (اختياري)"
-										/>
-									</div>
-								</div>
-							</div>
-
-							{/* Fixed Footer */}
-							<div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100 bg-gray-50/30">
-								<button
-									type="button"
-									onClick={closeModal}
-									className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-white transition-colors text-sm"
-								>
-									إلغاء
-								</button>
-								<button
-									type="button"
-									onClick={submit}
-									disabled={saving}
-									className="px-6 py-2.5 rounded-xl bg-[#7f2dfb] text-white font-medium hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-colors text-sm flex items-center gap-2 disabled:opacity-70"
-								>
-									{saving && <Loader2 size={16} className="animate-spin" />}
-									{saving
-										? "جاري الحفظ..."
-										: editing
-											? "تحديث المنتج"
-											: "إضافة المنتج"}
-								</button>
-							</div>
-						</m.div>
-					</div>
-				)}
-			</AnimatePresence>
+			<QuickProductModal
+				isOpen={showModal}
+				onClose={closeModal}
+				onSuccess={load}
+				product={editing}
+			/>
 
 			{/* Delete Confirmation Dialog */}
 			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

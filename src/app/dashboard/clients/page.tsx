@@ -575,7 +575,7 @@ export default function ClientsPage() {
 							size="sm"
 							onClick={() => handleBulkStatusChange("active")}
 							disabled={bulkActionLoading}
-							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200"
+							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 inline-flex items-center justify-center gap-2"
 						>
 							<CheckCircle2 size={16} />
 							تفعيل
@@ -585,7 +585,7 @@ export default function ClientsPage() {
 							size="sm"
 							onClick={() => handleBulkStatusChange("inactive")}
 							disabled={bulkActionLoading}
-							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200"
+							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 inline-flex items-center justify-center gap-2"
 						>
 							<XCircle size={16} />
 							تعطيل
