@@ -22,11 +22,11 @@ export type Database = {
                     company_name: string | null
                     created_at: string
                     deleted_at: string | null
-                    email: string
+                    email: string | null
                     id: string
                     name: string
                     notes: string | null
-                    phone: string
+                    phone: string | null
                     status: string
                     tax_number: string | null
                     updated_at: string
@@ -39,11 +39,11 @@ export type Database = {
                     company_name?: string | null
                     created_at?: string
                     deleted_at?: string | null
-                    email: string
+                    email?: string | null
                     id?: string
                     name: string
                     notes?: string | null
-                    phone: string
+                    phone?: string | null
                     status?: string
                     tax_number?: string | null
                     updated_at?: string
@@ -56,11 +56,11 @@ export type Database = {
                     company_name?: string | null
                     created_at?: string
                     deleted_at?: string | null
-                    email?: string
+                    email?: string | null
                     id?: string
                     name?: string
                     notes?: string | null
-                    phone?: string
+                    phone?: string | null
                     status?: string
                     tax_number?: string | null
                     updated_at?: string
@@ -215,6 +215,7 @@ export type Database = {
                     invoice_number: string
                     invoice_type: string
                     issue_date: string
+                    issue_time: string | null
                     notes: string | null
                     order_id: string | null
                     related_invoice_id: string | null
@@ -237,6 +238,7 @@ export type Database = {
                     invoice_number: string
                     invoice_type: string
                     issue_date: string
+                    issue_time?: string | null
                     notes?: string | null
                     order_id?: string | null
                     related_invoice_id?: string | null
@@ -259,6 +261,7 @@ export type Database = {
                     invoice_number?: string
                     invoice_type?: string
                     issue_date?: string
+                    issue_time?: string | null
                     notes?: string | null
                     order_id?: string | null
                     related_invoice_id?: string | null

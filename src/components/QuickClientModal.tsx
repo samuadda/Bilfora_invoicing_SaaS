@@ -7,40 +7,20 @@ import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText } from "lucide-react";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Heading, Text } from "@/components/ui";
+import { Heading, Text } from "@/components/ui";
 import { m, AnimatePresence } from "framer-motion";
 
 // ── ZATCA Tax Number Validation ─────────────────────────────────────────────
 const ZATCA_TAX_NUMBER_REGEX = /^3\d{13}3$/;
 
-// ── Country Phone Codes ─────────────────────────────────────────────────────
-const COUNTRY_CODES = [
-	{ code: "+966", country: "السعودية", flag: "🇸🇦" },
-	{ code: "+971", country: "الإمارات", flag: "🇦🇪" },
-	{ code: "+973", country: "البحرين", flag: "🇧🇭" },
-	{ code: "+965", country: "الكويت", flag: "🇰🇼" },
-	{ code: "+968", country: "عُمان", flag: "🇴🇲" },
-	{ code: "+974", country: "قطر", flag: "🇶🇦" },
-	{ code: "+20", country: "مصر", flag: "🇪🇬" },
-	{ code: "+962", country: "الأردن", flag: "🇯🇴" },
-	{ code: "+961", country: "لبنان", flag: "🇱🇧" },
-	{ code: "+970", country: "فلسطين", flag: "🇵🇸" },
-	{ code: "+964", country: "العراق", flag: "🇮🇶" },
-	{ code: "+967", country: "اليمن", flag: "🇾🇪" },
-	{ code: "+963", country: "سوريا", flag: "🇸🇾" },
-	{ code: "+212", country: "المغرب", flag: "🇲🇦" },
-	{ code: "+213", country: "الجزائر", flag: "🇩🇿" },
-	{ code: "+216", country: "تونس", flag: "🇹🇳" },
-	{ code: "+218", country: "ليبيا", flag: "🇱🇾" },
-	{ code: "+249", country: "السودان", flag: "🇸🇩" },
-];
-
 // ── Zod Schema with Conditional Validation ──────────────────────────────────
 const baseSchema = z.object({
 	client_type: z.enum(["individual", "organization"]),
-	name: z.string().min(2, "الاسم قصير جداً"),
-	phone_prefix: z.string(),
-	phone: z.string().optional().or(z.literal("")),
+	name: z.string().min(1, "الاسم مطلوب").min(2, "الاسم يجب أن يكون حرفين على الأقل"),
+	phone: z.string()
+		.regex(/^05\d{8}$/, "رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام")
+		.optional()
+		.or(z.literal("")),
 	landline: z.string().optional().or(z.literal("")),
 	email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
 	address: z.string().optional().or(z.literal("")),
@@ -99,7 +79,6 @@ export default function QuickClientModal({
 		defaultValues: {
 			client_type: "individual",
 			name: "",
-			phone_prefix: "+966",
 			phone: "",
 			landline: "",
 			email: "",
@@ -131,8 +110,8 @@ export default function QuickClientModal({
 				return;
 			}
 
-			// Format full phone with prefix
-			const fullPhone = data.phone ? `${data.phone_prefix}${data.phone.replace(/^0+/, "")}` : null;
+			// Use phone directly
+			const fullPhone = data.phone ? data.phone.trim() : null;
 
 			const payload = {
 				user_id: user.id,
@@ -281,35 +260,23 @@ export default function QuickClientModal({
 									<label className="block text-sm font-medium text-gray-700 mb-1.5">
 										رقم الجوال <span className="text-gray-400 font-normal">(اختياري)</span>
 									</label>
-									<div className="flex gap-2">
-										<div className="relative w-28 shrink-0">
-											<Select
-												value={watch("phone_prefix")}
-												onValueChange={(val) => setValue("phone_prefix", val)}
-											>
-												<SelectTrigger className="w-full h-[42px] px-2 text-sm">
-													<SelectValue placeholder="+966" />
-												</SelectTrigger>
-												<SelectContent>
-													{COUNTRY_CODES.map((c) => (
-														<SelectItem key={c.code} value={c.code}>
-															{c.flag} {c.code}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-										<div className="relative flex-1">
-											<Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-											<input
-												type="tel"
-												{...register("phone")}
-												className={`${inputBaseClasses} ${inputNormalClasses} pr-9 pl-4`}
-												placeholder="5xxxxxxxx"
-												dir="ltr"
-											/>
-										</div>
+									<div className="relative">
+										<Phone className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+										<input
+											type="tel"
+											{...register("phone")}
+											className={`${inputBaseClasses} ${errors.phone ? inputErrorClasses : inputNormalClasses} pr-9 pl-4`}
+											placeholder="05xxxxxxxx"
+											dir="ltr"
+											maxLength={10}
+										/>
 									</div>
+									{errors.phone && (
+										<p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+											<AlertCircle size={12} />
+											{errors.phone.message}
+										</p>
+									)}
 								</div>
 
 								<div>

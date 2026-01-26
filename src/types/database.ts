@@ -148,6 +148,7 @@ export interface CreateInvoiceInput {
 	document_kind?: DocumentKind;
 	related_invoice_id?: string | null;
 	issue_date: string;
+	issue_time?: string; // HH:MM:SS
 	due_date: string;
 	status?: InvoiceStatus;
 	tax_rate?: number;

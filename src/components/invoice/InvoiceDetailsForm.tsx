@@ -26,6 +26,8 @@ interface InvoiceDetailsFormProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
     onTypeChange: (type: InvoiceType) => void;
     onDateChange?: (field: "issue_date" | "due_date", date: Date | undefined) => void;
+    onTermChange?: (days: string) => void;
+    errors?: Record<string, string>;
 }
 
 export function InvoiceDetailsForm({
@@ -33,6 +35,8 @@ export function InvoiceDetailsForm({
     onChange,
     onTypeChange,
     onDateChange,
+    onTermChange,
+    errors,
 }: InvoiceDetailsFormProps) {
     // Helper to safely parse YYYY-MM-DD string to Date without timezone shifts
     const parseDate = (dateStr: string | null | undefined) => {
@@ -44,12 +48,12 @@ export function InvoiceDetailsForm({
 
     return (
         <FormRow columns={3} gap="large">
-            <Field label="نوع الفاتورة" required>
+            <Field label="نوع الفاتورة" required error={errors?.invoice_type}>
                 <Select
                     value={formData.invoice_type || "standard_tax"}
                     onValueChange={(val) => onTypeChange(val as InvoiceType)}
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className={errors?.invoice_type ? "border-red-300 ring-red-100" : ""}>
                         <SelectValue placeholder="اختر نوع الفاتورة" />
                     </SelectTrigger>
                     <SelectContent>
@@ -60,7 +64,7 @@ export function InvoiceDetailsForm({
                 </Select>
             </Field>
 
-            <Field label="تاريخ الإصدار" required>
+            <Field label="تاريخ الإصدار" required error={errors?.issue_date}>
                 {onDateChange ? (
                     <Popover>
                         <PopoverTrigger asChild>
@@ -68,7 +72,8 @@ export function InvoiceDetailsForm({
                                 variant="secondary"
                                 className={cn(
                                     "w-full justify-start text-start font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none flex items-center gap-2 px-4 py-2 text-sm h-auto",
-                                    !formData.issue_date && "text-muted-foreground"
+                                    !formData.issue_date && "text-muted-foreground",
+                                    errors?.issue_date && "border-red-300 bg-red-50 text-red-900"
                                 )}
                             >
                                 <CalendarIcon className="h-4 w-4 text-gray-500" />
@@ -91,11 +96,30 @@ export function InvoiceDetailsForm({
                         value={formData.issue_date}
                         onChange={onChange}
                         required
+                        className={errors?.issue_date ? "border-red-300" : ""}
                     />
                 )}
             </Field>
 
-            <Field label="تاريخ الاستحقاق" required>
+            <Field label="شروط الدفع">
+                <Select
+                    onValueChange={(val) => onTermChange?.(val)}
+                    defaultValue="7"
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="اختر المدة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="0">دفع فوري</SelectItem>
+                        <SelectItem value="7">بعد 7 أيام</SelectItem>
+                        <SelectItem value="14">بعد 14 يوم</SelectItem>
+                        <SelectItem value="30">بعد 30 يوم</SelectItem>
+                        <SelectItem value="60">بعد 60 يوم</SelectItem>
+                    </SelectContent>
+                </Select>
+            </Field>
+
+            <Field label="تاريخ الاستحقاق" required error={errors?.due_date}>
                 {onDateChange ? (
                     <Popover>
                         <PopoverTrigger asChild>
@@ -103,7 +127,8 @@ export function InvoiceDetailsForm({
                                 variant="secondary"
                                 className={cn(
                                     "w-full justify-start text-start font-normal bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 shadow-none flex items-center gap-2 px-4 py-2 text-sm h-auto",
-                                    !formData.due_date && "text-muted-foreground"
+                                    !formData.due_date && "text-muted-foreground",
+                                    errors?.due_date && "border-red-300 bg-red-50 text-red-900"
                                 )}
                             >
                                 <CalendarIcon className="h-4 w-4 text-gray-500" />
@@ -115,6 +140,10 @@ export function InvoiceDetailsForm({
                                 mode="single"
                                 selected={parseDate(formData.due_date)}
                                 onSelect={(date) => onDateChange("due_date", date)}
+                                disabled={(() => {
+                                    const d = parseDate(formData.issue_date);
+                                    return d ? { before: d } : undefined;
+                                })()}
                                 initialFocus
                             />
                         </PopoverContent>
@@ -126,16 +155,17 @@ export function InvoiceDetailsForm({
                         value={formData.due_date}
                         onChange={onChange}
                         required
+                        className={errors?.due_date ? "border-red-300" : ""}
                     />
                 )}
             </Field>
 
-            <Field label="الحالة">
+            <Field label="الحالة" error={errors?.status}>
                 <Select
                     value={formData.status}
                     onValueChange={(val) => onChange({ target: { name: 'status', value: val } } as React.ChangeEvent<HTMLInputElement>)}
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className={errors?.status ? "border-red-300 ring-red-100" : ""}>
                         <SelectValue placeholder="اختر الحالة" />
                     </SelectTrigger>
                     <SelectContent>
@@ -147,7 +177,7 @@ export function InvoiceDetailsForm({
                 </Select>
             </Field>
 
-            <Field label="معدل الضريبة (%)">
+            <Field label="معدل الضريبة (%)" error={errors?.tax_rate}>
                 <Input
                     name="tax_rate"
                     type="number"
@@ -161,6 +191,7 @@ export function InvoiceDetailsForm({
                     }
                     onChange={onChange}
                     disabled={formData.invoice_type === "non_tax"}
+                    className={errors?.tax_rate ? "border-red-300" : ""}
                 />
             </Field>
 

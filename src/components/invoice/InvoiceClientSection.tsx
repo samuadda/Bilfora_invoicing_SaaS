@@ -257,6 +257,7 @@ export function InvoiceClientSection({
                                             className="pr-9"
                                             placeholder="05xxxxxxxx"
                                             dir="ltr"
+                                            maxLength={10}
                                         />
                                     </div>
                                 </Field>

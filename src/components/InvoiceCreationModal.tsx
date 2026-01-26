@@ -68,7 +68,9 @@ export default function InvoiceCreationModal({
 		invoice_type: "standard_tax",
 		document_kind: "invoice",
 		issue_date: new Date().toISOString().split("T")[0],
-		due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+		issue_time: new Date().toLocaleTimeString("en-GB", { hour12: false }), // HH:MM:SS
+		// Default to Net 7 (Agency Standard)
+		due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
 		status: "draft",
 		tax_rate: 15,
 		notes: "",
@@ -76,6 +78,7 @@ export default function InvoiceCreationModal({
 	});
 
 	const [error, setError] = useState<string | null>(null);
+	const [errors, setErrors] = useState<Record<string, string>>({});
 	const { toast } = useToast();
 
 	const closeModal = useCallback(() => {
@@ -83,91 +86,24 @@ export default function InvoiceCreationModal({
 		onClose();
 	}, [onClose]);
 
-	// Load data when modal opens -> Handled by TanStack Query automatically
-	/* useEffect(() => {
-		if (isOpen) {
-			loadClientsForInvoice();
-			loadProducts();
-		}
-	}, [isOpen]); */
+	// ... existing useEffects ...
 
-	// Handle ESC key and backdrop click
+	// Smart Date Logic: Auto-correct due_date if issue_date moves ahead of it
 	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "Escape" && isOpen) {
-				closeModal();
-			}
-		};
+		const issueDate = new Date(invoiceFormData.issue_date);
+		const dueDate = new Date(invoiceFormData.due_date);
 
-		if (isOpen) {
-			document.addEventListener("keydown", handleKeyDown);
-			document.body.style.overflow = "hidden";
-		}
+		// If issue date is invalid, ignore
+		if (isNaN(issueDate.getTime())) return;
 
-		return () => {
-			document.removeEventListener("keydown", handleKeyDown);
-			document.body.style.overflow = "unset";
-		};
-	}, [isOpen, closeModal]);
-
-	// Manual loading functions removed in favor of hooks
-
-	const handleInvoiceInputChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-		>,
-	) => {
-		const { name, value } = e.target;
-
-		setInvoiceFormData((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	};
-
-	const handleInvoiceItemChange = (
-		index: number,
-		field: keyof CreateInvoiceItemInput,
-		value: string | number,
-	) => {
-		setInvoiceFormData((prev) => ({
-			...prev,
-			items: prev.items.map((item, i) =>
-				i === index ? { ...item, [field]: value } : item,
-			),
-		}));
-	};
-
-	const handleDateChange = (field: "issue_date" | "due_date", date: Date | undefined) => {
-		if (!date) return;
-		setInvoiceFormData((prev) => ({
-			...prev,
-			[field]: format(date, "yyyy-MM-dd"), // Format for backend/storage
-		}));
-	};
-
-	const addInvoiceItem = () => {
-		setInvoiceFormData((prev) => ({
-			...prev,
-			items: [
-				...prev.items,
-				{
-					description: "",
-					quantity: 1,
-					unit_price: 0,
-				},
-			],
-		}));
-	};
-
-	const removeInvoiceItem = (index: number) => {
-		if (invoiceFormData.items.length > 1) {
+		// If due date is before issue date (or invalid), fix it
+		if (dueDate < issueDate || isNaN(dueDate.getTime())) {
 			setInvoiceFormData((prev) => ({
 				...prev,
-				items: prev.items.filter((_, i) => i !== index),
+				due_date: prev.issue_date,
 			}));
 		}
-	};
+	}, [invoiceFormData.issue_date, invoiceFormData.due_date]);
 
 	const resetInvoiceForm = () => {
 		setInvoiceFormData({
@@ -176,7 +112,9 @@ export default function InvoiceCreationModal({
 			invoice_type: "standard_tax",
 			document_kind: "invoice",
 			issue_date: new Date().toISOString().split("T")[0],
-			due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+			issue_time: new Date().toLocaleTimeString("en-GB", { hour12: false }),
+			// Default to Net 7 (Agency Standard)
+			due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 				.toISOString()
 				.split("T")[0],
 			status: "draft",
@@ -191,6 +129,7 @@ export default function InvoiceCreationModal({
 			],
 		});
 		setError(null);
+		setErrors({});
 	};
 
 	const handleInvoiceSubmit = async (e: React.FormEvent) => {
@@ -200,14 +139,23 @@ export default function InvoiceCreationModal({
 		try {
 			setSaving(true);
 			setError(null);
+			setErrors({});
 
 			// Client-Side Validation (Fast Feedback)
 			const parsed = invoiceSchema.safeParse(invoiceFormData);
 			if (!parsed.success) {
-				const msg = parsed.error.issues[0]?.message || "البيانات غير صالحة";
+				const newErrors: Record<string, string> = {};
+				parsed.error.issues.forEach((issue) => {
+					// Join path for nested errors (e.g. items.0.description)
+					const path = issue.path.join(".");
+					newErrors[path] = issue.message;
+				});
+				setErrors(newErrors);
+
+				const firstError = parsed.error.issues[0]?.message || "البيانات غير صالحة";
 				toast({
 					title: "تحقق من المدخلات",
-					description: msg,
+					description: firstError,
 					variant: "destructive",
 				});
 				return;
@@ -247,6 +195,90 @@ export default function InvoiceCreationModal({
 		}
 	};
 
+	// ── Event Handlers ──────────────────────────────────────────────────────────
+
+	const handleInvoiceInputChange = (
+		e: React.ChangeEvent<
+			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+		>,
+	) => {
+		const { name, value } = e.target;
+
+		setInvoiceFormData((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	};
+
+	const handleInvoiceItemChange = (
+		index: number,
+		field: keyof CreateInvoiceItemInput,
+		value: string | number,
+	) => {
+		setInvoiceFormData((prev) => ({
+			...prev,
+			items: prev.items.map((item, i) =>
+				i === index ? { ...item, [field]: value } : item,
+			),
+		}));
+	};
+
+	const handleDateChange = (field: "issue_date" | "due_date", date: Date | undefined) => {
+		if (!date) return;
+		setInvoiceFormData((prev) => {
+			const updates: Partial<CreateInvoiceInput> = {
+				[field]: format(date, "yyyy-MM-dd"),
+			};
+
+			// If Issue Date changes, preserve current time or reset to now
+			if (field === "issue_date") {
+				// Keep existing time if set, otherwise current time
+				updates.issue_time = prev.issue_time || new Date().toLocaleTimeString("en-GB", { hour12: false });
+			}
+
+			return { ...prev, ...updates };
+		});
+	};
+
+	const handleTermChange = (days: string) => {
+		const daysToAdd = parseInt(days);
+		if (isNaN(daysToAdd)) return;
+
+		const issueDate = new Date(invoiceFormData.issue_date);
+		if (isNaN(issueDate.getTime())) return;
+
+		const newDueDate = new Date(issueDate);
+		newDueDate.setDate(newDueDate.getDate() + daysToAdd);
+
+		setInvoiceFormData((prev) => ({
+			...prev,
+			due_date: format(newDueDate, "yyyy-MM-dd"),
+		}));
+	};
+
+	const addInvoiceItem = () => {
+		setInvoiceFormData((prev) => ({
+			...prev,
+			items: [
+				...prev.items,
+				{
+					description: "",
+					quantity: 1,
+					unit_price: 0,
+				},
+			],
+		}));
+	};
+
+	const removeInvoiceItem = (index: number) => {
+		if (invoiceFormData.items.length > 1) {
+			setInvoiceFormData((prev) => ({
+				...prev,
+				items: prev.items.filter((_, i) => i !== index),
+			}));
+		}
+	};
+
 	const handleClientCreated = (newClient: Client) => {
 		// Invalidate clients query to refetch list
 		queryClient.invalidateQueries({ queryKey: ["clients"] });
@@ -262,12 +294,11 @@ export default function InvoiceCreationModal({
 		setIsProductModalOpen(false);
 	};
 
-
-
 	return (
 		<AnimatePresence>
 			{isOpen && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+					{/* ... backdrop ... */}
 					<m.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -317,17 +348,35 @@ export default function InvoiceCreationModal({
 								onSubmit={handleInvoiceSubmit}
 								className={layout.stack.large}
 							>
-								<InvoiceClientSection
-									clients={clients}
-									selectedClientId={invoiceFormData.client_id}
-									onClientChange={(id) => setInvoiceFormData(prev => ({ ...prev, client_id: id }))}
-									onClientCreated={handleClientCreated}
-								/>
+								<div>
+									<div className={errors.client_id ? "border border-red-300 rounded-xl" : ""}>
+										<InvoiceClientSection
+											clients={clients}
+											selectedClientId={invoiceFormData.client_id}
+											onClientChange={(id) => {
+												setInvoiceFormData(prev => ({ ...prev, client_id: id }));
+												if (errors.client_id) {
+													const newErrors = { ...errors };
+													delete newErrors.client_id;
+													setErrors(newErrors);
+												}
+											}}
+											onClientCreated={handleClientCreated}
+										/>
+									</div>
+									{errors.client_id && (
+										<p className="text-xs text-red-600 font-medium mt-1 mr-1 flex items-center gap-1">
+											<AlertCircle size={12} />
+											العميل مطلوب
+										</p>
+									)}
+								</div>
 
 								<InvoiceDetailsForm
 									formData={invoiceFormData}
 									onChange={handleInvoiceInputChange}
 									onDateChange={handleDateChange}
+									onTermChange={handleTermChange}
 									onTypeChange={(newType) => {
 										setInvoiceFormData((prev) => ({
 											...prev,
@@ -335,6 +384,7 @@ export default function InvoiceCreationModal({
 											tax_rate: newType === "non_tax" ? 0 : prev.tax_rate || 15,
 										}));
 									}}
+									errors={errors}
 								/>
 
 								<InvoiceItemsTable

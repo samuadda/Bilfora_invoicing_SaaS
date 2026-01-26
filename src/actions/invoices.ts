@@ -33,6 +33,7 @@ export async function createInvoiceAction(data: CreateInvoiceSchema): Promise<Ac
         invoice_type,
         document_kind,
         issue_date,
+        issue_time,
         due_date,
         status,
         tax_rate,
@@ -90,6 +91,7 @@ export async function createInvoiceAction(data: CreateInvoiceSchema): Promise<Ac
             p_invoice_type: invoice_type,
             p_document_kind: document_kind ?? "invoice",
             p_issue_date: issue_date,
+            p_issue_time: issue_time || null,
             p_due_date: due_date,
             p_status: status,
             p_tax_rate: finalTaxRate,
@@ -200,6 +202,7 @@ export async function duplicateInvoiceAction(originalId: string): Promise<Action
             p_invoice_type: original.invoice_type,
             p_document_kind: original.document_kind ?? "invoice",
             p_issue_date: today,
+            p_issue_time: new Date().toLocaleTimeString("en-GB", { hour12: false }),
             p_due_date: today, // User can adjust this in the draft
             p_status: "draft", // Always start as draft
             p_tax_rate: Number(original.tax_rate) || 0,

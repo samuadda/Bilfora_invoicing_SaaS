@@ -226,8 +226,8 @@ export default function ClientsPage() {
 			filtered = filtered.filter(
 				(c) =>
 					c.name.toLowerCase().includes(term) ||
-					c.email.toLowerCase().includes(term) ||
-					c.phone.includes(term) ||
+					(c.email && c.email.toLowerCase().includes(term)) ||
+					(c.phone && c.phone.includes(term)) ||
 					(c.company_name && c.company_name.toLowerCase().includes(term)) ||
 					(c.tax_number && c.tax_number.toLowerCase().includes(term))
 			);

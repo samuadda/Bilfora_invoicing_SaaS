@@ -477,7 +477,7 @@ export function generateInvoiceHtml(
             <div class="column-label">التفاصيل</div>
             <div class="meta-row">
                 <span class="meta-label">تاريخ الإصدار</span>
-                <span class="meta-value">${formatDate(invoice.issue_date)}</span>
+                <span class="meta-value">${formatDate(invoice.issue_date)}${invoice.issue_time ? ` - ${invoice.issue_time}` : ''}</span>
             </div>
             <div class="meta-row">
                 <span class="meta-label">تاريخ الاستحقاق</span>

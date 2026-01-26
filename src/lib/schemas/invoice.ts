@@ -18,6 +18,7 @@ export const invoiceSchema = z.object({
     document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),
 
     issue_date: z.string().min(1, "تاريخ الإصدار مطلوب"),
+    issue_time: z.string().optional(),
     due_date: z.string().min(1, "تاريخ الاستحقاق مطلوب"),
     status: z.enum(["draft", "sent", "paid", "cancelled"]),
     tax_rate: z.coerce.number().min(0).max(100),

@@ -105,9 +105,9 @@ export default function OrdersPage() {
 					o.client.name
 						.toLowerCase()
 						.includes(searchTerm.toLowerCase()) ||
-					o.client.email
+					(o.client.email && o.client.email
 						.toLowerCase()
-						.includes(searchTerm.toLowerCase())
+						.includes(searchTerm.toLowerCase()))
 			);
 		}
 

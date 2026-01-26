@@ -14,10 +14,17 @@ export const addressSchema = z.object({
     postal_code: z.string().optional().or(z.literal("")),
 });
 
+const SA_PHONE_REGEX = /^05\d{8}$/; // Starts with 05, followed by 8 digits (Total 10)
+
+const phoneSchema = z.string().refine((val) => {
+    if (!val) return true; // Optional
+    return SA_PHONE_REGEX.test(val);
+}, "رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 05");
+
 // Base schema for common fields
 const baseClientSchema = z.object({
     name: z.string().min(2, "الاسم قصير جداً"),
-    phone: z.string().optional().or(z.literal("")),
+    phone: phoneSchema.optional().or(z.literal("")),
     landline: z.string().optional().or(z.literal("")),
     email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
 });
@@ -25,10 +32,8 @@ const baseClientSchema = z.object({
 // Individual Client Schema
 export const individualClientSchema = baseClientSchema.extend({
     client_type: z.literal("individual"),
-    // Individual can have tax number but it's optional usually, but sticking to request requirement:
-    // Request says: If Individual -> Hide Tax Number. So we make it optional/nullable.
     tax_number: z.string().optional().or(z.literal("")),
-    address: z.string().optional().or(z.literal("")), // Simplified address for inline form or optional
+    address: z.string().optional().or(z.literal("")),
 });
 
 // Organization Client Schema
@@ -42,7 +47,7 @@ export const organizationClientSchema = baseClientSchema.extend({
             (val) => !val || ZATCA_TAX_NUMBER_REGEX.test(val),
             "الرقم الضريبي غير صحيح (يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3)"
         ),
-    address: z.string().min(5, "العنوان الوطني مطلوب للمنشآت"), // Required for organization
+    address: z.string().min(5, "العنوان الوطني مطلوب للمنشآت"),
 });
 
 // Discriminated Union for Form Validation
