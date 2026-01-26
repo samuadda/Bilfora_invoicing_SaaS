@@ -71,7 +71,7 @@ export default function QuickClientModal({
 		register,
 		handleSubmit,
 		watch,
-		setValue,
+
 		reset,
 		formState: { errors },
 	} = useForm<ClientFormData>({

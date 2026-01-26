@@ -43,7 +43,8 @@ export default function QuickProductModal({
 		reset,
 		formState: { errors, isSubmitting },
 	} = useForm<ProductFormValues>({
-		resolver: zodResolver(productSchema) as any,
+		// @ts-expect-error - zod resolver type mismatch
+		resolver: zodResolver(productSchema),
 		defaultValues: {
 			type: "service",
 			name: "",
@@ -365,7 +366,7 @@ export default function QuickProductModal({
 														...unitRest,
 														ref: (e: HTMLInputElement | null) => {
 															unitRegisterRef(e);
-															// @ts-ignore
+
 															unitInputRef.current = e;
 														}
 													};
@@ -449,7 +450,6 @@ export default function QuickProductModal({
 													...catRest,
 													ref: (e: HTMLInputElement | null) => {
 														catRegisterRef(e);
-														// @ts-ignore
 														categoryInputRef.current = e;
 													}
 												};

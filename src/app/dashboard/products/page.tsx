@@ -24,7 +24,7 @@ import {
 	Package,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { m, AnimatePresence } from "framer-motion";
+import { m } from "framer-motion";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
