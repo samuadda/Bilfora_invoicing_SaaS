@@ -135,7 +135,7 @@ export default function Sidebar() {
 					transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
 				}}
 				className={cn(
-					"fixed top-0 right-0 h-screen bg-white/90 backdrop-blur-xl border-l border-gray-200/50 shadow-2xl flex flex-col z-40",
+					"fixed top-0 right-0 h-screen bg-white/90 backdrop-blur-xl border-l border-gray-200/50 shadow-2xl flex flex-col z-40 dashboard-sidebar",
 					isMobileMenuOpen ? "translate-x-0" : "translate-x-full md:translate-x-0",
 					"transition-transform duration-300 ease-in-out"
 				)}

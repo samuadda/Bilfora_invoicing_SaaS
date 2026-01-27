@@ -107,9 +107,24 @@
     }
   }
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Inter",
+  ui-sans-serif,
+  system-ui,
+  sans-serif,
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  "Segoe UI Symbol",
+  "Noto Color Emoji";
 
-  --font-mono: "Geist Mono", 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace';
+  --font-mono: "Geist Mono",
+  'ui-monospace',
+  'SFMono-Regular',
+  'Menlo',
+  'Monaco',
+  'Consolas',
+  '"Liberation Mono"',
+  '"Courier New"',
+  'monospace';
 
   --color-destructive-foreground: var(--destructive-foreground);
 
@@ -260,6 +275,36 @@
     overscroll-behavior: none;
   }
 
+  /* 
+    FAILSAFE LAYOUT FIX: FORCE SCROLLBAR
+    Always show the vertical scrollbar track to prevent layout shifts when modals open.
+  */
+  html {
+    overflow-y: scroll !important;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 
+    Prevent Radix UI from adding any padding to the body.
+    Since the scrollbar is forced visible (even if disabled behind the modal backdrop),
+    we DO NOT want to compensate for its "removal".
+  */
+  body[data-scroll-locked] {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    overflow: hidden !important;
+    /* Lock scroll but keep track visible via html */
+  }
+
+  /* Ensure Fixed Sidebar doesn't jump */
+  body[data-scroll-locked] .dashboard-sidebar {
+    padding-right: 0 !important;
+    right: 0 !important;
+  }
+
   /* Force English/Western numerals on all form inputs */
   input,
   select,
@@ -293,23 +338,28 @@
   input[type="number"]::-webkit-outer-spin-button {
     font-variant-numeric: lining-nums tabular-nums;
   }
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-tap-highlight-color: transparent;}
+
   html[data-base-ui-scroll-locked] {
-    scroll-behavior: auto;}
+    scroll-behavior: auto;
+  }
+
   .root {
     isolation: isolate;
-    min-height: 100vh;}
+    min-height: 100vh;
+  }
+
   ::-webkit-scrollbar {
-    width: 4px;}
+    width: 4px;
+  }
+
   ::-webkit-scrollbar-track {
-    background: transparent;}
+    background: transparent;
+  }
+
   ::-webkit-scrollbar-thumb {
     background: var(--border);
-    border-radius: 4px;}
+    border-radius: 4px;
+  }
 }
 
 @layer utilities {
