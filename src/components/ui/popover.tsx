@@ -5,7 +5,10 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
 
-const Popover = PopoverPrimitive.Root
+const Popover = (props: React.ComponentProps<typeof PopoverPrimitive.Root>) => (
+  // @ts-expect-error - dir prop exists on Radix Popover Root but types might be outdated
+  <PopoverPrimitive.Root dir="rtl" {...props} />
+)
 
 const PopoverTrigger = PopoverPrimitive.Trigger
 

@@ -6,7 +6,9 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const Select = SelectPrimitive.Root
+const Select = (props: React.ComponentProps<typeof SelectPrimitive.Root>) => (
+  <SelectPrimitive.Root dir="rtl" {...props} />
+)
 
 const SelectGroup = SelectPrimitive.Group
 
