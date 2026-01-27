@@ -22,7 +22,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
 	return (
 		<main
 			className={cn(
-				"flex-1 min-h-screen bg-[#f8f9fc] transition-all duration-300 w-full max-w-[100vw] overflow-x-hidden",
+				"flex-1 min-h-screen bg-[#f8f9fc] transition-[margin] duration-300 w-full max-w-full overflow-x-hidden",
 				isCollapsed ? "md:mr-[80px]" : "md:mr-[280px]"
 			)}
 		>
@@ -53,7 +53,7 @@ function AuthWrapper({ children }: { children: ReactNode }) {
 			setIsLoading(true);
 			setConnectionError(false);
 
-		// Check both clients to find active session (could be in localStorage or sessionStorage)
+			// Check both clients to find active session (could be in localStorage or sessionStorage)
 			// Check both clients in PARALLEL to eliminate waterfall
 			const timeoutPromise = new Promise((_, reject) =>
 				setTimeout(() => reject(new Error("Connection timeout")), 10000)

@@ -296,6 +296,8 @@
     padding-right: 0 !important;
     padding-left: 0 !important;
     overflow: hidden !important;
+    width: 100% !important;
+    margin: 0 !important;
     /* Lock scroll but keep track visible via html */
   }
 
