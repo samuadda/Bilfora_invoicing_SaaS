@@ -8,10 +8,8 @@ import {
 	Edit,
 	Trash2,
 	Loader2,
-	X,
-	AlertCircle,
+
 	ShoppingCart,
-	Tag,
 	Search,
 	CheckCircle2,
 	XCircle,
@@ -273,7 +271,6 @@ export default function ProductsPage() {
 			{ header: "المنتج", key: "name", width: 30 },
 			{ header: "الوصف", key: "description", width: 30 },
 			{ header: "السعر", key: "price", width: 15 },
-			{ header: "العملة", key: "currency", width: 10 },
 			{ header: "القسم", key: "category", width: 20 },
 			{ header: "الوحدة", key: "unit", width: 15 },
 			{ header: "الحالة", key: "active", width: 15 },
@@ -284,8 +281,7 @@ export default function ProductsPage() {
 			worksheet.addRow({
 				name: product.name,
 				description: product.description || "",
-				price: product.price,
-				currency: product.currency,
+				price: Number(product.unit_price),
 				category: product.category || "",
 				unit: product.unit || "",
 				active: product.active ? "نشط" : "غير نشط",
@@ -480,7 +476,7 @@ export default function ProductsPage() {
 		return <LoadingState message="جاري استعراض المنتجات..." />;
 	}
 
-	const hasSelected = selectedIds.size > 0;
+
 	const allSelected =
 		paginatedProducts.length > 0 &&
 		selectedIds.size === paginatedProducts.length;

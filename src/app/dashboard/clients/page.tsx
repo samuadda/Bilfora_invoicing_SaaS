@@ -518,7 +518,7 @@ export default function ClientsPage() {
 		paginatedClients.length > 0 &&
 		selectedClientIds.size === paginatedClients.length &&
 		paginatedClients.every((c) => selectedClientIds.has(c.id));
-	const hasSelected = selectedClientIds.size > 0;
+
 
 	if (loading) {
 		return <LoadingState message="جاري تحميل العملاء..." />;

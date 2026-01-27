@@ -301,7 +301,7 @@ function InvoicesContent() {
 	const allSelected =
 		paginatedInvoices.length > 0 &&
 		selectedInvoiceIds.size === paginatedInvoices.length;
-	const hasSelected = selectedInvoiceIds.size > 0;
+
 
 
 
