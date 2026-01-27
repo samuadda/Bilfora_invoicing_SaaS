@@ -508,7 +508,7 @@ export default function ProductsPage() {
 			</div>
 
 			{/* Stats Grid */}
-			<div className={cn("grid grid-cols-1 md:grid-cols-4", layout.gap.standard)}>
+			<div className={cn("grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4", layout.gap.standard)}>
 				<StatsCard
 					title="إجمالي المنتجات"
 					value={stats.total}

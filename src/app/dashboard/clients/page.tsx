@@ -629,7 +629,7 @@ export default function ClientsPage() {
 							className="pr-12 bg-gray-50"
 						/>
 					</div>
-					<div className="flex items-center gap-3 w-full lg:w-auto">
+					<div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
 						<div className="relative flex-1 lg:flex-none min-w-[180px]">
 							<Select
 								value={statusFilter}

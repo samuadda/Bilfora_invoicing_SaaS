@@ -32,18 +32,18 @@ export function Pagination({
     // let start = Math.max(1, currentPage - 2);
     // let end = Math.min(totalPages, start + 4);
     // if (end - start < 4) start = Math.max(1, end - 4);
-    
+
     // Let's implement a standard shifting window
     let startPage = Math.max(1, currentPage - 2);
     const endPage = Math.min(totalPages, startPage + 4);
-    
+
     // Adjust start if we're near the end
     if (endPage - startPage < 4) {
       startPage = Math.max(1, endPage - 4);
     }
 
     for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
+      pages.push(i);
     }
     return pages;
   };
@@ -72,7 +72,7 @@ export function Pagination({
             className={cn(
               "w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors",
               currentPage === page
-                ? "bg-blue-600 text-white shadow-sm"
+                ? "bg-[#7f2dfb] text-white shadow-sm hover:bg-[#6a1fd8]"
                 : "text-gray-600 hover:bg-gray-100"
             )}
           >

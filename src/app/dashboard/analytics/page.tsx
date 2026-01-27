@@ -20,6 +20,9 @@ import {
 	Package,
 	ArrowUpRight,
 	ArrowDownRight,
+	CalendarRange,
+	Search,
+	ChevronDown,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { InvoiceWithClientAndItems } from "@/types/database";
@@ -67,6 +70,13 @@ function AnalyticsContent() {
 	const fromParam = searchParams.get("from");
 	const toParam = searchParams.get("to");
 	const pageRef = useRef<HTMLDivElement>(null);
+	const datePickerRef = useRef<HTMLDivElement>(null);
+
+	// Date Picker State
+	const [showDatePicker, setShowDatePicker] = useState(false);
+	const [customFrom, setCustomFrom] = useState("");
+	const [customTo, setCustomTo] = useState("");
+	const [searchTerm, setSearchTerm] = useState(""); // Add search state
 
 	// State
 	const [invoices, setInvoices] = useState<InvoiceWithClientAndItems[]>([]);
@@ -115,6 +125,45 @@ function AnalyticsContent() {
 		? new Date(fromParam)
 		: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000);
 	const dateTo = toParam ? new Date(toParam) : new Date();
+
+	// Date Picker Helpers
+	const currentRangeLabel = useMemo(() => {
+		if (fromParam && toParam) return `${new Date(fromParam).toLocaleDateString("en-GB")} – ${new Date(toParam).toLocaleDateString("en-GB")}`;
+		return "نطاق زمني";
+	}, [fromParam, toParam]);
+
+	const setRange = (days: number) => {
+		const toDate = new Date();
+		const fromDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("from", fromDate.toISOString());
+		params.set("to", toDate.toISOString());
+		router.push(`?${params.toString()}`);
+		setShowDatePicker(false);
+	};
+
+	const setCustomRange = () => {
+		if (customFrom && customTo) {
+			const params = new URLSearchParams(searchParams.toString());
+			params.set("from", new Date(customFrom).toISOString());
+			params.set("to", new Date(customTo).toISOString());
+			router.push(`?${params.toString()}`);
+			setShowDatePicker(false);
+		}
+	};
+
+	// Close dropdown when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+				setShowDatePicker(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
 
 	// Previous period for comparison
 	const previousPeriodDays = Math.ceil(
@@ -459,6 +508,15 @@ function AnalyticsContent() {
 				new Date(inv.created_at) <= dateTo
 		);
 
+		// Search Filter
+		if (searchTerm) {
+			const term = searchTerm.toLowerCase();
+			filtered = filtered.filter(inv =>
+				inv.invoice_number.toLowerCase().includes(term) ||
+				inv.client?.name.toLowerCase().includes(term)
+			);
+		}
+
 		// Customer filter
 		if (filters.customerId !== "all") {
 			filtered = filtered.filter((inv) => inv.client_id === filters.customerId);
@@ -630,16 +688,93 @@ function AnalyticsContent() {
 	return (
 		<div ref={pageRef} className="space-y-8 pb-12">
 			{/* Header with Filters and Export */}
-			<div className={cn("flex flex-col md:flex-row items-center justify-between", layout.gap.standard)}>
+			{/* Header & Controls */}
+			<div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
 				<div>
-					<Heading variant="h1">تقارير الأداء</Heading>
-					<Text variant="body-large" color="muted" className="mt-2">تحليلات مفصلة لنمو أعمالك</Text>
+					<Heading variant="h1">التحليلات</Heading>
+					<Text variant="body-large" color="muted" className="mt-2">نظرة متقدمة على الأداء والمبيعات</Text>
 				</div>
-				<div className={cn("flex items-center", layout.gap.standard)}>
+
+				<div className="flex flex-col md:flex-row items-center gap-3 w-full xl:w-auto">
+					{/* Search */}
+					<div className="relative w-full md:w-64">
+						<Search
+							className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+							size={16}
+						/>
+						<input
+							type="search"
+							placeholder="ابحث في التقارير..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							className="w-full rounded-xl border border-gray-200 pl-3 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
+						/>
+					</div>
+
+					{/* Date Range Picker */}
+					<div className="relative w-full md:w-auto" ref={datePickerRef}>
+						<button
+							onClick={() => setShowDatePicker(!showDatePicker)}
+							className="w-full md:w-auto inline-flex items-center justify-between md:justify-start gap-2 rounded-xl bg-white border border-gray-200 text-gray-700 px-4 py-2 text-sm font-medium hover:bg-gray-50 active:translate-y-[1px]"
+						>
+							<div className="flex items-center gap-2">
+								<CalendarRange size={16} />
+								<span>{currentRangeLabel}</span>
+							</div>
+							<ChevronDown size={16} />
+						</button>
+
+						{showDatePicker && (
+							<div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-50 min-w-[320px]">
+								<div className="space-y-4">
+									<h3 className="font-semibold text-gray-900">اختر النطاق الزمني</h3>
+									<div className="flex gap-2 flex-wrap">
+										<button onClick={() => setRange(7)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">7 أيام</button>
+										<button onClick={() => setRange(30)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">30 يوماً</button>
+										<button onClick={() => setRange(90)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">3 أشهر</button>
+										<button onClick={() => setRange(180)} className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">6 أشهر</button>
+									</div>
+									<div className="border-t pt-4">
+										<h4 className="font-medium text-gray-700 mb-3">نطاق مخصص</h4>
+										<div className="grid grid-cols-2 gap-3">
+											<div>
+												<label className="block text-sm text-gray-600 mb-1">من</label>
+												<input
+													type="date"
+													value={customFrom}
+													onChange={(e) => setCustomFrom(e.target.value)}
+													className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
+												/>
+											</div>
+											<div>
+												<label className="block text-sm text-gray-600 mb-1">إلى</label>
+												<input
+													type="date"
+													value={customTo}
+													onChange={(e) => setCustomTo(e.target.value)}
+													className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
+												/>
+											</div>
+										</div>
+										<button
+											onClick={setCustomRange}
+											className="mt-3 w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 text-sm font-medium"
+										>
+											تطبيق
+										</button>
+									</div>
+								</div>
+							</div>
+						)}
+					</div>
+
+					{/* Filters */}
 					<AnalyticsFiltersComponent
 						filters={filters}
 						onFiltersChange={setFilters}
 					/>
+
+					{/* Export */}
 					<ExportMenu
 						onExportCSV={exportToCSV}
 						onExportExcel={exportToExcel}
