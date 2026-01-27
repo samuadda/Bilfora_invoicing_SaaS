@@ -37,6 +37,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
+import { BulkActions, BulkActionButton } from "@/components/dashboard/BulkActions";
 import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Input } from "@/components/ui";
 import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
@@ -257,6 +258,56 @@ export default function ProductsPage() {
 	};
 
 
+
+	// Export Products
+	const exportProducts = async () => {
+		const productsToExport = selectedIds.size > 0
+			? products.filter((p) => selectedIds.has(p.id))
+			: filteredProducts;
+
+		const ExcelJS = (await import("exceljs")).default;
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet("المنتجات");
+
+		worksheet.columns = [
+			{ header: "المنتج", key: "name", width: 30 },
+			{ header: "الوصف", key: "description", width: 30 },
+			{ header: "السعر", key: "price", width: 15 },
+			{ header: "العملة", key: "currency", width: 10 },
+			{ header: "القسم", key: "category", width: 20 },
+			{ header: "الوحدة", key: "unit", width: 15 },
+			{ header: "الحالة", key: "active", width: 15 },
+			{ header: "تاريخ الإضافة", key: "created_at", width: 20 },
+		];
+
+		productsToExport.forEach((product) => {
+			worksheet.addRow({
+				name: product.name,
+				description: product.description || "",
+				price: product.price,
+				currency: product.currency,
+				category: product.category || "",
+				unit: product.unit || "",
+				active: product.active ? "نشط" : "غير نشط",
+				created_at: new Date(product.created_at).toLocaleDateString("en-GB"),
+			});
+		});
+
+		const headerRow = worksheet.getRow(1);
+		headerRow.font = { bold: true };
+		headerRow.alignment = { vertical: "middle", horizontal: "center" };
+
+		const buffer = await workbook.xlsx.writeBuffer();
+		const blob = new Blob([buffer], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `products-export-${new Date().toISOString().split("T")[0]}.xlsx`;
+		anchor.click();
+		window.URL.revokeObjectURL(url);
+	};
 
 	const toggleProductStatus = async (id: string, currentStatus: boolean) => {
 		try {
@@ -489,68 +540,45 @@ export default function ProductsPage() {
 			</div>
 
 			{/* Bulk Actions Bar */}
-			{hasSelected && (
-				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<m.div
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className={cn("flex items-center", layout.gap.standard)}
-					>
-						<div className="w-10 h-10 rounded-xl bg-purple-50 text-[#7f2dfb] flex items-center justify-center flex-shrink-0">
-							<Check size={20} />
-						</div>
-						<div>
-							<Text variant="body-small" className="font-bold">
-								تم تحديد {selectedIds.size} منتج
-							</Text>
-							<Text variant="body-xs" color="muted" className="mt-0.5">
-								اختر إجراءاً لتطبيقه على المنتجات المحددة
-							</Text>
-						</div>
-					</m.div>
-					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange(true)}
-							disabled={bulkActionLoading}
-							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 inline-flex items-center justify-center gap-2"
-						>
-							<CheckCircle2 size={16} />
-							تفعيل
-						</UIButton>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange(false)}
-							disabled={bulkActionLoading}
-							className="bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 inline-flex items-center justify-center gap-2"
-						>
-							<XCircle size={16} />
-							تعطيل
-						</UIButton>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => setShowDeleteDialog(true)}
-							disabled={bulkActionLoading}
-							className="bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 inline-flex items-center justify-center gap-2"
-						>
-							<Trash2 size={16} />
-							حذف
-						</UIButton>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => setSelectedIds(new Set())}
-							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 inline-flex items-center justify-center gap-2"
-						>
-							<X size={16} />
-							إلغاء
-						</UIButton>
-					</div>
-				</Card>
-			)}
+			{/* Bulk Actions Bar */}
+			<BulkActions
+				selectedCount={selectedIds.size}
+				itemLabel="منتج"
+				onClearSelection={() => setSelectedIds(new Set())}
+			>
+				<BulkActionButton
+					variant="delete"
+					icon={<Trash2 size={16} />}
+					onClick={() => setShowDeleteDialog(true)}
+					disabled={bulkActionLoading}
+				>
+					حذف
+				</BulkActionButton>
+				<BulkActionButton
+					variant="info"
+					icon={<Download size={16} />}
+					onClick={exportProducts}
+					disabled={bulkActionLoading}
+				>
+					تصدير اكسل
+				</BulkActionButton>
+				<BulkActionButton
+					variant="warning"
+					icon={<XCircle size={16} />}
+					onClick={() => handleBulkStatusChange(false)}
+					disabled={bulkActionLoading}
+				>
+					تعطيل
+				</BulkActionButton>
+				<BulkActionButton
+					variant="success"
+					icon={<CheckCircle2 size={16} />}
+					onClick={() => handleBulkStatusChange(true)}
+					disabled={bulkActionLoading}
+				>
+					تفعيل
+				</BulkActionButton>
+			</BulkActions>
 
 			{/* Filters Card */}
 			<Card padding="standard">

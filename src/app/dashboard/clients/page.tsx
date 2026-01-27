@@ -25,6 +25,7 @@ import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 // ExcelJS is dynamically imported in exportClients to reduce bundle size
 import { Heading, Text, Card, Button as UIButton, Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Input } from "@/components/ui";
+import { BulkActions, BulkActionButton } from "@/components/dashboard/BulkActions";
 import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
 import QuickClientModal from "@/components/QuickClientModal";
@@ -575,75 +576,45 @@ export default function ClientsPage() {
 			</div>
 
 			{/* Bulk Actions Bar */}
-			{hasSelected && (
-				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<m.div
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className={cn("flex items-center", layout.gap.standard)}
-					>
-						<div className="w-10 h-10 rounded-xl bg-purple-50 text-[#7f2dfb] flex items-center justify-center flex-shrink-0">
-							<Check size={20} />
-						</div>
-						<div>
-							<Text variant="body-small" className="font-bold">
-								تم تحديد {selectedClientIds.size} عميل
-							</Text>
-							<Text variant="body-xs" color="muted" className="mt-0.5">
-								اختر إجراءاً لتطبيقه على العملاء المحددين
-							</Text>
-						</div>
-					</m.div>
-					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange("active")}
-							disabled={bulkActionLoading}
-							className="bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 inline-flex items-center justify-center gap-2"
-						>
-							<CheckCircle2 size={16} />
-							تفعيل
-						</UIButton>
-						<UIButton
-							variant="ghost"
-							size="sm"
-							onClick={() => handleBulkStatusChange("inactive")}
-							disabled={bulkActionLoading}
-							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 inline-flex items-center justify-center gap-2"
-						>
-							<XCircle size={16} />
-							تعطيل
-						</UIButton>
-						<button
-							type="button"
-							onClick={() => exportClients(true)}
-							disabled={bulkActionLoading}
-							className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							<Download size={16} />
-							تصدير CSV
-						</button>
-						<button
-							type="button"
-							onClick={() => setShowBulkDeleteDialog(true)}
-							disabled={bulkActionLoading}
-							className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							<Trash2 size={16} />
-							حذف
-						</button>
-						<button
-							type="button"
-							onClick={() => setSelectedClientIds(new Set())}
-							className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-sm font-medium transition-colors"
-						>
-							<XCircle size={16} />
-							إلغاء
-						</button>
-					</div>
-				</Card>
-			)}
+			{/* Bulk Actions Bar */}
+			<BulkActions
+				selectedCount={selectedClientIds.size}
+				itemLabel="عميل"
+				onClearSelection={() => setSelectedClientIds(new Set())}
+			>
+				<BulkActionButton
+					variant="delete"
+					icon={<Trash2 size={16} />}
+					onClick={() => setShowBulkDeleteDialog(true)}
+					disabled={bulkActionLoading}
+				>
+					حذف
+				</BulkActionButton>
+				<BulkActionButton
+					variant="info"
+					icon={<Download size={16} />}
+					onClick={() => exportClients(true)}
+					disabled={bulkActionLoading}
+				>
+					تصدير اكسل
+				</BulkActionButton>
+				<BulkActionButton
+					variant="warning"
+					icon={<XCircle size={16} />}
+					onClick={() => handleBulkStatusChange("inactive")}
+					disabled={bulkActionLoading}
+				>
+					تعطيل
+				</BulkActionButton>
+				<BulkActionButton
+					variant="success"
+					icon={<CheckCircle2 size={16} />}
+					onClick={() => handleBulkStatusChange("active")}
+					disabled={bulkActionLoading}
+				>
+					تفعيل
+				</BulkActionButton>
+			</BulkActions>
 
 			{/* Filter Card */}
 			<Card padding="standard">

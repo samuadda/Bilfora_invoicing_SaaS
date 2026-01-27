@@ -46,6 +46,7 @@ import { Heading, Text, Card, Button, Input, Select, SelectTrigger, SelectConten
 import { layout } from "@/lib/ui/tokens";
 import { formatDate } from "@/lib/formatters";
 import { Pagination } from "@/components/ui/pagination";
+import { BulkActions, BulkActionButton } from "@/components/dashboard/BulkActions";
 
 const statusConfig = {
 	draft: {
@@ -428,8 +429,12 @@ function InvoicesContent() {
 			{ header: "تاريخ الاستحقاق", key: "due_date", width: 15 },
 		];
 
+		const invoicesToExport = selectedInvoiceIds.size > 0
+			? invoices.filter((inv) => selectedInvoiceIds.has(inv.id))
+			: filteredInvoices;
+
 		// Add rows
-		filteredInvoices.forEach((invoice) => {
+		invoicesToExport.forEach((invoice) => {
 			worksheet.addRow({
 				invoice_number: invoice.invoice_number,
 				client_name: invoice.client.name,
@@ -565,94 +570,70 @@ function InvoicesContent() {
 			</div>
 
 			{/* Bulk Actions Bar */}
-			{hasSelected && (
-				<Card padding="standard" className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-					<m.div
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						className="flex items-center gap-3"
+			{/* Bulk Actions Bar */}
+			<BulkActions
+				selectedCount={selectedInvoiceIds.size}
+				itemLabel="فاتورة"
+				onClearSelection={() => setSelectedInvoiceIds(new Set())}
+			>
+				<BulkActionButton
+					variant="delete"
+					icon={<Trash2 size={16} />}
+					onClick={() => setShowBulkDeleteDialog(true)}
+					disabled={bulkActionLoading}
+				>
+					حذف
+				</BulkActionButton>
+
+				<BulkActionButton
+					variant="info"
+					icon={<Download size={16} />}
+					onClick={exportToExcel}
+					disabled={bulkActionLoading}
+				>
+					تصدير اكسل
+				</BulkActionButton>
+
+				<div className="flex items-center gap-1.5 px-3 py-1 bg-yellow-50 rounded-lg border border-yellow-100 mx-2">
+					<span className="text-xs font-medium text-yellow-700">تغيير الحالة:</span>
+					<BulkActionButton
+						variant="default"
+						icon={<FileText size={14} />}
+						onClick={() => handleBulkStatusChange("draft")}
+						disabled={bulkActionLoading}
+						className="h-7 text-xs px-2"
 					>
-						<div className="w-10 h-10 rounded-xl bg-purple-50 text-[#7f2dfb] flex items-center justify-center flex-shrink-0">
-							<Check size={20} />
-						</div>
-						<div>
-							<Text variant="body-small" className="font-bold">
-								تم تحديد {selectedInvoiceIds.size} فاتورة
-							</Text>
-							<Text variant="body-xs" color="muted" className="mt-0.5">
-								اختر إجراءاً لتطبيقه على الفواتير المحددة
-							</Text>
-						</div>
-					</m.div>
-					<div className={cn("flex items-center flex-wrap", layout.gap.tight)}>
-						<div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
-							<span className="text-xs font-medium text-gray-500 px-2">تغيير الحالة:</span>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleBulkStatusChange("draft")}
-								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-sm inline-flex items-center justify-center gap-1.5"
-								title="مسودة"
-							>
-								<FileText size={14} />
-								مسودة
-							</Button>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleBulkStatusChange("sent")}
-								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm inline-flex items-center justify-center gap-1.5"
-								title="مرسلة"
-							>
-								<Send size={14} />
-								مرسلة
-							</Button>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleBulkStatusChange("paid")}
-								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 shadow-sm inline-flex items-center justify-center gap-1.5"
-								title="مدفوعة"
-							>
-								<CheckCircle size={14} />
-								مدفوعة
-							</Button>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => handleBulkStatusChange("cancelled")}
-								disabled={bulkActionLoading}
-								className="h-8 px-2 text-xs bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 shadow-sm inline-flex items-center justify-center gap-1.5"
-								title="ملغية"
-							>
-								<XCircle size={14} />
-								ملغية
-							</Button>
-						</div>
-						<button
-							type="button"
-							onClick={() => setShowBulkDeleteDialog(true)}
-							disabled={bulkActionLoading}
-							className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							<Trash2 size={16} />
-							حذف
-						</button>
-						<button
-							type="button"
-							onClick={() => setSelectedInvoiceIds(new Set())}
-							className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-sm font-medium transition-colors"
-						>
-							<XCircle size={16} />
-							إلغاء
-						</button>
-					</div>
-				</Card>
-			)
-			}
+						مسودة
+					</BulkActionButton>
+					<BulkActionButton
+						variant="info"
+						icon={<Send size={14} />}
+						onClick={() => handleBulkStatusChange("sent")}
+						disabled={bulkActionLoading}
+						className="h-7 text-xs px-2"
+					>
+						مرسلة
+					</BulkActionButton>
+					<BulkActionButton
+						variant="success"
+						icon={<CheckCircle size={14} />}
+						onClick={() => handleBulkStatusChange("paid")}
+						disabled={bulkActionLoading}
+						className="h-7 text-xs px-2"
+					>
+						مدفوعة
+					</BulkActionButton>
+					<BulkActionButton
+						variant="warning"
+						icon={<XCircle size={14} />}
+						onClick={() => handleBulkStatusChange("cancelled")}
+						disabled={bulkActionLoading}
+						className="h-7 text-xs px-2"
+					>
+						ملغية
+					</BulkActionButton>
+				</div>
+			</BulkActions>
 
 			{/* Filters & Search */}
 			<Card padding="standard">
@@ -788,19 +769,21 @@ function InvoicesContent() {
 			</Card>
 
 			{/* Pagination Controls */}
-			{totalCount > 0 && (
-				<div className="flex items-center justify-between mt-4">
-					<Text variant="body-small" color="muted">
-						عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
-					</Text>
-					<Pagination
-						currentPage={currentPage}
-						totalPages={totalPages}
-						onPageChange={setCurrentPage}
-						isLoading={loading}
-					/>
-				</div>
-			)}
+			{
+				totalCount > 0 && (
+					<div className="flex items-center justify-between mt-4">
+						<Text variant="body-small" color="muted">
+							عرض {Math.min((currentPage - 1) * pageSize + 1, totalCount)} إلى {Math.min(currentPage * pageSize, totalCount)} من {totalCount} فاتورة
+						</Text>
+						<Pagination
+							currentPage={currentPage}
+							totalPages={totalPages}
+							onPageChange={setCurrentPage}
+							isLoading={loading}
+						/>
+					</div>
+				)
+			}
 
 			{/* Invoices Table */}
 			<Card padding="none" className="overflow-hidden">
