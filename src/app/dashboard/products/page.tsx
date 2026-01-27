@@ -22,6 +22,7 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Package,
+	Download,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { m } from "framer-motion";
@@ -36,7 +37,7 @@ import {
 	DialogFooter,
 } from "@/components/dialog";
 import { Button } from "@/components/dialogButton";
-import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton, Price, Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Input } from "@/components/ui";
 import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
 import QuickProductModal from "@/components/QuickProductModal";
@@ -378,6 +379,48 @@ export default function ProductsPage() {
 	};
 
 
+	const exportToExcel = async () => {
+		// Dynamic import to reduce initial bundle size (~500KB savings)
+		const ExcelJS = (await import("exceljs")).default;
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet("المنتجات");
+
+		worksheet.columns = [
+			{ header: "الاسم", key: "name", width: 20 },
+			{ header: "الفئة", key: "category", width: 15 },
+			{ header: "الوحدة", key: "unit", width: 10 },
+			{ header: "السعر", key: "price", width: 12 },
+			{ header: "الحالة", key: "status", width: 10 },
+			{ header: "تاريخ الإضافة", key: "created_at", width: 15 },
+		];
+
+		filteredProducts.forEach((product) => {
+			worksheet.addRow({
+				name: product.name,
+				category: product.category || "",
+				unit: product.unit || "",
+				price: Number(product.unit_price),
+				status: product.active ? "نشط" : "معطّل",
+				created_at: formatDate(product.created_at),
+			});
+		});
+
+		const headerRow = worksheet.getRow(1);
+		headerRow.font = { bold: true };
+		headerRow.alignment = { vertical: "middle", horizontal: "center" };
+
+		const buffer = await workbook.xlsx.writeBuffer();
+		const blob = new Blob([buffer], {
+			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		});
+		const url = window.URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = `products-export-${new Date().toISOString().split("T")[0]}.xlsx`;
+		anchor.click();
+		window.URL.revokeObjectURL(url);
+	};
+
 	const formatDate = (dateString: string) => {
 		return new Date(dateString).toLocaleDateString("en-GB");
 	};
@@ -511,105 +554,113 @@ export default function ProductsPage() {
 
 			{/* Filters Card */}
 			<Card padding="standard">
-				<div className="flex flex-col lg:flex-row gap-4">
-					<div className="flex flex-col lg:flex-row gap-4">
-						{/* Search */}
-						<div className="relative flex-1">
-							<Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-							<input
-								type="text"
-								placeholder="ابحث عن اسم المنتج، الوصف، أو الكود..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 transition-all text-sm"
-							/>
+				<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+					{/* Search */}
+					<div className="relative w-full lg:w-96">
+						<Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+						<Input
+							type="text"
+							placeholder="ابحث عن اسم المنتج، الوصف، أو الكود..."
+							value={searchTerm}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+							className="pr-12 bg-gray-50"
+						/>
+					</div>
+
+					{/* Filters Row */}
+					<div className="flex flex-wrap w-full lg:w-auto gap-3">
+						{/* Status Filter */}
+						<div className="relative flex-1 lg:flex-none min-w-[140px]">
+							<Select
+								value={statusFilter}
+								onValueChange={(val) =>
+									setStatusFilter(val as "all" | ProductStatus)
+								}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="الحالة" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="all">جميع الحالات</SelectItem>
+									<SelectItem value="active">نشط</SelectItem>
+									<SelectItem value="inactive">معطّل</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
 
-						{/* Filters Row */}
-						<div className="flex flex-wrap gap-3">
-							{/* Status Filter */}
-							<div className="relative">
+						{/* Category Filter */}
+						{categories.length > 0 && (
+							<div className="relative flex-1 lg:flex-none min-w-[140px]">
 								<Select
-									value={statusFilter}
-									onValueChange={(val) =>
-										setStatusFilter(val as "all" | ProductStatus)
-									}
+									value={categoryFilter}
+									onValueChange={(val) => setCategoryFilter(val)}
 								>
-									<SelectTrigger className="w-[140px]">
-										<SelectValue placeholder="الحالة" />
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="الفئة" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="all">جميع الحالات</SelectItem>
-										<SelectItem value="active">نشط</SelectItem>
-										<SelectItem value="inactive">معطّل</SelectItem>
+										<SelectItem value="all">جميع الفئات</SelectItem>
+										{categories.map((cat) => (
+											<SelectItem key={cat} value={cat}>
+												{cat}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
 							</div>
+						)}
 
-							{/* Category Filter */}
-							{categories.length > 0 && (
-								<div className="relative">
-									<Select
-										value={categoryFilter}
-										onValueChange={(val) => setCategoryFilter(val)}
-									>
-										<SelectTrigger className="w-[140px]">
-											<SelectValue placeholder="الفئة" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="all">جميع الفئات</SelectItem>
-											{categories.map((cat) => (
-												<SelectItem key={cat} value={cat}>
-													{cat}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							)}
-
-							{/* Unit Filter */}
-							{units.length > 0 && (
-								<div className="relative">
-									<Select
-										value={unitFilter}
-										onValueChange={(val) => setUnitFilter(val)}
-									>
-										<SelectTrigger className="w-[140px]">
-											<SelectValue placeholder="الوحدة" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="all">جميع الوحدات</SelectItem>
-											{units.map((unit) => (
-												<SelectItem key={unit} value={unit}>
-													{unit}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							)}
-
-							{/* Sort */}
-							<div className="relative">
+						{/* Unit Filter */}
+						{units.length > 0 && (
+							<div className="relative flex-1 lg:flex-none min-w-[140px]">
 								<Select
-									value={sortOption}
-									onValueChange={(val) =>
-										setSortOption(val as SortOption)
-									}
+									value={unitFilter}
+									onValueChange={(val) => setUnitFilter(val)}
 								>
-									<SelectTrigger className="w-[160px]">
-										<SelectValue placeholder="ترتيب حسب" />
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="الوحدة" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="newest">الأحدث أولاً</SelectItem>
-										<SelectItem value="oldest">الأقدم أولاً</SelectItem>
-										<SelectItem value="price-high">الأعلى سعراً</SelectItem>
-										<SelectItem value="price-low">الأقل سعراً</SelectItem>
+										<SelectItem value="all">جميع الوحدات</SelectItem>
+										{units.map((unit) => (
+											<SelectItem key={unit} value={unit}>
+												{unit}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
 							</div>
+						)}
+
+						{/* Sort */}
+						<div className="relative flex-1 lg:flex-none min-w-[140px]">
+							<Select
+								value={sortOption}
+								onValueChange={(val) =>
+									setSortOption(val as SortOption)
+								}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="ترتيب حسب" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="newest">الأحدث أولاً</SelectItem>
+									<SelectItem value="oldest">الأقدم أولاً</SelectItem>
+									<SelectItem value="price-high">الأعلى سعراً</SelectItem>
+									<SelectItem value="price-low">الأقل سعراً</SelectItem>
+								</SelectContent>
+							</Select>
 						</div>
+
+						<UIButton
+							variant="secondary"
+							size="md"
+							onClick={exportToExcel}
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm"
+						>
+							<Download size={18} />
+							تصدير (Excel)
+						</UIButton>
 					</div>
 				</div>
 			</Card>

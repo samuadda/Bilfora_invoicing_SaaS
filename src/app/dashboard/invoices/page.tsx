@@ -632,25 +632,23 @@ function InvoicesContent() {
 								ملغية
 							</Button>
 						</div>
-						<Button
-							variant="ghost"
-							size="sm"
+						<button
+							type="button"
 							onClick={() => setShowBulkDeleteDialog(true)}
 							disabled={bulkActionLoading}
-							className="bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
+							className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							<Trash2 size={16} />
 							حذف
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
+						</button>
+						<button
+							type="button"
 							onClick={() => setSelectedInvoiceIds(new Set())}
-							className="bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200"
+							className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 rounded-xl text-sm font-medium transition-colors"
 						>
 							<XCircle size={16} />
 							إلغاء
-						</Button>
+						</button>
 					</div>
 				</Card>
 			)
@@ -780,7 +778,7 @@ function InvoicesContent() {
 							variant="secondary"
 							size="md"
 							onClick={exportToExcel}
-							className="inline-flex items-center gap-2"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm"
 						>
 							<Download size={18} />
 							تصدير (Excel)

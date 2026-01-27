@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import LoadingState from "@/components/LoadingState";
 import { useRouter } from "next/navigation";
 // ExcelJS is dynamically imported in exportClients to reduce bundle size
-import { Heading, Text, Card, Button as UIButton, Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui";
+import { Heading, Text, Card, Button as UIButton, Select, SelectTrigger, SelectContent, SelectItem, SelectValue, Input } from "@/components/ui";
 import { Pagination } from "@/components/ui/pagination";
 import { layout } from "@/lib/ui/tokens";
 import QuickClientModal from "@/components/QuickClientModal";
@@ -50,6 +50,13 @@ type AdvancedFilter =
 	| "has-overdue"
 	| "no-invoices"
 	| "new-clients";
+
+type SortOption =
+	| "newest"
+	| "oldest"
+	| "most-invoices"
+	| "highest-amount"
+	| "alphabetical";
 
 const clientSchema = z.object({
 	name: z.string().min(2, "اسم العميل قصير جداً"),
@@ -97,6 +104,7 @@ export default function ClientsPage() {
 	// const [totalCount, setTotalCount] = useState(0);
 
 	const [statusFilter, setStatusFilter] = useState<AdvancedFilter>("all");
+	const [sortOption, setSortOption] = useState<SortOption>("newest");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showModal, setShowModal] = useState(false);
 	const [showQuickAddModal, setShowQuickAddModal] = useState(false);
@@ -202,29 +210,27 @@ export default function ClientsPage() {
 	}, [toast]);
 
 	const filterClients = useCallback(() => {
-		let filtered = [...clients];
+		let result = [...clients];
 
 		// Advanced filters
 		if (statusFilter === "active-only") {
-			filtered = filtered.filter((c) => c.status === "active");
+			result = result.filter((c) => c.status === "active");
 		} else if (statusFilter === "inactive-only") {
-			filtered = filtered.filter((c) => c.status === "inactive");
+			result = result.filter((c) => c.status === "inactive");
 		} else if (statusFilter === "has-overdue") {
-			filtered = filtered.filter((c) => c.has_overdue_invoices);
+			result = result.filter((c) => c.has_overdue_invoices);
 		} else if (statusFilter === "no-invoices") {
-			filtered = filtered.filter((c) => (c.invoice_count || 0) === 0);
+			result = result.filter((c) => (c.invoice_count || 0) === 0);
 		} else if (statusFilter === "new-clients") {
 			const thirtyDaysAgo = new Date();
 			thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-			filtered = filtered.filter(
-				(c) => new Date(c.created_at) >= thirtyDaysAgo
-			);
+			result = result.filter((c) => new Date(c.created_at) >= thirtyDaysAgo);
 		}
 
-		// Search filter (improved to include tax_number)
+		// Search filter
 		if (searchTerm) {
 			const term = searchTerm.toLowerCase();
-			filtered = filtered.filter(
+			result = result.filter(
 				(c) =>
 					c.name.toLowerCase().includes(term) ||
 					(c.email && c.email.toLowerCase().includes(term)) ||
@@ -234,8 +240,26 @@ export default function ClientsPage() {
 			);
 		}
 
-		setFilteredClients(filtered);
-	}, [clients, statusFilter, searchTerm]);
+		// Apply Sorting
+		result.sort((a, b) => {
+			switch (sortOption) {
+				case "newest":
+					return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+				case "oldest":
+					return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+				case "most-invoices":
+					return (b.invoice_count || 0) - (a.invoice_count || 0);
+				case "highest-amount":
+					return (b.total_invoiced_amount || 0) - (a.total_invoiced_amount || 0);
+				case "alphabetical":
+					return a.name.localeCompare(b.name);
+				default:
+					return 0;
+			}
+		});
+
+		setFilteredClients(result);
+	}, [clients, statusFilter, searchTerm, sortOption]);
 
 	useEffect(() => {
 		loadClients();
@@ -626,12 +650,12 @@ export default function ClientsPage() {
 				<div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 					<div className="relative w-full lg:w-96">
 						<Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-						<input
+						<Input
 							type="text"
 							placeholder="ابحث بالاسم، الشركة، البريد، الهاتف، الرقم الضريبي..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-2 focus:ring-purple-100 transition-all text-sm"
+							className="pr-12 bg-gray-50"
 						/>
 					</div>
 					<div className="flex items-center gap-3 w-full lg:w-auto">
@@ -653,14 +677,32 @@ export default function ClientsPage() {
 								</SelectContent>
 							</Select>
 						</div>
-						<button
-							type="button"
+						<div className="relative flex-1 lg:flex-none min-w-[160px]">
+							<Select
+								value={sortOption}
+								onValueChange={(val) => setSortOption(val as SortOption)}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="ترتيب حسب" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="newest">الأحدث إضافة</SelectItem>
+									<SelectItem value="oldest">الأقدم إضافة</SelectItem>
+									<SelectItem value="most-invoices">الأكثر فواتير</SelectItem>
+									<SelectItem value="highest-amount">الأعلى مبلغاً</SelectItem>
+									<SelectItem value="alphabetical">أبجدياً (أ-ي)</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
+						<UIButton
+							variant="secondary"
+							size="md"
 							onClick={() => exportClients(false)}
-							className="inline-flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-sm font-medium transition-colors"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm"
 						>
 							<Download size={18} />
-							تصدير العملاء
-						</button>
+							تصدير (Excel)
+						</UIButton>
 					</div>
 				</div>
 			</Card>
