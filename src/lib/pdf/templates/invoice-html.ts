@@ -66,7 +66,7 @@ export function generateInvoiceHtml(
 
     // Explicit conditions
     const isTax = vat > 0;
-    const isOrg = client?.client_type === 'organization';
+    const isOrg = !!client?.tax_number;
 
     if (isTax) {
         if (isOrg) {
@@ -100,7 +100,7 @@ export function generateInvoiceHtml(
                 if (hours !== 0 || minutes !== 0) {
                     return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
                 }
-            } catch (e) { /* ignore */ }
+            } catch { /* ignore */ }
         }
 
         // 3. Fallback: Current Time (Temporary Quick Fix for ZATCA validation)
