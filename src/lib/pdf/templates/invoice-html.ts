@@ -53,25 +53,76 @@ export function generateInvoiceHtml(
     fonts?: { regular: string; bold: string },
     seller?: SellerProfile | null
 ) {
-    const isTax = invoice.invoice_type === 'standard_tax' || invoice.invoice_type === 'simplified_tax';
     const total = Number(invoice.total_amount || 0);
     const subtotal = Number(invoice.subtotal || 0);
     const vat = Number(invoice.vat_amount || 0);
+    const taxRate = invoice.tax_rate || 0;
 
-    // Dynamic invoice title based on type
-    const invoiceTitle = isTax ? "فاتورة ضريبية" : "فاتورة";
+    // ─────────────────────────────────────────────────────────────
+    // 1. DETERMINE INVOICE MODE & TITLE (Deepmind Fix)
+    // ─────────────────────────────────────────────────────────────
+    // Strict Mode Logic
+    let invoiceTitle = "فاتورة"; // Default (Non-Tax)
 
-    // Seller: company_name fallback to full_name, then "اسم المستخدم"
+    // Explicit conditions
+    const isTax = vat > 0;
+    const isOrg = client?.client_type === 'organization';
+
+    if (isTax) {
+        if (isOrg) {
+            invoiceTitle = "فاتورة ضريبية"; // Mode A: Tax Invoice (B2B)
+        } else {
+            invoiceTitle = "فاتورة ضريبية مبسطة"; // Mode B: Simplified Tax Invoice (B2C)
+        }
+    }
+
+    // Derived flags for layout
+    const isTaxMode = isTax; // General flag for showing tax columns
+    const showBuyerVat = isTax && isOrg; // Only show Buyer VAT in B2B Tax Invoice
+    const showQrPlaceholder = isTax; // Show QR in tax modes
+
+    // ─────────────────────────────────────────────────────────────
+    // 2. HELPER: Issue Time
+    // ─────────────────────────────────────────────────────────────
+    function getFormattedTime(dateStr?: string | null, timeStr?: string | null): string {
+        // 1. Try explicit time field
+        if (timeStr && timeStr.length >= 5) {
+            return timeStr.substring(0, 5); // HH:mm
+        }
+
+        // 2. Try extracting from date string if ISO
+        if (dateStr && dateStr.includes('T')) {
+            try {
+                const date = new Date(dateStr);
+                const hours = date.getHours();
+                const minutes = date.getMinutes();
+                // Avoid 00:00 default
+                if (hours !== 0 || minutes !== 0) {
+                    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        // 3. Fallback: Current Time (Temporary Quick Fix for ZATCA validation)
+        const now = new Date();
+        return now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    const issueTime = getFormattedTime(invoice.issue_date, invoice.issue_time);
+
+    // Seller Info
     const sellerName = seller?.company_name || seller?.full_name || "اسم المستخدم";
     const sellerTaxNumber = seller?.tax_number || "";
     const sellerAddress = seller?.address || "";
     const sellerIban = seller?.iban || "";
     const sellerBankName = seller?.bank_name || "";
+    const sellerPhone = seller?.phone || "";
 
-    // Buyer: company_name fallback to name
+    // Buyer Info
     const buyerName = client?.company_name || client?.name || "عميل نقدي";
     const buyerTaxNumber = client?.tax_number || "";
     const buyerAddress = client?.address || "";
+    const buyerPhone = client?.phone || "";
 
     // Font embedding
     const fontStyles = fonts ? `
@@ -111,6 +162,7 @@ export function generateInvoiceHtml(
             --border: #e2e8f0;
             --accent: #7f2dfb;
             --bg-subtle: #f8fafc;
+            --bg-qr: #f1f5f9;
         }
 
         body {
@@ -123,15 +175,22 @@ export function generateInvoiceHtml(
         }
 
         /* ─────────────────────────────────────────────────────────────
-           TOP BAR - Logo (Right) and Invoice Title + Number (Left)
+           TOP BAR
         ───────────────────────────────────────────────────────────── */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
             padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .brand-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .brand {
@@ -141,12 +200,25 @@ export function generateInvoiceHtml(
             letter-spacing: -0.5px;
         }
 
-        .invoice-header {
+        .invoice-type-tag {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-subtle);
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .invoice-header-col {
             text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
 
         .invoice-title {
-            font-size: 28px;
+            font-size: 26px; /* Slightly smaller to fit long arabic titles */
             font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 4px;
@@ -160,8 +232,24 @@ export function generateInvoiceHtml(
             unicode-bidi: isolate;
         }
 
+        /* QR Placeholder */
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            background-color: var(--bg-qr);
+            border: 1px dashed var(--text-muted);
+            border-radius: 8px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            text-align: center;
+        }
+
         /* ─────────────────────────────────────────────────────────────
-           INFO GRID - 3 Column Editorial Layout
+           INFO GRID
         ───────────────────────────────────────────────────────────── */
         .info-grid {
             display: grid;
@@ -170,14 +258,6 @@ export function generateInvoiceHtml(
             margin-bottom: 40px;
             padding-bottom: 24px;
             border-bottom: 1px solid var(--border);
-        }
-
-        .info-column {
-            /* Clean column styling */
-        }
-
-        .info-column.meta {
-            text-align: left;
         }
 
         .column-label {
@@ -190,7 +270,7 @@ export function generateInvoiceHtml(
         }
 
         .party-name {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 6px;
@@ -207,6 +287,7 @@ export function generateInvoiceHtml(
         .party-detail.vat {
             font-size: 12px;
             color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .meta-row {
@@ -215,7 +296,9 @@ export function generateInvoiceHtml(
             align-items: baseline;
             padding: 8px 0;
             font-size: 14px;
+            border-bottom: 1px dashed var(--border);
         }
+        .meta-row:last-child { border-bottom: none; }
 
         .meta-label {
             color: var(--text-muted);
@@ -230,7 +313,7 @@ export function generateInvoiceHtml(
         }
 
         /* ─────────────────────────────────────────────────────────────
-           TABLE - Minimalist with thick header border, RTL aligned
+           TABLE
         ───────────────────────────────────────────────────────────── */
         table {
             width: 100%;
@@ -255,40 +338,54 @@ export function generateInvoiceHtml(
 
         th.center { text-align: center; }
         th.left { text-align: left; direction: ltr; }
+        
+        /* Specific column styles for Tax mode vibe */
+        th.tax-col { 
+            color: var(--text-muted); 
+            font-size: 11px;
+            font-weight: 600;
+        }
 
         td {
             padding: 20px 12px;
             border-bottom: 1px solid var(--border);
             color: var(--text-secondary);
-            font-size: 15px;
+            font-size: 14px;
             vertical-align: top;
         }
 
         td.center { text-align: center; direction: ltr; unicode-bidi: isolate; }
         td.left { text-align: left; direction: ltr; unicode-bidi: isolate; }
+        
+        td.tax-col {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        
+        td.total-col {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
 
         .item-desc {
             color: var(--text-primary);
             font-weight: 500;
-            max-width: 320px;
-            word-break: break-word;
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr {
-            break-inside: avoid;
-            page-break-inside: avoid;
+            max-width: 300px;
+            word-break: break-all;
         }
 
         /* ─────────────────────────────────────────────────────────────
-           TOTALS - Massive total, positioned on left (RTL right visual)
+           TOTALS
         ───────────────────────────────────────────────────────────── */
         .totals-wrapper {
             display: flex;
-            justify-content: flex-start;
+            justify-content: flex-start; /* RTL: This is visually Right if LTR, but in RTL content flows right to left. */
+            /* Actually in RTL flex-start is Right. We want it on the Left side (English convention) or Right side (Arabic convention)? 
+               Usually totals are under the amount column.
+               Let's stick to 'flex-end' relative to LTR, which is 'flex-start' in RTL? No.
+               Let's just align it to the "Left" side of the page visually (end of RTL line).
+            */
+            justify-content: flex-end; /* Visual Left */
             margin-top: 24px;
             break-inside: avoid;
             page-break-inside: avoid;
@@ -334,40 +431,8 @@ export function generateInvoiceHtml(
             letter-spacing: -0.5px;
         }
 
-        .currency-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-right: 4px;
-        }
-
         /* ─────────────────────────────────────────────────────────────
-           NOTES - Simple and subtle
-        ───────────────────────────────────────────────────────────── */
-        .notes-section {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-        }
-
-        .notes-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .notes-content {
-            font-size: 14px;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-            line-height: 1.7;
-        }
-
-        /* ─────────────────────────────────────────────────────────────
-           PAYMENT DETAILS - Bank section footer
+           FOOTER & BANK
         ───────────────────────────────────────────────────────────── */
         .payment-section {
             margin-top: 48px;
@@ -377,7 +442,7 @@ export function generateInvoiceHtml(
             border-radius: 8px;
             break-inside: avoid;
         }
-
+        
         .payment-title {
             font-size: 11px;
             font-weight: 700;
@@ -386,7 +451,7 @@ export function generateInvoiceHtml(
             letter-spacing: 1px;
             margin-bottom: 16px;
         }
-
+        
         .payment-row {
             display: flex;
             justify-content: space-between;
@@ -394,101 +459,83 @@ export function generateInvoiceHtml(
             font-size: 14px;
             border-bottom: 1px solid var(--border);
         }
+        .payment-row:last-child { border-bottom: none; }
 
-        .payment-row:last-child {
-            border-bottom: none;
-        }
+        .payment-label { color: var(--text-muted); font-size: 13px; }
+        .payment-value { color: var(--text-primary); font-weight: 600; direction: ltr; font-family: 'Courier New', monospace; }
 
-        .payment-label {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .payment-value {
-            color: var(--text-primary);
-            font-weight: 600;
-            direction: ltr;
-            unicode-bidi: isolate;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 0.5px;
-        }
-
-        /* ─────────────────────────────────────────────────────────────
-           FOOTER - Minimal branding
-        ───────────────────────────────────────────────────────────── */
         .footer {
             margin-top: 64px;
             text-align: center;
             color: var(--text-muted);
             font-size: 12px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
         }
 
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
+        .footer a { color: var(--accent); text-decoration: none; }
 
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
-        @media print {
-            body {
-                padding: 40px;
-            }
-        }
+        @page { size: A4; margin: 0; }
     </style>
 </head>
 <body>
 
-    <!-- TOP BAR: Logo + Invoice Title -->
+    <!-- TOP BAR -->
     <div class="top-bar">
-        <div class="brand">Bilfora</div>
-        <div class="invoice-header">
+        <div class="brand-col">
+            <div class="brand">Bilfora</div>
+            ${sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">VAT: ${safe(sellerTaxNumber)}</div>` : ''}
+        </div>
+        
+        <div class="invoice-header-col">
             <h1 class="invoice-title">${invoiceTitle}</h1>
             <div class="invoice-number"># ${safe(invoice.invoice_number)}</div>
+            ${showQrPlaceholder ? `
+            <div class="qr-placeholder">
+                <div>QR Code Area<br>(ZATCA)</div>
+            </div>
+            ` : ''}
         </div>
     </div>
 
-    <!-- INFO GRID: 3-Column Editorial Layout -->
+    <!-- INFO GRID -->
     <div class="info-grid">
-        <!-- Column 1: From (Seller) -->
+        <!-- Seller Info -->
         <div class="info-column">
-            <div class="column-label">مِن</div>
+            <div class="column-label">مِن (المورد)</div>
             <div class="party-name">${safe(sellerName)}</div>
             ${sellerAddress ? `<div class="party-detail">${safe(sellerAddress)}</div>` : ''}
+            ${sellerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(sellerPhone)}</div>` : ''}
             ${sellerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
-            ${seller?.phone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(seller.phone)}</div>` : ''}
         </div>
 
-        <!-- Column 2: To (Buyer) -->
+        <!-- Buyer Info -->
         <div class="info-column">
-            <div class="column-label">إلى</div>
+            <div class="column-label">إلى (العميل)</div>
             <div class="party-name">${safe(buyerName)}</div>
-            ${client?.name && client?.company_name ? `<div class="party-detail">${safe(client.name)}</div>` : ''}
             ${buyerAddress ? `<div class="party-detail">${safe(buyerAddress)}</div>` : ''}
-            ${buyerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(buyerTaxNumber)}</span></div>` : ''}
-            ${client?.phone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(client.phone)}</div>` : ''}
+            ${buyerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(buyerPhone)}</div>` : ''}
+            
+            <!-- Buyer VAT only for Tax Invoice (B2B) -->
+            ${showBuyerVat && buyerTaxNumber ? `
+                <div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(buyerTaxNumber)}</span></div>
+            ` : ''}
         </div>
 
-        <!-- Column 3: Meta (Dates, Tax Rate) -->
+        <!-- Meta Info -->
         <div class="info-column meta">
             <div class="column-label">التفاصيل</div>
             <div class="meta-row">
                 <span class="meta-label">تاريخ الإصدار</span>
-                <span class="meta-value">${formatDate(invoice.issue_date)}${invoice.issue_time ? ` - ${invoice.issue_time}` : ''}</span>
+                <span class="meta-value">
+                    ${formatDate(invoice.issue_date)}
+                    <span style="color: var(--text-muted); font-size: 13px; margin-right: 6px; font-weight: 500;">${issueTime}</span>
+                </span>
             </div>
             <div class="meta-row">
                 <span class="meta-label">تاريخ الاستحقاق</span>
                 <span class="meta-value">${formatDate(invoice.due_date)}</span>
             </div>
-            ${isTax ? `
-            <div class="meta-row">
-                <span class="meta-label">معدل الضريبة</span>
-                <span class="meta-value">${invoice.tax_rate || 15}%</span>
-            </div>
-            ` : ''}
         </div>
     </div>
 
@@ -497,10 +544,10 @@ export function generateInvoiceHtml(
         <thead>
             <tr>
                 <th style="width: 5%" class="center">#</th>
-                <th style="width: ${isTax ? '35%' : '45%'}">الوصف</th>
+                <th style="width: ${isTaxMode ? '35%' : '45%'}">الوصف</th>
                 <th style="width: 10%" class="center">الكمية</th>
-                <th style="width: 15%" class="left">السعر</th>
-                ${isTax ? '<th style="width: 15%" class="left">الضريبة</th>' : ''}
+                <th style="width: 15%" class="left">سعر الوحدة</th>
+                ${isTaxMode ? `<th style="width: 15%" class="left tax-col">الضريبة (${taxRate}%)</th>` : ''}
                 <th style="width: 15%" class="left">الإجمالي</th>
             </tr>
         </thead>
@@ -508,9 +555,21 @@ export function generateInvoiceHtml(
             ${items.map((item, i) => {
         const qty = Number(item.quantity) || 0;
         const unitPrice = Number(item.unit_price) || 0;
-        const lineTotalRaw = qty * unitPrice;
-        const taxAmount = isTax ? (invoice.tax_rate ? lineTotalRaw * (invoice.tax_rate / 100) : 0) : 0;
-        const lineTotal = item.total ? Number(item.total) : (isTax ? lineTotalRaw + taxAmount : lineTotalRaw);
+
+        // For layout purposes:
+        // Pre-vat total
+        const lineTotalPreTax = qty * unitPrice;
+
+        // Tax amount
+        let lineTaxAmount = 0;
+        if (isTaxMode && taxRate > 0) {
+            lineTaxAmount = lineTotalPreTax * (taxRate / 100);
+        }
+
+        // Final Total
+        // If item has a specific total override from DB, use it, else calculate
+        // But in ZATCA strict mode, calculation should be consistent.
+        const lineTotalFinal = item.total ? Number(item.total) : (lineTotalPreTax + lineTaxAmount);
 
         return `
                 <tr>
@@ -518,8 +577,8 @@ export function generateInvoiceHtml(
                     <td class="item-desc">${safe(item.description)}</td>
                     <td class="center">${qty}</td>
                     <td class="left">${formatCurrency(unitPrice)}</td>
-                    ${isTax ? `<td class="left">${formatCurrency(taxAmount)}</td>` : ''}
-                    <td class="left">${formatCurrency(lineTotal)}</td>
+                    ${isTaxMode ? `<td class="left tax-col">${formatCurrency(lineTaxAmount)}</td>` : ''}
+                    <td class="left total-col">${formatCurrency(lineTotalFinal)}</td>
                 </tr>
                 `;
     }).join('')}
@@ -530,34 +589,34 @@ export function generateInvoiceHtml(
     <div class="totals-wrapper">
         <div class="totals-section">
             <div class="totals-row subtotal">
-                <span class="totals-label">المجموع الفرعي</span>
+                <span class="totals-label">المجموع (غير شامل الضريبة)</span>
                 <span class="totals-value">${formatCurrency(subtotal)}</span>
             </div>
-            ${isTax ? `
+            
+            ${isTaxMode ? `
             <div class="totals-row">
-                <span class="totals-label">ضريبة القيمة المضافة (${invoice.tax_rate || 15}%)</span>
+                <span class="totals-label">مجموع الضريبة (${taxRate}%)</span>
                 <span class="totals-value">${formatCurrency(vat)}</span>
             </div>
             ` : ''}
+
             <div class="totals-row final">
-                <span class="totals-label" style="font-size: 18px; font-weight: 700; color: var(--text-primary);">الإجمالي</span>
+                <span class="totals-label" style="font-size: 16px; font-weight: 800; color: var(--text-primary);">الإجمالي المستحق</span>
                 <span class="totals-value">${formatCurrency(total, true)}</span>
             </div>
         </div>
     </div>
 
     ${invoice.notes ? `
-    <!-- NOTES -->
-    <div class="notes-section">
-        <div class="notes-label">ملاحظات</div>
-        <div class="notes-content">${safe(invoice.notes)}</div>
+    <div style="margin-top: 48px; border-top: 1px solid var(--border); padding-top: 24px;">
+        <div class="column-label">ملاحظات</div>
+        <div style="font-size: 14px; color: var(--text-secondary); white-space: pre-wrap;">${safe(invoice.notes)}</div>
     </div>
     ` : ''}
 
     ${(sellerIban || sellerBankName) ? `
-    <!-- PAYMENT DETAILS -->
     <div class="payment-section">
-        <div class="payment-title">تفاصيل الدفع</div>
+        <div class="payment-title">تفاصيل الحساب البنكي</div>
         ${sellerBankName ? `
         <div class="payment-row">
             <span class="payment-label">اسم البنك</span>
@@ -566,16 +625,15 @@ export function generateInvoiceHtml(
         ` : ''}
         ${sellerIban ? `
         <div class="payment-row">
-            <span class="payment-label">رقم الآيبان (IBAN)</span>
+            <span class="payment-label">IBAN</span>
             <span class="payment-value">${safe(sellerIban)}</span>
         </div>
         ` : ''}
     </div>
     ` : ''}
 
-    <!-- FOOTER -->
     <div class="footer">
-        Generated by <a href="https://bilfora.com" target="_blank">Bilfora</a>
+        تم الإنشاء بواسطة منصة <a href="https://bilfora.com" target="_blank">Bilfora</a> للفواتير الإلكترونية
     </div>
 
 </body>
