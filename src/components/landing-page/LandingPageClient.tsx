@@ -83,15 +83,7 @@ export default function LandingPageClient() {
 
 					<Container className="relative z-20">
 						<div className="max-w-4xl mx-auto text-center">
-							<m.div
-								initial={{ opacity: 0, y: -20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.5 }}
-								className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-sm font-medium text-purple-800 mb-8"
-							>
-								<span className="flex h-2 w-2 rounded-full bg-purple-600 ml-2 animate-pulse"></span>
-								جديد: نظام إدارة الفواتير الأذكى في المملكة 🇸🇦
-							</m.div>
+
 							<h1>
 								<TypewriterEffect
 									words={heroWords}
@@ -105,71 +97,41 @@ export default function LandingPageClient() {
 								transition={{ delay: 1, duration: 0.5 }}
 								className="mt-8"
 							>
-								<Text variant="body-large" color="muted" className="sm:text-2xl max-w-2xl mx-auto leading-relaxed">
-									توقف عن إضاعة الوقت مع إكسل والفواتير اليدوية.
+								<Text variant="body-large" color="muted" className="sm:text-2xl max-w-3xl mx-auto leading-relaxed">
+									لا تحتاج محاسب ولا خبرة سابقة.
+									<br className="hidden sm:block" />
+									نظام فواتير ذكي يصمم لك، يحسب لك، ويضمن حقك.
 									<br />
-									أنشئ فواتير احترافية متوافقة مع هيئة الزكاة والضريبة في أقل من دقيقتين
-									<br />
-									<span className="font-semibold text-gray-800">- بدون خبرة محاسبية.</span>
+									<span className="font-bold text-[#012d46] bg-purple-50 px-2 rounded-md border border-purple-100 mt-2 inline-block">
+										خلّي المحاسبة علينا، وركّز أنت في تجارتك
+									</span>
 								</Text>
 							</m.div>
 
-							{/* Trust Badges */}
-							<m.div
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 1.2, duration: 0.5 }}
-								className="flex items-center justify-center gap-6 mt-8 flex-wrap"
-							>
-								<div className="flex items-center gap-2 text-sm text-gray-600">
-									<Shield className="h-5 w-5 text-green-500" />
-									<span>متوافق مع هيئة الزكاة والضريبة</span>
-								</div>
-								<div className="flex items-center gap-2 text-sm text-gray-600">
-									<Lock className="h-5 w-5 text-blue-500" />
-									<span>بياناتك مشفرة وآمنة 100%</span>
-								</div>
-								<div className="flex items-center gap-2 text-sm text-gray-600">
-									<CreditCard className="h-5 w-5 text-purple-500" />
-									<span>بدون بطاقة ائتمان - جرب مجاناً</span>
-								</div>
-							</m.div>
+
 
 							{/* CTA Buttons  */}
 							<m.div
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.5, delay: 1.5 }}
-								className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10"
+								className="flex flex-col items-center justify-center gap-4 mt-8"
 							>
 								<Link href="/register">
 									<MainButton
-										text="ابدأ مجاناً - بدون بطاقة ائتمان"
+										text="ابدأ بإصدار فواتيرك مجاناً"
 										bgColor="bg-[#7f2dfb]"
 										textColor="text-white"
-										className="w-full sm:w-auto px-8 py-4 text-lg shadow-purple-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+										className="w-full sm:w-auto px-10 py-5 text-xl shadow-purple-200 shadow-xl hover:shadow-2xl transition-all hover:scale-105 font-bold"
 									/>
 								</Link>
-								<Link
-									href="/login"
-									className="group flex items-center gap-2 text-gray-600 font-medium hover:text-[#7f2dfb] transition-colors"
-								>
-									<span>تسجيل الدخول</span>
-									<ChevronLeft
-										size={20}
-										className="transition-transform group-hover:-translate-x-1"
-									/>
-								</Link>
-								<Link
-									href="/demo"
-									className="group flex items-center gap-2 text-gray-600 font-medium hover:text-[#7f2dfb] transition-colors text-sm"
-								>
-									<span>شاهد كيف يعمل</span>
-									<ChevronLeft
-										size={16}
-										className="transition-transform group-hover:-translate-x-1"
-									/>
-								</Link>
+								<p className="text-sm text-gray-500 mt-2 flex items-center gap-2">
+									<span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+									بدون بطاقة ائتمان
+									<span className="text-gray-300 mx-1">|</span>
+									<span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+									معتمد من الزكاة والضريبة
+								</p>
 							</m.div>
 
 							<m.div
@@ -220,53 +182,7 @@ export default function LandingPageClient() {
 					<Logos />
 				</m.div>
 
-				{/* Trust Signals Section */}
-				<Section
-					padding="small"
-					background="muted"
-					divider
-					className="border-y border-gray-200"
-				>
-					<m.div
-						initial={{ opacity: 0, y: 20 }}
-						whileInView={{ opacity: 1, y: 0 }}
-						viewport={{ once: true, amount: 0.3 }}
-						transition={{ duration: 0.5, ease: "easeOut" }}
-					>
-						<Container>
-							<div className={cn("grid md:grid-cols-4", layout.gap.large)}>
-								<div className="text-center">
-									<Shield className="h-12 w-12 text-green-500 mx-auto mb-3" />
-									<Heading variant="h3-subsection" className="mb-1">متوافق مع الزكاة والضريبة</Heading>
-									<Text variant="body-small" color="muted">
-										جميع الفواتير تلتزم بالمتطلبات السعودية
-									</Text>
-								</div>
-								<div className="text-center">
-									<Lock className="h-12 w-12 text-blue-500 mx-auto mb-3" />
-									<Heading variant="h3-subsection" className="mb-1">بياناتك آمنة 100%</Heading>
-									<Text variant="body-small" color="muted">
-										تشفير SSL ونسخ احتياطية يومية
-									</Text>
-								</div>
-								<div className="text-center">
-									<CreditCard className="h-12 w-12 text-purple-500 mx-auto mb-3" />
-									<Heading variant="h3-subsection" className="mb-1">جرب مجاناً</Heading>
-									<Text variant="body-small" color="muted">
-										بدون بطاقة ائتمان - ألغِ في أي وقت
-									</Text>
-								</div>
-								<div className="text-center">
-									<Headphones className="h-12 w-12 text-orange-500 mx-auto mb-3" />
-									<Heading variant="h3-subsection" className="mb-1">دعم بالعربية</Heading>
-									<Text variant="body-small" color="muted">
-										فريق دعم متاح 6 أيام في الأسبوع
-									</Text>
-								</div>
-							</div>
-						</Container>
-					</m.div>
-				</Section>
+
 
 				{/* features */}
 				<m.div
@@ -430,10 +346,10 @@ export default function LandingPageClient() {
 						className="mb-12 text-center"
 					>
 						<Heading variant="h2" className="mb-4">
-							تجارب أصدقائنا
+							شركاء النجاح 💜
 						</Heading>
 						<Text variant="body-large" color="muted">
-							قصص نجاح من أشخاص مثلك يستخدمون بيلفورا يومياً
+							انضم لأكثر من 500+ مبدع ومستقل يعتمدون على بيلفورا
 						</Text>
 					</m.div>
 					<Marquee pauseOnHover className="[--duration:40s]">
@@ -478,37 +394,23 @@ export default function LandingPageClient() {
 							numCircles={12}
 							className="absolute inset-0 z-0 text-white"
 						/>
-						<h2 className="relative z-10 text-3xl md:text-5xl text-white font-bold max-w-4xl leading-tight">
-							وفر 10 ساعات شهرياً - ركز على ما تحب بدلاً من الفواتير
+						<h2 className="relative z-10 text-3xl md:text-5xl text-white font-bold max-w-4xl leading-tight mb-8">
+							ابدأ رحلتك المالية مجاناً
 							<br />
-							<span className="text-purple-200">
-								أنشئ فاتورتك الأولى في دقيقتين - بدون خبرة محاسبية
+							<span className="text-purple-200 text-2xl md:text-3xl mt-4 block font-medium">
+								وخلص أول فاتورة في دقيقة
 							</span>
 						</h2>
-						<p className="relative z-10 text-lg text-purple-100 max-w-2xl">
-							انضم لـ <span className="font-semibold text-white">500+ مستقل سعودي</span> يستخدمون بيلفورا يومياً.
-							<br />
-							<span className="font-semibold text-white">بدون بطاقة ائتمان - ألغِ في أي وقت</span>
-						</p>
+						
 						<div className="relative z-10 flex flex-col sm:flex-row gap-4">
 							<Link href="/register">
 								<Button
 									variant="secondary"
 									size="lg"
 									pill
-									className="px-10 bg-white text-[#7f2dfb] hover:shadow-lg transform hover:-translate-y-1"
+									className="px-12 py-8 text-xl bg-white text-[#7f2dfb] hover:shadow-lg transform hover:-translate-y-1 font-bold"
 								>
 									ابدأ مجاناً الآن
-								</Button>
-							</Link>
-							<Link href="/demo">
-								<Button
-									variant="ghost"
-									size="lg"
-									pill
-									className="px-10 text-white bg-white/10 border border-white/20 hover:bg-white/20 transform hover:-translate-y-1"
-								>
-									شاهد عرض توضيحي
 								</Button>
 							</Link>
 						</div>
