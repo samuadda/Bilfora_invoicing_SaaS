@@ -67,7 +67,7 @@ export const Features = () => {
                     </BounceCard>
 
                     {/* Feature 3: Design & Customization */}
-                    <BounceCard className="col-span-12 md:col-span-8 bg-gradient-to-br from-amber-50 to-orange-50 border-none">
+                    <BounceCard className="col-span-12 md:col-span-6 lg:col-span-4 bg-gradient-to-br from-amber-50 to-orange-50 border-none">
                         <CardTitle>فواتير تجعل عملك يبدو احترافياً</CardTitle>
                         <p className="text-gray-600 mt-3 text-center text-sm relative z-10">
                             أضف شعارك وألوان علامتك التجارية - قوالب عربية جاهزة
@@ -91,7 +91,7 @@ export const Features = () => {
                     </BounceCard>
 
                     {/* Feature 4: Clean UI */}
-                    <BounceCard className="col-span-12 md:col-span-4 bg-gradient-to-br from-emerald-50 to-green-50 border-none">
+                    <BounceCard className="col-span-12 md:col-span-6 lg:col-span-4 bg-gradient-to-br from-emerald-50 to-green-50 border-none">
                         <CardTitle>وفر 5 ساعات أسبوعياً</CardTitle>
                         <p className="text-gray-600 mt-3 text-center text-sm relative z-10">
                             ركز على عملك بدلاً من الفواتير - واجهة بسيطة وسريعة
@@ -124,7 +124,7 @@ export const Features = () => {
                     </BounceCard>
 
                     {/* Feature 5: For Freelancers */}
-                    <BounceCard className="col-span-12 md:col-span-4 bg-gradient-to-br from-pink-50 to-rose-50 border-none">
+                    <BounceCard className="col-span-12 md:col-span-12 lg:col-span-4 bg-gradient-to-br from-pink-50 to-rose-50 border-none">
                         <CardTitle>احفظ عملائك وخدماتك مرة واحدة</CardTitle>
                         <p className="text-gray-600 mt-3 text-center text-sm relative z-10">
                             استخدمها في كل فاتورة بدون إعادة كتابة - قاعدة بيانات ذكية

@@ -134,41 +134,7 @@ export default function LandingPageClient() {
 								</p>
 							</m.div>
 
-							<m.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{ delay: 2, duration: 1 }}
-								className="mt-12 flex items-center justify-center gap-2 text-sm text-gray-500"
-							>
-								<div className="flex -space-x-2 space-x-reverse">
-									{[1, 2, 3, 4].map((i) => (
-										<div
-											key={i}
-											className="h-8 w-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden"
-										>
-											<Image
-												src={`https://avatar.vercel.sh/${i}`}
-												width={32}
-												height={32}
-												alt="user"
-											/>
-										</div>
-									))}
-								</div>
-								<div className="flex items-center gap-1">
-									<div className="flex text-yellow-400">
-										<Star className="h-4 w-4 fill-current" />
-										<Star className="h-4 w-4 fill-current" />
-										<Star className="h-4 w-4 fill-current" />
-										<Star className="h-4 w-4 fill-current" />
-										<Star className="h-4 w-4 fill-current" />
-									</div>
-									<span className="font-bold text-gray-700">
-										5.0
-									</span>
-								</div>
-								<span>من 500+ عميل سعيد</span>
-							</m.div>
+
 						</div>
 					</Container>
 				</section>
@@ -423,13 +389,9 @@ export default function LandingPageClient() {
 								{/* Company Info */}
 								<div className="space-y-6">
 									<Link href="/" className="inline-block">
-										<Image
-											src="/logoPNG.png"
-											alt="Bilfora"
-											width={140}
-											height={40}
-											className="h-10 w-auto brightness-0 invert"
-										/>
+										<span className="text-3xl font-black text-white tracking-tighter hover:opacity-80 transition-opacity">
+											بِلفورا
+										</span>
 									</Link>
 									<p className="text-gray-400 text-sm leading-relaxed">
 										منصة ذكية لإصدار الفواتير الإلكترونية
