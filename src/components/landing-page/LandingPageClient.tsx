@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronLeft, ChevronUp, Star, Shield, Lock, CreditCard, Headphones } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/landing-page/Navbar";
 import MainButton from "@/components/MainButton";
