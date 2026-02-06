@@ -199,7 +199,7 @@ export const interactive = {
 
   // Button variants
   buttonVariant: {
-    primary: "bg-brand-primary text-white shadow-lg shadow-purple-200 hover:bg-brand-primary-hover hover:shadow-xl",
+    primary: "bg-brand-primary text-white hover:bg-brand-primary-hover",
     secondary: "border border-gray-200 text-gray-700 hover:bg-gray-50",
     ghost: "text-gray-700 hover:bg-gray-100",
     danger: "bg-red-600 text-white hover:bg-red-700",
