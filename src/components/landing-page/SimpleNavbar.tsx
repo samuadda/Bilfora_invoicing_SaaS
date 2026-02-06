@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
 import { ChevronLeft } from "lucide-react";
@@ -14,13 +13,10 @@ const SimpleNavbar = () => {
 			>
 				<div className="navbar-start">
 					{/* logo */}
-					<Link href="/">
-						<Image
-							src="/logo-full.svg"
-							alt="Bilfora"
-							width={140}
-							height={40}
-						/>
+					<Link href="/" className="hover:opacity-80 transition-opacity">
+						<span className="text-2xl font-black text-[#7f2dfb] tracking-tight">
+							بِلفورا
+						</span>
 					</Link>
 				</div>
 

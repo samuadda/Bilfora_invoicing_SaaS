@@ -10,7 +10,7 @@ export default function CookiesPage() {
 				</h1>
 				<div className="space-y-6 text-gray-600 leading-relaxed">
 					<p>
-						نستخدم ملفات تعريف الارتباط وتقنيات التتبع المماثلة لتحسين تجربتك في تصفح موقع بيلفورا.
+						نستخدم ملفات تعريف الارتباط وتقنيات التتبع المماثلة لتحسين تجربتك في تصفح موقع بِلفورا.
 					</p>
 
 					<h2 className="text-2xl font-semibold text-[#012d46]">

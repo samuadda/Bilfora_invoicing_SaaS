@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { DotPattern } from "@/components/landing-page/dot-pattern";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { Eye, EyeClosed, Loader2 } from "lucide-react";
 
 function ResetPasswordContent() {
@@ -235,14 +234,9 @@ function ResetPasswordContent() {
 			<div className="relative w-full max-w-md mx-auto px-4 py-6 sm:px-6 sm:py-8 shadow-lg rounded-2xl sm:rounded-3xl bg-white z-10">
 				<div className="w-full">
 					<h1 className="text-lg sm:text-xl font-bold flex items-center justify-center gap-2 mb-4">
-						<Image
-							src="/logo-symbol.svg"
-							alt="Bilfora"
-							width={40}
-							height={40}
-							className="w-10 h-10 sm:w-12 sm:h-12"
-							priority
-						/>
+						<span className="text-2xl sm:text-3xl font-black text-[#7f2dfb] tracking-tight">
+							بِلفورا
+						</span>
 					</h1>
 
 					<h2 className="text-xl font-bold text-center mb-2">

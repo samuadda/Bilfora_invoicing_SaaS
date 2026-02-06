@@ -17,7 +17,7 @@ export default function ApiPage() {
 						Bilfora API للمطورين
 					</TextAnimate>
 					<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-						اربط أنظمتك بمنصة بيلفورا بسهولة. قريباً ستتمكن من أتمتة إصدار الفواتير بالكامل.
+						اربط أنظمتك بمنصة بِلفورا بسهولة. قريباً ستتمكن من أتمتة إصدار الفواتير بالكامل.
 					</p>
 				</div>
 

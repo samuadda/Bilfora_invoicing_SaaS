@@ -40,7 +40,7 @@ export default function TutorialsPage() {
 						الدروس التعليمية
 					</TextAnimate>
 					<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-						تعلم كيف تستفيد من كل ميزات بيلفورا خطوة بخطوة
+						تعلم كيف تستفيد من كل ميزات بِلفورا خطوة بخطوة
 					</p>
 				</div>
 

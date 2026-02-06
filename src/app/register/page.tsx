@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { DotPattern } from "@/components/landing-page/dot-pattern";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -195,15 +194,11 @@ const Form = () => {
 					className="mx-auto w-full max-w-sm lg:w-96"
 				>
 					<div className="flex flex-col items-start gap-2 mb-8">
-						<Image
-							src="/logoPNG.png"
-							alt="Bilfora"
-							width={140}
-							height={40}
-							className="h-10 w-auto mb-6"
-						/>
+						<span className="text-3xl font-black text-[#7f2dfb] tracking-tight mb-6">
+							بِلفورا
+						</span>
 						<h2 className="text-3xl font-bold tracking-tight text-[#012d46]">
-							انضم إلى بيلفورا 🚀
+							انضم إلى بِلفورا 🚀
 						</h2>
 						<p className="text-sm text-gray-600">
 							أنشئ حسابك الجديد في دقائق وابدأ في تنظيم فواتيرك
@@ -480,7 +475,7 @@ const Form = () => {
 							انضم لأكثر من 2000+ شركة ومستقل
 						</h2>
 						<p className="text-white/70">
-							ابدأ رحلتك المالية الرقمية اليوم مع بيلفورا.
+							ابدأ رحلتك المالية الرقمية اليوم مع بِلفورا.
 						</p>
 					</m.div>
 				</div>

@@ -6,7 +6,7 @@ import LandingPageClient from "@/components/landing-page/LandingPageClient";
  * This runs on the server for better performance.
  */
 export const metadata: Metadata = {
-	title: "بيلفورا - نظام إدارة الفواتير الأذكى في المملكة",
+	title: "بِلفورا - نظام إدارة الفواتير الأذكى في المملكة",
 	description:
 		"أنشئ فواتير احترافية متوافقة مع هيئة الزكاة والضريبة في أقل من دقيقتين. منصة ذكية لإصدار الفواتير الإلكترونية للمستقلين وأصحاب الأعمال.",
 	keywords: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 		"أعمال",
 	],
 	openGraph: {
-		title: "بيلفورا - نظام إدارة الفواتير الأذكى في المملكة",
+		title: "بِلفورا - نظام إدارة الفواتير الأذكى في المملكة",
 		description:
 			"أنشئ فواتير احترافية متوافقة مع هيئة الزكاة والضريبة في أقل من دقيقتين.",
 		type: "website",

@@ -265,13 +265,9 @@ function LoginContent() {
 					className="mx-auto w-full max-w-sm lg:w-96"
 				>
 					<div className="flex flex-col items-start gap-2 mb-10">
-						<Image
-							src="/logoPNG.png"
-							alt="Bilfora"
-							width={140}
-							height={40}
-							className="h-10 w-auto mb-6"
-						/>
+						<span className="text-3xl font-black text-[#7f2dfb] tracking-tight mb-6">
+							بِلفورا
+						</span>
 						<h2 className="text-3xl font-bold tracking-tight text-[#012d46]">
 							مرحباً بعودتك 👋
 						</h2>

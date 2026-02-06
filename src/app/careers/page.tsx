@@ -14,7 +14,7 @@ export default function CareersPage() {
 						once={true}
 						className="text-4xl font-bold md:text-5xl text-[#012d46] mb-6"
 					>
-						انضم لفريق بيلفورا
+						انضم لفريق بِلفورا
 					</TextAnimate>
 					<p className="text-xl text-gray-600 max-w-2xl mx-auto">
 						نحن نبحث دائماً عن الموهوبين والشغوفين لبناء مستقبل الفواتير الرقمية معنا.

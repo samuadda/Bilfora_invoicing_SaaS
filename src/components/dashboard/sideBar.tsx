@@ -22,7 +22,6 @@ import {
 	ChevronLeft,
 	Menu,
 } from "lucide-react";
-import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import { m, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -143,34 +142,22 @@ export default function Sidebar() {
 				{/* Logo & Collapse */}
 				<div className={cn("p-6 border-b border-gray-100 flex items-center", isCollapsed ? "justify-center" : "justify-between")}>
 					<div className={cn("transition-all duration-300 flex justify-center", isCollapsed ? "w-full" : "w-auto")}>
-						{isCollapsed ? (
-							<button
-								onClick={toggleSidebar}
-								className="flex flex-col items-center gap-1 group w-full"
-								title="توسيع القائمة"
-							>
-								<Image
-									src="/symbol-shadowNoBg.png"
-									alt="Bilfora"
-									width={40}
-									height={40}
-									priority
-									className="w-10 h-10 object-contain drop-shadow-md"
-								/>
-								<ChevronLeft size={14} className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors animate-pulse" />
-							</button>
-						) : (
-							<Link href="/dashboard">
-								<Image
-									src="/logoPNG.png"
-									alt="Bilfora"
-									width={140}
-									height={45}
-									priority
-									className="w-32 h-auto object-contain"
-								/>
-							</Link>
-						)}
+					{isCollapsed ? (
+						<button
+							onClick={toggleSidebar}
+							className="flex flex-col items-center gap-1 group w-full"
+							title="توسيع القائمة"
+						>
+							<span className="text-lg font-black text-[#7f2dfb]">بِ</span>
+							<ChevronLeft size={14} className="text-gray-400 group-hover:text-[#7f2dfb] transition-colors animate-pulse" />
+						</button>
+					) : (
+						<Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+							<span className="text-2xl font-black text-[#7f2dfb] tracking-tight">
+								بِلفورا
+							</span>
+						</Link>
+					)}
 					</div>
 					{!isCollapsed && (
 						<button

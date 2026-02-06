@@ -233,7 +233,7 @@ export default function LandingPageClient() {
 									منشأة ومستقل
 								</Text>
 								<Text variant="body-xs" color="muted">
-									يعتمدون على بيلفورا يومياً
+									يعتمدون على بِلفورا يومياً
 								</Text>
 							</Card>
 							<Card padding="standard" className="text-center">
@@ -314,7 +314,7 @@ export default function LandingPageClient() {
 							شركاء النجاح 💜
 						</Heading>
 						<Text variant="body-large" color="muted">
-							انضم لأكثر من 500+ مبدع ومستقل يعتمدون على بيلفورا
+							انضم لأكثر من 500+ مبدع ومستقل يعتمدون على بِلفورا
 						</Text>
 					</m.div>
 					<Marquee pauseOnHover className="[--duration:40s]">
@@ -562,7 +562,7 @@ export default function LandingPageClient() {
 							<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 								<div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
 									<div className="text-gray-500 text-sm">
-										© 2025 بيلفورا. جميع الحقوق محفوظة.
+										© 2025 بِلفورا. جميع الحقوق محفوظة.
 									</div>
 									<div className="flex items-center gap-8 text-sm">
 										<Link

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
 import { ChevronLeft } from "lucide-react";
@@ -30,14 +29,10 @@ const Navbar = () => {
 			>
 				<div className="navbar-start flex items-center">
 					{/* logo */}
-					<Link href="/">
-						<Image
-							src="/logoPNG.png"
-							alt="Bilfora"
-							width={120}
-							height={40}
-							className="h-8 w-auto hover:opacity-80 transition-opacity"
-						/>
+					<Link href="/" className="hover:opacity-80 transition-opacity">
+						<span className="text-3xl font-black text-[#7f2dfb] tracking-tight">
+							بِلفورا
+						</span>
 					</Link>
 				</div>
 

@@ -33,7 +33,7 @@ export default function HelpCenterPage() {
 				<div className="grid md:grid-cols-3 gap-8">
 					<div className="p-6 rounded-2xl border border-gray-100 bg-gray-50 hover:shadow-md transition-shadow">
 						<h3 className="text-xl font-bold text-[#012d46] mb-4">
-							البدء مع بيلفورا
+							البدء مع بِلفورا
 						</h3>
 						<ul className="space-y-3 text-gray-600">
 							<li className="hover:text-[#7f2dfb] cursor-pointer">

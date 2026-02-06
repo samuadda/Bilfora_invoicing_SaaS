@@ -34,7 +34,7 @@ export default function BlogPage() {
 						once={true}
 						className="text-4xl font-bold md:text-5xl text-[#012d46] mb-6"
 					>
-						مدونة بيلفورا
+						مدونة بِلفورا
 					</TextAnimate>
 					<p className="text-xl text-gray-600 max-w-2xl mx-auto">
 						أحدث المقالات والنصائح للمستقلين وأصحاب الأعمال
