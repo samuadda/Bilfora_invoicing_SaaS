@@ -20,7 +20,6 @@ import { FAQ } from "@/components/landing-page/FAQ";
 import { Logos } from "@/components/landing-page/Logos";
 import { Section, Container, Heading, Text, Card, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
-import { StatNumber } from "@/components/landing-page/StatNumber";
 import { ReviewCard } from "@/components/landing-page/ReviewCard";
 import { heroWords, content, reviews } from "@/data/landing-page";
 
