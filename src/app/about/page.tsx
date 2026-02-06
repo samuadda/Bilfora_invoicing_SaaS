@@ -4,6 +4,7 @@ import { TextAnimate } from "@/components/landing-page/text-animate";
 import { Ripple } from "@/components/landing-page/ripple";
 import { m } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Github, Twitter, ArrowLeft, Zap, HeartHandshake, Sparkles } from "lucide-react";
 
 export default function AboutPage() {
@@ -39,7 +40,7 @@ export default function AboutPage() {
 						من إحباط مستقل يضيع ساعات في الإكسل...
 						<br />
 						<span className="text-[#7f2dfb] font-semibold">
-							إلى أداة تخدم أكثر من 500 مستقل وصاحب مشروع يومياً.
+							إلى أداة عربية بسيطة تختصر كل شي في ثوانٍ.
 						</span>
 					</m.p>
 				</section>
@@ -79,9 +80,13 @@ export default function AboutPage() {
 							</div>
 
 							<div className="pt-4 flex items-center gap-4">
-								<div className="h-12 w-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-lg font-bold">
-									ص
-								</div>
+								<Image
+									src="/saddiqMusaProfile.jpg"
+									alt="صدّيق"
+									width={48}
+									height={48}
+									className="h-12 w-12 rounded-full object-cover border-2 border-white/30"
+								/>
 								<div>
 									<p className="font-semibold">صدّيق</p>
 									<p className="text-sm text-purple-200">المطوّر الوحيد لبِلفورا</p>

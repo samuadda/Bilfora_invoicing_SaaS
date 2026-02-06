@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, Zap, Globe, Gift, Shield } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/landing-page/Navbar";
 import MainButton from "@/components/MainButton";
@@ -211,55 +211,47 @@ export default function LandingPageClient() {
 							className={cn("mt-16 grid sm:grid-cols-2 lg:grid-cols-4", layout.gap.large)}
 						>
 							<Card padding="standard" className="text-center">
-								<p className="text-3xl md:text-4xl font-extrabold text-[#7f2dfb] mb-1">
-									<StatNumber
-										value={10}
-										prefix="+"
-										suffix="K"
-									/>
-								</p>
+								<div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
+									<Zap className="h-5 w-5 text-[#7f2dfb]" />
+								</div>
 								<Text variant="body-small" className="font-semibold text-slate-800 mb-1">
-									فاتورة مُصدَرة
+									90 ثانية
 								</Text>
 								<Text variant="body-xs" color="muted">
-									من آلاف المستقلين السعداء
+									لإنشاء أول فاتورة احترافية
 								</Text>
 							</Card>
 							<Card padding="standard" className="text-center">
-								<p className="text-3xl md:text-4xl font-extrabold text-emerald-500 mb-1">
-									<StatNumber value={500} prefix="+" />
-								</p>
+								<div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+									<Globe className="h-5 w-5 text-emerald-500" />
+								</div>
 								<Text variant="body-small" className="font-semibold text-slate-800 mb-1">
-									منشأة ومستقل
+									عربي 100%
 								</Text>
 								<Text variant="body-xs" color="muted">
-									يعتمدون على بِلفورا يومياً
+									من التصميم للكود للدعم
 								</Text>
 							</Card>
 							<Card padding="standard" className="text-center">
-								<p className="text-3xl md:text-4xl font-extrabold text-cyan-500 mb-1">
-									<StatNumber
-										value={3}
-										prefix="+"
-										suffix="M"
-									/>
-								</p>
+								<div className="h-10 w-10 rounded-full bg-cyan-100 flex items-center justify-center mx-auto mb-3">
+									<Gift className="h-5 w-5 text-cyan-500" />
+								</div>
 								<Text variant="body-small" className="font-semibold text-slate-800 mb-1">
-									SAR قيمة فواتير
+									مجاني تماماً
 								</Text>
 								<Text variant="body-xs" color="muted">
-									تمت معالجتها عبر المنصة
+									بدون رسوم خفية أو اشتراكات
 								</Text>
 							</Card>
 							<Card padding="standard" className="text-center">
-								<p className="text-3xl md:text-4xl font-extrabold text-amber-500 mb-1">
-									<StatNumber value={90} suffix="%" />
-								</p>
+								<div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
+									<Shield className="h-5 w-5 text-amber-500" />
+								</div>
 								<Text variant="body-small" className="font-semibold text-slate-800 mb-1">
-									توفّر في الوقت
+									آمن وموثوق
 								</Text>
 								<Text variant="body-xs" color="muted">
-									عند إنشاء وإرسال الفواتير
+									بياناتك محمية ومشفرة
 								</Text>
 							</Card>
 						</m.div>

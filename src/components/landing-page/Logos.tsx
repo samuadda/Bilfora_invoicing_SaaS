@@ -1,35 +1,41 @@
 "use client";
 
+import { Palette, Code, TrendingUp, Calculator } from "lucide-react";
+
 export function Logos() {
+  const audiences = [
+    { icon: Palette, title: "مصممين", subtitle: "جرافيك • UI/UX" },
+    { icon: Code, title: "مطورين", subtitle: "ويب • تطبيقات" },
+    { icon: TrendingUp, title: "مستشارين", subtitle: "إدارة • تسويق" },
+    { icon: Calculator, title: "محاسبين", subtitle: "مستقلين" },
+  ];
+
   return (
     <section className="py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h2 className="text-center text-lg font-semibold leading-8 text-gray-500 mb-8">
-          يثق بنا أكثر من <span className="text-[#7f2dfb] font-bold">500+ مستقل وشركة سعودية</span>
+          صُمّم خصيصاً لـ <span className="text-[#7f2dfb] font-bold">المستقلين وأصحاب المشاريع الصغيرة</span>
         </h2>
-        <div className="flex items-center justify-center gap-6 flex-wrap">
-          <div className="text-center px-6 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-            <p className="text-2xl font-bold text-gray-700">مصممين</p>
-            <p className="text-sm text-gray-500">جرافيك • UI/UX</p>
-          </div>
-          <div className="text-center px-6 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-            <p className="text-2xl font-bold text-gray-700">مطورين</p>
-            <p className="text-sm text-gray-500">ويب • تطبيقات</p>
-          </div>
-          <div className="text-center px-6 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-            <p className="text-2xl font-bold text-gray-700">مستشارين</p>
-            <p className="text-sm text-gray-500">إدارة • تسويق</p>
-          </div>
-          <div className="text-center px-6 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-            <p className="text-2xl font-bold text-gray-700">محاسبين</p>
-            <p className="text-sm text-gray-500">مستقلين</p>
-          </div>
+        <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
+          {audiences.map((item, index) => (
+            <div
+              key={index}
+              className="text-center px-5 py-4 bg-gray-50 border border-gray-100 rounded-xl hover:bg-purple-50 hover:border-purple-100 transition-all group"
+            >
+              <div className="flex justify-center mb-2">
+                <item.icon className="h-6 w-6 text-gray-400 group-hover:text-[#7f2dfb] transition-colors" />
+              </div>
+              <p className="text-xl font-bold text-gray-700 group-hover:text-[#7f2dfb] transition-colors">
+                {item.title}
+              </p>
+              <p className="text-sm text-gray-500">{item.subtitle}</p>
+            </div>
+          ))}
         </div>
-        <p className="text-center text-sm text-gray-500 mt-6">
-          من الرياض إلى جدة - في كل أنحاء المملكة
+        <p className="text-center text-sm text-gray-400 mt-6">
+          سواء كنت في الرياض أو جدة — أو أي مكان في العالم العربي
         </p>
       </div>
     </section>
   );
 }
-
