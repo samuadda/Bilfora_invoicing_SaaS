@@ -108,7 +108,7 @@ export default function AboutPage() {
 							ليش المستقلين يختارون بِلفورا؟
 						</h3>
 						<p className="text-gray-600">
-							مو بس لأنه مجاني — لأنه فعلاً يوفر وقتهم
+							مو بس لأنه مجاني، لأنه فعلاً يوفر وقتهم
 						</p>
 					</m.div>
 
@@ -144,7 +144,7 @@ export default function AboutPage() {
 								دعم حقيقي من شخص حقيقي
 							</h4>
 							<p className="text-gray-600 text-sm leading-relaxed">
-								لما ترسلي رسالة، أنا اللي أرد عليك — مو بوت.
+								لما ترسلي رسالة، أنا اللي أرد عليك، مو بوت.
 								وملاحظاتك تتحول لتحديثات في أيام مو شهور.
 							</p>
 						</m.div>
@@ -184,7 +184,7 @@ export default function AboutPage() {
 							className="absolute inset-0 z-0 text-white"
 						/>
 						<h3 className="relative z-10 text-2xl md:text-4xl font-bold text-white max-w-2xl leading-tight">
-							جرّب بنفسك — مجاناً
+							جرّب بنفسك، مجاناً
 							<span className="text-purple-200 text-lg md:text-xl mt-4 block font-medium">
 								بدون بطاقة ائتمان. بدون التزام. لو ما عجبك، ما تخسر شي.
 							</span>

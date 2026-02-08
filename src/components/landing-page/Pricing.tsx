@@ -112,7 +112,7 @@ export function Pricing() {
           className="mt-10 text-center"
         >
           <Text variant="body-small" color="muted">
-            &ldquo;ليش مجاني؟&rdquo; — لأني أبني أداة أتمنى لو كانت موجودة لي
+            &ldquo;ليش مجاني؟&rdquo; لأني أبني أداة أتمنى لو كانت موجودة لي
           </Text>
         </m.div>
       </Container>

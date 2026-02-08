@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { DotPattern } from "@/components/landing-page/dot-pattern";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -15,78 +13,38 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "@/components/dialog";
-import { Eye, EyeClosed, ArrowLeft, Check, Smartphone, Laptop } from "lucide-react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
+import { Eye, EyeClosed, Check, FileText, ArrowRight, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const Form = () => {
+export default function RegisterPage() {
 	const [formData, setFormData] = useState({
 		fullname: "",
 		email: "",
-		phone: "",
 		password: "",
-		dob: "",
-		gender: "male", // 'male' | 'female' | 'institute'
 	});
 
 	const router = useRouter();
-
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [generalError, setGeneralError] = useState("");
 
-	// ===== Utils =====
-	const calculateAge = (dob: string) => {
-		const birthDate = new Date(dob);
-		const today = new Date();
-		let age = today.getFullYear() - birthDate.getFullYear();
-		const m = today.getMonth() - birthDate.getMonth();
-		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-		return age;
-	};
-
-	// 05xxxxxxxx -> +9665xxxxxxxx (E.164)
-	const normalizeSaPhone = (p: string) =>
-		p
-			.replace(/\D/g, "")
-			.replace(/^966/, "")
-			.replace(/^0/, "")
-			.replace(/^5/, "+9665");
-
 	const validate = () => {
 		const newErrors: Record<string, string> = {};
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		const phoneRegex = /^05\d{8}$/; // إدخال المستخدم
-		// 8+ chars, at least 1 letter & 1 digit (يسمح بالرموز)
 		const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-		if (!formData.fullname.trim())
-			newErrors.fullname = "الاسم الكامل مطلوب";
-
-		if (!formData.email.trim()) newErrors.email = "البريد الإلكتروني مطلوب";
-		else if (!emailRegex.test(formData.email))
-			newErrors.email = "البريد الإلكتروني غير صالح";
-
-		if (!formData.phone.trim()) newErrors.phone = "رقم الجوال مطلوب";
-		else if (!phoneRegex.test(formData.phone))
-			newErrors.phone = "رقم الجوال غير صالح (مثال: 05xxxxxxxx)";
-
+		if (!formData.fullname.trim()) newErrors.fullname = "الاسم مطلوب";
+		if (!formData.email.trim()) newErrors.email = "البريد مطلوب";
+		else if (!emailRegex.test(formData.email)) newErrors.email = "البريد غير صالح";
 		if (!formData.password) newErrors.password = "كلمة المرور مطلوبة";
-		else if (!passwordRegex.test(formData.password))
-			newErrors.password =
-				"كلمة المرور يجب أن تكون 8 خانات على الأقل، وتحتوي على حرف ورقم على الأقل";
-
-		if (!formData.dob) newErrors.dob = "تاريخ الميلاد مطلوب";
-		else if (calculateAge(formData.dob) < 13)
-			newErrors.dob = "يجب أن يكون عمرك 13 سنة أو أكثر";
+		else if (!passwordRegex.test(formData.password)) newErrors.password = "8 خانات على الأقل، حرف ورقم";
 
 		return newErrors;
 	};
 
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 		setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -95,7 +53,6 @@ const Form = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-
 		const validationErrors = validate();
 		if (Object.keys(validationErrors).length > 0) {
 			setErrors(validationErrors);
@@ -106,411 +63,291 @@ const Form = () => {
 		setGeneralError("");
 
 		try {
-			const phoneE164 = normalizeSaPhone(formData.phone);
-
 			const { error } = await supabase.auth.signUp({
 				email: formData.email,
 				password: formData.password,
 				options: {
 					emailRedirectTo: `${location.origin}/confirmed`,
-					data: {
-						full_name: formData.fullname,
-						phone: phoneE164,
-						dob: formData.dob,
-						account_type:
-							formData.gender === "institute"
-								? "business"
-								: "individual",
-						gender:
-							formData.gender === "institute"
-								? null
-								: formData.gender,
-					},
+					data: { full_name: formData.fullname },
 				},
 			});
 
 			if (error) {
-				// أخطاء شائعة
-				if (
-					(error as { code?: string }).code ===
-					"user_already_registered"
-				) {
-					setGeneralError(
-						"هذا البريد مسجّل مسبقًا. جرّب تسجيل الدخول."
-					);
+				if ((error as { code?: string }).code === "user_already_registered") {
+					setGeneralError("هذا البريد مسجّل مسبقًا");
 				} else {
-					setGeneralError("فشل التسجيل: " + error.message);
+					setGeneralError(error.message);
 				}
-				// أفرغ كلمة المرور للأمان (اختياري)
 				setFormData((p) => ({ ...p, password: "" }));
 				return;
 			}
-
 			setShowConfirmModal(true);
-		} catch (err: unknown) {
-			console.error("Unexpected Error:", err);
-			setGeneralError("حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+		} catch {
+			setGeneralError("حدث خطأ، حاول مرة أخرى");
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
-	// ===== Password strength meter =====
 	const getPasswordStrength = (password: string) => {
 		if (!password) return { strength: 0, color: "bg-gray-200", text: "" };
-
 		let score = 0;
 		if (password.length >= 8) score++;
 		if (/[A-Za-z]/.test(password)) score++;
 		if (/\d/.test(password)) score++;
-		if (/[^A-Za-z\d]/.test(password)) score++; // يسمح بالرموز
-		if (score <= 1)
-			return { strength: score, color: "bg-red-500", text: "ضعيفة" };
-		if (score === 2)
-			return { strength: score, color: "bg-yellow-500", text: "متوسطة" };
-		if (score === 3)
-			return { strength: score, color: "bg-blue-500", text: "جيدة" };
+		if (/[^A-Za-z\d]/.test(password)) score++;
+		if (score <= 1) return { strength: score, color: "bg-red-500", text: "ضعيفة" };
+		if (score === 2) return { strength: score, color: "bg-yellow-500", text: "متوسطة" };
+		if (score === 3) return { strength: score, color: "bg-blue-500", text: "جيدة" };
 		return { strength: score, color: "bg-green-500", text: "قوية" };
 	};
 
 	const passwordStrength = getPasswordStrength(formData.password);
 
 	return (
-		<div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
-			{/* Right Side - Form */}
-			<div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 bg-white relative">
-				<Link
-					href="/"
-					className="absolute top-8 right-8 flex items-center gap-2 text-gray-500 hover:text-[#7f2dfb] transition-colors"
-				>
-					<ArrowLeft size={16} />
-					<span>العودة للرئيسية</span>
-				</Link>
+		<div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center justify-center px-4 py-12">
+			{/* Background decorations */}
+			<div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-[#7f2dfb]/10 to-transparent rounded-full blur-3xl" />
+			<div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-100/50 to-transparent rounded-full blur-3xl" />
+			
+			{/* Floating shapes */}
+			<m.div
+				animate={{ y: [-10, 10, -10], rotate: [0, 5, 0] }}
+				transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+				className="absolute top-20 left-[15%] w-16 h-16 bg-purple-100 rounded-2xl opacity-60"
+			/>
+			<m.div
+				animate={{ y: [10, -10, 10], rotate: [0, -5, 0] }}
+				transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+				className="absolute top-40 right-[10%] w-12 h-12 bg-[#7f2dfb]/10 rounded-full"
+			/>
+			<m.div
+				animate={{ y: [-5, 15, -5] }}
+				transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+				className="absolute bottom-32 right-[20%] w-20 h-20 bg-purple-50 rounded-3xl opacity-70"
+			/>
 
-				<m.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className="mx-auto w-full max-w-sm lg:w-96"
-				>
-					<div className="flex flex-col items-start gap-2 mb-8">
-						<span className="text-3xl font-black text-[#7f2dfb] tracking-tight mb-6">
-							بِلفورا
-						</span>
-						<h2 className="text-3xl font-bold tracking-tight text-[#012d46]">
-							انضم إلى بِلفورا 🚀
-						</h2>
-						<p className="text-sm text-gray-600">
-							أنشئ حسابك الجديد في دقائق وابدأ في تنظيم فواتيرك
+			{/* Logo */}
+			<m.div
+				initial={{ opacity: 0, y: -10 }}
+				animate={{ opacity: 1, y: 0 }}
+				className="relative z-10 mb-8"
+			>
+				<Link href="/" className="flex items-center gap-2 group">
+					<div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#7f2dfb] to-[#9f5dff] flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:shadow-purple-500/40 transition-shadow">
+						<FileText className="h-5 w-5 text-white" />
+					</div>
+					<span className="text-2xl font-black text-[#7f2dfb]">بِلفورا</span>
+				</Link>
+			</m.div>
+
+			{/* Main Card */}
+			<m.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ delay: 0.1 }}
+				className="relative z-10 w-full max-w-md"
+			>
+				<div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 p-8">
+					{/* Header with badge */}
+					<div className="text-center mb-8">
+						<m.div
+							initial={{ scale: 0.9, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							transition={{ delay: 0.2 }}
+							className="inline-flex items-center gap-1.5 bg-purple-50 text-[#7f2dfb] text-xs font-semibold px-3 py-1.5 rounded-full mb-4"
+						>
+							<Sparkles className="h-3.5 w-3.5" />
+							<span>مجاني للأبد</span>
+						</m.div>
+						<h1 className="text-2xl font-bold text-[#012d46] mb-2">
+							أنشئ حسابك
+						</h1>
+						<p className="text-gray-500 text-sm">
+							وابدأ بإصدار فواتيرك في ثوانٍ
 						</p>
 					</div>
 
+					{/* Error */}
 					{generalError && (
 						<m.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="mb-6 p-3 bg-red-50 border border-red-100 rounded-xl"
 						>
-							<p className="text-red-600 text-sm font-medium">
-								{generalError}
-							</p>
+							<p className="text-red-600 text-sm text-center">{generalError}</p>
 						</m.div>
 					)}
 
 					<form onSubmit={handleSubmit} className="space-y-5">
-						<div className="grid grid-cols-1 gap-5">
-							<div>
-								<label
-									htmlFor="fullname"
-									className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-								>
-									الاسم الكامل
-								</label>
-								<input
-									type="text"
-									id="fullname"
-									name="fullname"
-									value={formData.fullname}
-									onChange={handleChange}
-									className={cn(
-										"block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-										errors.fullname && "ring-red-300 focus:ring-red-500"
-									)}
-								/>
-								{errors.fullname && (
-									<p className="mt-1 text-xs text-red-600">{errors.fullname}</p>
+						{/* Name */}
+						<div>
+							<label htmlFor="fullname" className="block text-sm font-medium text-gray-700 mb-2">
+								الاسم
+							</label>
+							<input
+								type="text"
+								id="fullname"
+								name="fullname"
+								value={formData.fullname}
+								onChange={handleChange}
+								placeholder="اسمك أو اسم منشأتك"
+								className={cn(
+									"block w-full rounded-xl border-2 border-gray-100 bg-gray-50/50 py-3 px-4 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all text-sm",
+									errors.fullname && "border-red-200 focus:border-red-500 focus:ring-red-500/20"
 								)}
-							</div>
-
-							<div>
-								<label
-									htmlFor="email"
-									className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-								>
-									البريد الإلكتروني
-								</label>
-								<input
-									type="email"
-									name="email"
-									id="email"
-									value={formData.email}
-									onChange={handleChange}
-									className={cn(
-										"block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-										errors.email && "ring-red-300 focus:ring-red-500"
-									)}
-								/>
-								{errors.email && (
-									<p className="mt-1 text-xs text-red-600">{errors.email}</p>
-								)}
-							</div>
-
-							<div className="grid grid-cols-2 gap-4">
-								<div>
-									<label
-										htmlFor="phone"
-										className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-									>
-										رقم الجوال
-									</label>
-									<input
-										type="tel"
-										name="phone"
-										id="phone"
-										value={formData.phone}
-										onChange={handleChange}
-										placeholder="05xxxxxxxx"
-										className={cn(
-											"block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-											errors.phone && "ring-red-300 focus:ring-red-500"
-										)}
-									/>
-									{errors.phone && (
-										<p className="mt-1 text-xs text-red-600">{errors.phone}</p>
-									)}
-								</div>
-								<div>
-									<label
-										htmlFor="dob"
-										className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-									>
-										تاريخ الميلاد
-									</label>
-									<input
-										type="date"
-										name="dob"
-										id="dob"
-										value={formData.dob}
-										onChange={handleChange}
-										className={cn(
-											"block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-											errors.dob && "ring-red-300 focus:ring-red-500"
-										)}
-									/>
-									{errors.dob && (
-										<p className="mt-1 text-xs text-red-600">{errors.dob}</p>
-									)}
-								</div>
-							</div>
-
-							<div>
-								<label
-									htmlFor="password"
-									className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-								>
-									كلمة المرور
-								</label>
-								<div className="relative">
-									<input
-										type={showPassword ? "text" : "password"}
-										name="password"
-										id="password"
-										value={formData.password}
-										onChange={handleChange}
-										className={cn(
-											"block w-full rounded-xl border-0 py-2.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-											errors.password && "ring-red-300 focus:ring-red-500"
-										)}
-									/>
-									<button
-										type="button"
-										onClick={() => setShowPassword((s) => !s)}
-										className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 hover:text-gray-600"
-									>
-										{showPassword ? (
-											<EyeClosed size={18} />
-										) : (
-											<Eye size={18} />
-										)}
-									</button>
-								</div>
-
-								{formData.password && (
-									<div className="mt-2 flex items-center gap-2">
-										<div className="flex gap-1 flex-1">
-											{[1, 2, 3, 4].map((level) => (
-												<div
-													key={level}
-													className={`h-1 flex-1 rounded-full transition-colors duration-300 ${level <= passwordStrength.strength
-															? passwordStrength.color
-															: "bg-gray-200"
-														}`}
-												/>
-											))}
-										</div>
-										<span className="text-xs text-gray-500 font-medium">
-											{passwordStrength.text}
-										</span>
-									</div>
-								)}
-								{errors.password && (
-									<p className="mt-1 text-xs text-red-600">{errors.password}</p>
-								)}
-							</div>
-
-							<div>
-								<label
-									htmlFor="gender"
-									className="block text-sm font-medium leading-6 text-gray-900 mb-1"
-								>
-									نوع الحساب
-								</label>
-								<div className="relative">
-									<Select
-										value={formData.gender}
-										onValueChange={(val) => {
-											setFormData(prev => ({ ...prev, gender: val }));
-											setErrors(prev => ({ ...prev, gender: "" }));
-											setGeneralError("");
-										}}
-									>
-										<SelectTrigger className="w-full h-[46px] rounded-xl border-gray-300 focus:ring-[#7f2dfb]">
-											<SelectValue placeholder="اختر الجنس" />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="male">فرد (ذكر)</SelectItem>
-											<SelectItem value="female">فرد (أنثى)</SelectItem>
-											<SelectItem value="institute">منشأة / شركة</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
+							/>
+							{errors.fullname && <p className="mt-1.5 text-xs text-red-500">{errors.fullname}</p>}
 						</div>
 
-						<div className="pt-2">
-							<button
-								type="submit"
-								disabled={isLoading}
-								className="flex w-full justify-center rounded-xl bg-[#012d46] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#023b5c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#012d46] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-							>
-								{isLoading ? (
-									<div className="flex items-center gap-2">
-										<div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-										<span>جاري إنشاء الحساب...</span>
-									</div>
-								) : (
-									"إنشاء حساب جديد"
+						{/* Email */}
+						<div>
+							<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+								البريد الإلكتروني
+							</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								value={formData.email}
+								onChange={handleChange}
+								placeholder="you@example.com"
+								dir="ltr"
+								className={cn(
+									"block w-full rounded-xl border-2 border-gray-100 bg-gray-50/50 py-3 px-4 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all text-sm text-left",
+									errors.email && "border-red-200 focus:border-red-500 focus:ring-red-500/20"
 								)}
-							</button>
+							/>
+							{errors.email && <p className="mt-1.5 text-xs text-red-500">{errors.email}</p>}
 						</div>
+
+						{/* Password */}
+						<div>
+							<label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+								كلمة المرور
+							</label>
+							<div className="relative">
+								<input
+									type={showPassword ? "text" : "password"}
+									id="password"
+									name="password"
+									value={formData.password}
+									onChange={handleChange}
+									placeholder="••••••••"
+									dir="ltr"
+									className={cn(
+										"block w-full rounded-xl border-2 border-gray-100 bg-gray-50/50 py-3 px-4 pr-12 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all text-sm text-left",
+										errors.password && "border-red-200 focus:border-red-500 focus:ring-red-500/20"
+									)}
+								/>
+								<button
+									type="button"
+									onClick={() => setShowPassword((s) => !s)}
+									className="absolute inset-y-0 left-3 flex items-center text-gray-400 hover:text-gray-600"
+								>
+									{showPassword ? <EyeClosed size={18} /> : <Eye size={18} />}
+								</button>
+							</div>
+
+							{formData.password && (
+								<div className="mt-2.5 flex items-center gap-2">
+									<div className="flex gap-1 flex-1">
+										{[1, 2, 3, 4].map((level) => (
+											<div
+												key={level}
+												className={`h-1.5 flex-1 rounded-full transition-colors ${
+													level <= passwordStrength.strength ? passwordStrength.color : "bg-gray-200"
+												}`}
+											/>
+										))}
+									</div>
+									<span className="text-xs text-gray-500 font-medium">{passwordStrength.text}</span>
+								</div>
+							)}
+							{errors.password && <p className="mt-1.5 text-xs text-red-500">{errors.password}</p>}
+						</div>
+
+						{/* Submit */}
+						<m.button
+							type="submit"
+							disabled={isLoading}
+							whileHover={{ scale: 1.01 }}
+							whileTap={{ scale: 0.99 }}
+							className="w-full bg-gradient-to-r from-[#7f2dfb] to-[#9f5dff] hover:from-[#6a1fd8] hover:to-[#8a4de8] text-white font-semibold py-3.5 px-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-500/25"
+						>
+							{isLoading ? (
+								<>
+									<div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+									<span>جاري الإنشاء...</span>
+								</>
+							) : (
+								<>
+									<span>أنشئ حسابي</span>
+									<ArrowRight className="h-4 w-4" />
+								</>
+							)}
+						</m.button>
 					</form>
 
-					<p className="mt-8 text-center text-sm text-gray-500">
-						لديك حساب بالفعل؟{" "}
-						<Link
-							href="/login"
-							className="font-semibold leading-6 text-[#7f2dfb] hover:text-[#6a1fd8]"
-						>
-							سجل الدخول
-						</Link>
-					</p>
-				</m.div>
-			</div>
-
-			{/* Left Side - Visuals */}
-			<div className="hidden lg:flex relative flex-1 flex-col justify-center items-center bg-[#012d46] overflow-hidden">
-				<div className="absolute inset-0 bg-gradient-to-br from-[#7f2dfb]/20 to-[#012d46]/90 z-0" />
-				<DotPattern
-					width={32}
-					height={32}
-					glow={true}
-					className="[mask-image:linear-gradient(to_bottom,white,transparent)] opacity-20"
-				/>
-
-				<div className="relative z-10 w-full max-w-lg">
-					<div className="grid grid-cols-2 gap-4 mb-8">
-						<m.div
-							initial={{ opacity: 0, x: -20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ delay: 0.2 }}
-							className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10"
-						>
-							<div className="w-10 h-10 bg-[#7f2dfb] rounded-lg flex items-center justify-center mb-4">
-								<Smartphone className="text-white w-6 h-6" />
-							</div>
-							<h3 className="text-white font-bold mb-1">تطبيق جوال</h3>
-							<p className="text-white/60 text-sm">أدر فواتيرك من أي مكان وفي أي وقت.</p>
-						</m.div>
-						<m.div
-							initial={{ opacity: 0, x: 20 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ delay: 0.3 }}
-							className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/10 translate-y-8"
-						>
-							<div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mb-4">
-								<Laptop className="text-white w-6 h-6" />
-							</div>
-							<h3 className="text-white font-bold mb-1">لوحة تحكم</h3>
-							<p className="text-white/60 text-sm">تقارير وتحليلات متقدمة لنمو أعمالك.</p>
-						</m.div>
+					{/* Divider */}
+					<div className="my-6 flex items-center gap-4">
+						<div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 					</div>
 
-					<m.div
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.5 }}
-						className="text-center"
-					>
-						<h2 className="text-3xl font-bold text-white mb-4">
-							انضم لأكثر من 2000+ شركة ومستقل
-						</h2>
-						<p className="text-white/70">
-							ابدأ رحلتك المالية الرقمية اليوم مع بِلفورا.
-						</p>
-					</m.div>
+					{/* Login link */}
+					<p className="text-center text-sm text-gray-500">
+						عندك حساب؟{" "}
+						<Link href="/login" className="font-semibold text-[#7f2dfb] hover:underline">
+							سجل دخولك
+						</Link>
+					</p>
 				</div>
-			</div>
 
+				{/* Footer */}
+				<p className="text-center text-xs text-gray-400 mt-6">
+					بإنشاء حسابك، أنت توافق على{" "}
+					<Link href="/terms" className="underline hover:text-gray-600">الشروط</Link>
+					{" "}و{" "}
+					<Link href="/privacy" className="underline hover:text-gray-600">الخصوصية</Link>
+				</p>
+			</m.div>
+
+			{/* Success Modal */}
 			<Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-				<DialogContent className="sm:max-w-md rounded-2xl text-center p-8">
+				<DialogContent className="sm:max-w-md rounded-3xl text-center p-8">
 					<DialogHeader className="flex flex-col items-center gap-4">
-						<div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-							<Check className="w-8 h-8 text-green-600" />
-						</div>
+						<m.div
+							initial={{ scale: 0 }}
+							animate={{ scale: 1 }}
+							transition={{ type: "spring", duration: 0.5 }}
+							className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30"
+						>
+							<Check className="w-10 h-10 text-white" />
+						</m.div>
 						<DialogTitle className="text-2xl font-bold text-[#012d46]">
-							تم إنشاء الحساب بنجاح! 🎉
+							تم إنشاء حسابك!
 						</DialogTitle>
-						<DialogDescription className="text-gray-600 text-base">
-							لقد أرسلنا رابط تفعيل إلى بريدك الإلكتروني.
+						<DialogDescription className="text-gray-500">
+							أرسلنا رابط تفعيل لبريدك.
 							<br />
-							يرجى التحقق من صندوق الوارد لتفعيل حسابك والبدء.
+							فعّل حسابك وابدأ!
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter className="mt-6 sm:justify-center">
-						<button
+						<m.button
+							whileHover={{ scale: 1.02 }}
+							whileTap={{ scale: 0.98 }}
 							onClick={() => {
 								setShowConfirmModal(false);
 								router.push("/login");
 							}}
-							className="w-full bg-[#7f2dfb] hover:bg-[#6a1fd8] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+							className="w-full bg-gradient-to-r from-[#7f2dfb] to-[#9f5dff] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-purple-500/25"
 						>
-							الذهاب لصفحة الدخول
-						</button>
+							الذهاب لتسجيل الدخول
+						</m.button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 		</div>
 	);
-};
-
-export default Form;
+}

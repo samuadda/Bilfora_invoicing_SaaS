@@ -33,7 +33,7 @@ export function Logos() {
           ))}
         </div>
         <p className="text-center text-sm text-gray-400 mt-6">
-          سواء كنت في الرياض أو جدة — أو أي مكان في العالم العربي
+          سواء كنت في الرياض أو جدة أو أي مكان في العالم العربي
         </p>
       </div>
     </section>

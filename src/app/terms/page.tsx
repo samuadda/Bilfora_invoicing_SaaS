@@ -39,7 +39,7 @@ export default function TermsPage() {
 							<p className="text-gray-700 leading-relaxed">
 								<strong className="text-[#012d46]">الفكرة بسيطة:</strong> بِلفورا أداة مجانية لإصدار الفواتير.
 								استخدمها بأمانة، احترم الآخرين، وما راح يصير شي يقلقك.
-								هذي الصفحة تشرح القواعد — بس بدون لغة محامين معقدة.
+								هذي الصفحة تشرح القواعد، بس بدون لغة محامين معقدة.
 							</p>
 						</div>
 					</div>
@@ -124,10 +124,10 @@ export default function TermsPage() {
 							<h2 className="text-xl font-bold text-[#012d46]">تنبيه مهم</h2>
 						</div>
 						<p className="text-gray-600 leading-relaxed">
-							بِلفورا أداة لإصدار الفواتير — <strong>مو برنامج محاسبة معتمد</strong>.
+							بِلفورا أداة لإصدار الفواتير، <strong>مو برنامج محاسبة معتمد</strong>.
 							أنا أبذل جهدي إن كل شي يشتغل تمام، بس أنت مسؤول عن التأكد إن فواتيرك صح وتتوافق مع أنظمة بلدك.
 							<br /><br />
-							المنصة مقدمة &ldquo;كما هي&rdquo; — يعني ما أقدر أضمن إنها تشتغل 100% طول الوقت، بس راح أسوي كل اللي بقدرتي!
+							المنصة مقدمة &ldquo;كما هي&rdquo;، يعني ما أقدر أضمن إنها تشتغل 100% طول الوقت، بس راح أسوي كل اللي بقدرتي!
 						</p>
 					</m.section>
 
@@ -146,11 +146,11 @@ export default function TermsPage() {
 						<ul className="space-y-3 text-gray-600">
 							<li className="flex items-start gap-2">
 								<span className="text-[#7f2dfb] font-bold">•</span>
-								<span><strong>بياناتك ملكك:</strong> كل الفواتير والعملاء والمنتجات اللي تضيفها — ملكك أنت</span>
+								<span><strong>بياناتك ملكك:</strong> كل الفواتير والعملاء والمنتجات اللي تضيفها، ملكك أنت</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-[#7f2dfb] font-bold">•</span>
-								<span><strong>المنصة ملكي:</strong> الكود والتصميم والاسم التجاري — ملكي أنا</span>
+								<span><strong>المنصة ملكي:</strong> الكود والتصميم والاسم التجاري، ملكي أنا</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-[#7f2dfb] font-bold">•</span>

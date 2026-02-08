@@ -39,7 +39,7 @@ export default function PrivacyPage() {
 							<p className="text-gray-700 leading-relaxed">
 								<strong className="text-[#012d46]">بالعربي الواضح:</strong> أنا صدّيق، مطور مستقل أبني بِلفورا لوحدي.
 								أحترم خصوصيتك لأني أعرف شعور إنسان يخاف على بياناته.
-								هذي الصفحة تشرح بالضبط ايش نجمع وليش — بدون لف ولا دوران.
+								هذي الصفحة تشرح بالضبط ايش نجمع وليش، بدون لف ولا دوران.
 							</p>
 						</div>
 					</div>
@@ -94,11 +94,11 @@ export default function PrivacyPage() {
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-emerald-500">✓</span>
-								<span>ما نشارك بياناتك مع أي طرف ثالث — أبداً</span>
+								<span>ما نشارك بياناتك مع أي طرف ثالث، أبداً</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-emerald-500">✓</span>
-								<span>ما نبيع بياناتك — هذا مو موديل عملنا</span>
+								<span>ما نبيع بياناتك، هذا مو موديل عملنا</span>
 							</li>
 							<li className="flex items-start gap-2">
 								<span className="text-emerald-500">✓</span>
