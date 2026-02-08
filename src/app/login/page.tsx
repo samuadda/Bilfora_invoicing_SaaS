@@ -4,12 +4,10 @@ import { supabasePersistent, supabaseSession } from "@/lib/supabase-clients";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { useState, useEffect, Suspense } from "react";
-import { Eye, EyeClosed, Check, ArrowLeft, Loader2 } from "lucide-react";
+import { Eye, EyeClosed, Check, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { m } from "framer-motion";
-import { DotPattern } from "@/components/landing-page/dot-pattern";
 import { AuthError } from "@supabase/supabase-js";
 
 function LoginContent() {
@@ -33,7 +31,6 @@ function LoginContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	// Check for success messages from URL
 	useEffect(() => {
 		const message = searchParams.get("message");
 		if (message === "password_reset_success") {
@@ -43,7 +40,6 @@ function LoginContent() {
 		}
 	}, [searchParams]);
 
-	// Load remember me preference from localStorage on component mount
 	useEffect(() => {
 		const savedRememberMe = localStorage.getItem("rememberMe");
 		if (savedRememberMe === "true") {
@@ -51,12 +47,9 @@ function LoginContent() {
 		}
 	}, []);
 
-	// Handle remember me checkbox change
 	const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const isChecked = e.target.checked;
 		setRememberMe(isChecked);
-
-		// Save preference to localStorage
 		if (isChecked) {
 			localStorage.setItem("rememberMe", "true");
 		} else {
@@ -64,19 +57,6 @@ function LoginContent() {
 		}
 	};
 
-	// =============  تسجيل الدخول بالبريد =============
-	/**
-	 * Manual Testing Steps:
-	 * 
-	 * 1. Login with "Remember me" checked:
-	 *    - Login → close tab → reopen site → user should still be authenticated
-	 * 
-	 * 2. Login with "Remember me" unchecked:
-	 *    - Login → close tab → reopen site → user should be logged out
-	 * 
-	 * 3. Explicit logout:
-	 *    - Click "Logout" → session should be cleared in both cases
-	 */
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		let isValid = true;
@@ -107,10 +87,8 @@ function LoginContent() {
 		setGeneralError("");
 
 		try {
-			// Select the appropriate client based on "Remember me" checkbox
 			const client = rememberMe ? supabasePersistent : supabaseSession;
 
-			// Add timeout wrapper for login request
 			const loginPromise = client.auth.signInWithPassword({
 				email,
 				password,
@@ -125,7 +103,6 @@ function LoginContent() {
 				timeoutPromise,
 			]) as { data: unknown; error: AuthError | null };
 
-			// Save remember me preference to localStorage for UI state
 			if (!error && rememberMe) {
 				localStorage.setItem("rememberMe", "true");
 			} else if (!error && !rememberMe) {
@@ -135,7 +112,6 @@ function LoginContent() {
 			if (error) {
 				let errorMessage = error.message;
 
-				// Handle network errors
 				if (error.message.includes("Failed to fetch") ||
 					error.message.includes("NetworkError") ||
 					error.message.includes("fetch failed")) {
@@ -152,13 +128,10 @@ function LoginContent() {
 				return;
 			}
 
-			// Login successful
 			setGeneralError("");
 			setSuccessMessage("تم تسجيل الدخول بنجاح!");
 			setIsLoading(false);
 
-			// Show redirecting message after a brief moment
-			// Show redirecting message after a brief moment
 			setTimeout(() => {
 				setIsRedirecting(true);
 				router.refresh();
@@ -170,7 +143,6 @@ function LoginContent() {
 			const error = err as Error;
 			console.error("Login Error:", error);
 
-			// Handle network/fetch errors in catch block
 			let errorMessage = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.";
 
 			if (
@@ -192,7 +164,6 @@ function LoginContent() {
 		}
 	};
 
-	// =============  إعادة تعيين كلمة المرور =============
 	const handleForgotPassword = async (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -211,7 +182,6 @@ function LoginContent() {
 		setResetEmailError("");
 
 		try {
-			// Use persistent client for password reset (always persistent)
 			const { error } = await supabasePersistent.auth.resetPasswordForEmail(
 				resetEmail,
 				{
@@ -247,157 +217,172 @@ function LoginContent() {
 	};
 
 	return (
-		<div className="w-full lg:grid lg:grid-cols-2 min-h-screen">
-			{/* Right Side - Form */}
-			<div className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-20 xl:px-24 bg-white relative">
-				<Link
-					href="/"
-					className="absolute top-8 right-8 flex items-center gap-2 text-gray-500 hover:text-[#7f2dfb] transition-colors"
-				>
-					<ArrowLeft size={16} />
-					<span>العودة للرئيسية</span>
-				</Link>
-
+		<div className="min-h-screen bg-gray-50 relative overflow-hidden flex items-center justify-center px-4 py-12">
+			{/* Aurora Background */}
+			<div className="absolute inset-0 overflow-hidden">
 				<m.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className="mx-auto w-full max-w-sm lg:w-96"
-				>
-					<div className="flex flex-col items-start gap-2 mb-10">
-						<span className="text-3xl font-black text-[#7f2dfb] tracking-tight mb-6">
-							بِلفورا
-						</span>
-						<h2 className="text-3xl font-bold tracking-tight text-[#012d46]">
-							مرحباً بعودتك 👋
-						</h2>
-						<p className="text-sm text-gray-600">
-							أدخل بياناتك للدخول إلى لوحة التحكم
+					animate={{
+						x: [0, 50, 0],
+						y: [0, 30, 0],
+						scale: [1, 1.1, 1],
+					}}
+					transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+					className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] bg-gradient-to-br from-[#7f2dfb]/20 via-purple-400/10 to-transparent rounded-full blur-[120px]"
+				/>
+				<m.div
+					animate={{
+						x: [0, -30, 0],
+						y: [0, 50, 0],
+						scale: [1, 1.2, 1],
+					}}
+					transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+					className="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-gradient-to-tl from-pink-300/20 via-rose-200/10 to-transparent rounded-full blur-[100px]"
+				/>
+				<m.div
+					animate={{
+						x: [0, 40, 0],
+						y: [0, -40, 0],
+					}}
+					transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+					className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-bl from-cyan-300/15 via-teal-200/10 to-transparent rounded-full blur-[80px]"
+				/>
+				<m.div
+					animate={{
+						x: [0, -20, 0],
+						y: [0, 20, 0],
+					}}
+					transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+					className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] bg-gradient-to-tr from-violet-200/20 to-transparent rounded-full blur-[60px]"
+				/>
+			</div>
+
+			{/* Glass Card */}
+			<m.div
+				initial={{ opacity: 0, y: 20, scale: 0.95 }}
+				animate={{ opacity: 1, y: 0, scale: 1 }}
+				transition={{ duration: 0.5 }}
+				className="relative z-10 w-full max-w-md"
+			>
+				<div className="bg-white/70 backdrop-blur-2xl rounded-3xl border border-white/50 p-8 shadow-xl shadow-gray-200/50">
+					{/* Tab Toggle */}
+					<div className="flex items-center justify-center mb-8">
+						<div className="bg-gray-100 rounded-full p-1 flex">
+							<Link
+								href="/register"
+								className="px-5 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors rounded-full"
+							>
+								حساب جديد
+							</Link>
+							<span className="px-5 py-2 text-sm font-medium bg-white text-[#012d46] rounded-full shadow-sm">
+								تسجيل الدخول
+							</span>
+						</div>
+					</div>
+
+					{/* Header */}
+					<div className="text-center mb-8">
+						<h1 className="text-2xl font-bold text-[#012d46] mb-2">
+							أهلاً من جديد!
+						</h1>
+						<p className="text-gray-500 text-sm">
+							سجّل دخولك وكمّل شغلك
 						</p>
 					</div>
 
+					{/* Success Message */}
 					{successMessage && (
 						<m.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3"
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="mb-6 p-3 bg-green-50 border border-green-100 rounded-xl flex items-center gap-3"
 						>
 							<div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
 								<Check className="h-4 w-4 text-green-600" />
 							</div>
-							<p className="text-green-700 text-sm font-medium">
-								{successMessage}
-							</p>
+							<p className="text-green-700 text-sm font-medium">{successMessage}</p>
 						</m.div>
 					)}
 
+					{/* Redirecting Message */}
 					{isRedirecting && (
 						<m.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center gap-3"
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="mb-6 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-3"
 						>
 							<div className="h-4 w-4 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin flex-shrink-0"></div>
-							<p className="text-blue-700 text-sm font-medium">
-								جاري التحويل...
-							</p>
+							<p className="text-blue-700 text-sm font-medium">لحظة ونوصّلك...</p>
 						</m.div>
 					)}
 
+					{/* Error */}
 					{generalError && (
 						<m.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="mb-6 p-3 bg-red-50 border border-red-100 rounded-xl"
 						>
-							<p className="text-red-600 text-sm font-medium">
-								{generalError}
-							</p>
+							<p className="text-red-600 text-sm text-center">{generalError}</p>
 						</m.div>
 					)}
 
-					<form onSubmit={handleSubmit} className="space-y-6" style={{ pointerEvents: isRedirecting ? 'none' : 'auto', opacity: isRedirecting ? 0.6 : 1 }}>
+					<form onSubmit={handleSubmit} className="space-y-4" style={{ pointerEvents: isRedirecting ? 'none' : 'auto', opacity: isRedirecting ? 0.6 : 1 }}>
+						{/* Email */}
 						<div>
-							<label
-								htmlFor="email"
-								className="block text-sm font-medium leading-6 text-gray-900 mb-2"
-							>
+							<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
 								البريد الإلكتروني
 							</label>
 							<div className="relative">
+								<Mail className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
 								<input
+									type="email"
 									id="email"
 									name="email"
-									type="email"
-									autoComplete="email"
-									required
 									value={email}
-									onChange={(e) =>
-										handleInputChange(
-											"email",
-											e.target.value
-										)
-									}
+									onChange={(e) => handleInputChange("email", e.target.value)}
+									placeholder="name@example.com"
 									className={cn(
-										"block w-full rounded-xl border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all",
-										emailError &&
-										"ring-red-300 focus:ring-red-500"
+										"block w-full rounded-xl bg-gray-50/80 border border-gray-200 py-4 pr-11 pl-4 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-[#7f2dfb]/10 focus:outline-none transition-all text-sm leading-relaxed",
+										emailError && "border-red-300 focus:border-red-500 focus:ring-red-500/10"
 									)}
 								/>
 							</div>
-							{emailError && (
-								<p className="mt-2 text-sm text-red-600">
-									{emailError}
-								</p>
-							)}
+							{emailError && <p className="mt-1.5 text-xs text-red-500">{emailError}</p>}
 						</div>
 
+						{/* Password */}
 						<div>
-							<label
-								htmlFor="password"
-								className="block text-sm font-medium leading-6 text-gray-900 mb-2"
-							>
+							<label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
 								كلمة المرور
 							</label>
 							<div className="relative">
+								<Lock className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
 								<input
+									type={showPassword ? "text" : "password"}
 									id="password"
 									name="password"
-									type={showPassword ? "text" : "password"}
-									autoComplete="current-password"
-									required
 									value={password}
-									onChange={(e) =>
-										handleInputChange(
-											"password",
-											e.target.value
-										)
-									}
-									className="block w-full rounded-xl border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#7f2dfb] sm:text-sm sm:leading-6 transition-all"
+									onChange={(e) => handleInputChange("password", e.target.value)}
+									placeholder="••••••••"
+									className={cn(
+										"block w-full rounded-xl bg-gray-50/80 border border-gray-200 py-4 pr-11 pl-11 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-[#7f2dfb]/10 focus:outline-none transition-all text-sm leading-relaxed",
+										passwordError && "border-red-300 focus:border-red-500 focus:ring-red-500/10"
+									)}
 								/>
 								<button
 									type="button"
-									onClick={() =>
-										setShowPassword(!showPassword)
-									}
-									className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 hover:text-gray-600"
+									onClick={() => setShowPassword(!showPassword)}
+									className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
 								>
-									{showPassword ? (
-										<EyeClosed size={18} />
-									) : (
-										<Eye size={18} />
-									)}
+									{showPassword ? <EyeClosed size={16} /> : <Eye size={16} />}
 								</button>
 							</div>
-							{passwordError && (
-								<p className="mt-2 text-sm text-red-600">
-									{passwordError}
-								</p>
-							)}
+							{passwordError && <p className="mt-1.5 text-xs text-red-500">{passwordError}</p>}
 						</div>
 
+						{/* Remember Me & Forgot Password */}
 						<div className="flex items-center justify-between">
-							<div className="flex items-center">
+							<div className="flex items-center gap-2">
 								<input
 									id="remember-me"
 									name="remember-me"
@@ -408,87 +393,59 @@ function LoginContent() {
 								/>
 								<label
 									htmlFor="remember-me"
-									className="mr-2 block text-sm text-gray-900 select-none cursor-pointer"
+									className="text-sm text-gray-600 select-none cursor-pointer"
 								>
-									تذكرني
+									خلّني داخل
 								</label>
 							</div>
 
-							<div className="text-sm">
-								<button
-									type="button"
-									onClick={() => setShowForgotPassword(true)}
-									className="font-semibold text-[#7f2dfb] hover:text-[#6a1fd8]"
-								>
-									نسيت كلمة المرور؟
-								</button>
-							</div>
-						</div>
-
-						<div>
 							<button
-								type="submit"
-								disabled={isLoading || isRedirecting}
-								className={`flex w-full justify-center rounded-xl bg-[#7f2dfb] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#6a1fd8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7f2dfb] transition-all ${isLoading || isRedirecting ? "opacity-70 cursor-wait" : ""
-									}`}
+								type="button"
+								onClick={() => setShowForgotPassword(true)}
+								className="text-sm font-medium text-[#7f2dfb] hover:text-[#6a1fd8]"
 							>
-								{isLoading ? (
-									<div className="flex items-center gap-2">
-										<div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-										<span>جاري تسجيل الدخول...</span>
-									</div>
-								) : "تسجيل الدخول"}
+								نسيت كلمة السر؟
 							</button>
 						</div>
+
+						{/* Submit */}
+						<m.button
+							type="submit"
+							disabled={isLoading || isRedirecting}
+							whileHover={{ scale: 1.01 }}
+							whileTap={{ scale: 0.99 }}
+							className="w-full bg-[#7f2dfb] text-white font-semibold py-3.5 px-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-[#6a1fd8] mt-6 shadow-lg shadow-purple-500/20"
+						>
+							{isLoading ? (
+								<>
+									<div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+									<span>لحظة...</span>
+								</>
+							) : (
+								<>
+									<span>دخول</span>
+									<ArrowRight className="h-4 w-4" />
+								</>
+							)}
+						</m.button>
 					</form>
 
-					<p className="mt-10 text-center text-sm text-gray-500">
-						ليس لديك حساب؟{" "}
-						<Link
-							href="/signup"
-							className="font-semibold leading-6 text-[#7f2dfb] hover:text-[#6a1fd8]"
-						>
-							أنشئ حساباً جديداً
+					{/* Footer */}
+					<p className="text-center text-xs text-gray-400 mt-6">
+						ما عندك حساب؟{" "}
+						<Link href="/register" className="text-[#7f2dfb] hover:underline font-medium">
+							أنشئ واحد مجاناً
 						</Link>
 					</p>
-				</m.div>
-			</div>
-
-			{/* Left Side - Image/Decoration */}
-			<div className="hidden lg:block relative bg-gray-50 overflow-hidden">
-				<DotPattern
-					width={24}
-					height={24}
-					glow={true}
-					className={cn(
-						"absolute inset-0 [mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)] opacity-50"
-					)}
-				/>
-				<div className="w-full h-full flex items-center justify-center p-12 relative z-10">
-					<div className="max-w-xl text-center">
-						<m.div
-							initial={{ opacity: 0, scale: 0.95 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.8 }}
-							className="relative w-full aspect-square mb-12"
-						>
-							<Image
-								src="/dashboard-preview.png"
-								alt="Dashboard Preview"
-								fill
-								className="object-contain drop-shadow-2xl rounded-2xl"
-								priority
-							/>
-						</m.div>
-						<h1 className="text-3xl font-bold text-[#012d46] mb-4">
-							أدر أعمالك بذكاء
-						</h1>
-						<p className="text-lg text-gray-600">
-							نظام متكامل لإدارة الفواتير، العملاء، والمدفوعات. صمم خصيصاً لتسهيل أعمالك وتوفير وقتك.
-						</p>
-					</div>
 				</div>
-			</div>
+
+				{/* Logo below card */}
+				<div className="flex items-center justify-center mt-8">
+					<Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-[#7f2dfb] transition-colors">
+						<span className="text-lg font-bold">بِلفورا</span>
+					</Link>
+				</div>
+			</m.div>
 
 			{/* Forgot Password Modal */}
 			{showForgotPassword && (
@@ -505,9 +462,9 @@ function LoginContent() {
 							✕
 						</button>
 
-						<h3 className="text-xl font-bold text-[#012d46] mb-2">استعادة كلمة المرور</h3>
+						<h3 className="text-xl font-bold text-[#012d46] mb-2">نسيت كلمة السر؟</h3>
 						<p className="text-sm text-gray-600 mb-6">
-							أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.
+							عادي! اكتب بريدك وبنرسل لك رابط تعيد فيه تعيينها.
 						</p>
 
 						{resetSuccess ? (
@@ -515,9 +472,9 @@ function LoginContent() {
 								<div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
 									<Check className="w-6 h-6 text-green-600" />
 								</div>
-								<h4 className="text-green-700 font-bold mb-2">تم الإرسال بنجاح!</h4>
+								<h4 className="text-green-700 font-bold mb-2">تمام!</h4>
 								<p className="text-sm text-gray-500 mb-6">
-									تم إرسال رابط إعادة تعيين كلمة المرور إلى {resetEmail}. يرجى التحقق من بريدك الوارد (والمهملات).
+									أرسلنا الرابط لـ {resetEmail}. شيّك بريدك (والمهملات بعد!).
 								</p>
 								<button
 									onClick={() => {
@@ -533,19 +490,22 @@ function LoginContent() {
 						) : (
 							<form onSubmit={handleForgotPassword}>
 								<div className="mb-4">
-									<label htmlFor="resetEmail" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="resetEmail" className="block text-sm font-medium text-gray-700 mb-2">
 										البريد الإلكتروني
 									</label>
-									<input
-										type="email"
-										id="resetEmail"
-										value={resetEmail}
-										onChange={(e) => handleInputChange("resetEmail", e.target.value)}
-										className="w-full rounded-xl border-gray-300 focus:ring-[#7f2dfb] focus:border-[#7f2dfb]"
-										placeholder="name@example.com"
-									/>
+									<div className="relative">
+										<Mail className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+										<input
+											type="email"
+											id="resetEmail"
+											value={resetEmail}
+											onChange={(e) => handleInputChange("resetEmail", e.target.value)}
+											className="block w-full rounded-xl bg-gray-50/80 border border-gray-200 py-3.5 pr-11 pl-4 text-gray-900 placeholder:text-gray-400 focus:bg-white focus:border-[#7f2dfb] focus:ring-2 focus:ring-[#7f2dfb]/10 focus:outline-none transition-all text-sm"
+											placeholder="name@example.com"
+										/>
+									</div>
 									{resetEmailError && (
-										<p className="mt-1 text-sm text-red-600">{resetEmailError}</p>
+										<p className="mt-1.5 text-xs text-red-500">{resetEmailError}</p>
 									)}
 								</div>
 
@@ -555,7 +515,7 @@ function LoginContent() {
 										onClick={() => setShowForgotPassword(false)}
 										className="flex-1 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50"
 									>
-										إلغاء
+										خلاص
 									</button>
 									<button
 										type="submit"
@@ -565,10 +525,10 @@ function LoginContent() {
 										{isResetting ? (
 											<>
 												<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-												جاري الإرسال...
+												لحظة...
 											</>
 										) : (
-											"إرسال الرابط"
+											"أرسل الرابط"
 										)}
 									</button>
 								</div>
@@ -585,7 +545,7 @@ export default function LoginForm() {
 	return (
 		<Suspense
 			fallback={
-				<div className="min-h-screen w-full flex items-center justify-center bg-white">
+				<div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
 					<div className="text-center">
 						<Loader2 className="h-8 w-8 animate-spin text-[#7f2dfb] mx-auto mb-2" />
 						<p className="text-gray-500">جاري التحميل...</p>
