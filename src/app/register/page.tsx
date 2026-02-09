@@ -15,6 +15,15 @@ import {
 } from "@/components/dialog";
 import { Eye, EyeClosed, Check, Mail, User, Lock, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+
+// Loading states for the multi-step loader
+const registerLoadingStates = [
+	{ text: "جارٍ إنشاء حسابك..." },
+	{ text: "تأمين بياناتك..." },
+	{ text: "إعداد لوحة التحكم..." },
+	{ text: "تمام! جارٍ إرسال رابط التفعيل..." },
+];
 
 export default function RegisterPage() {
 	const [formData, setFormData] = useState({
@@ -29,6 +38,7 @@ export default function RegisterPage() {
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [generalError, setGeneralError] = useState("");
+	const [showLoader, setShowLoader] = useState(false);
 
 	const validate = () => {
 		const newErrors: Record<string, string> = {};
@@ -81,7 +91,13 @@ export default function RegisterPage() {
 				setFormData((p) => ({ ...p, password: "" }));
 				return;
 			}
-			setShowConfirmModal(true);
+			
+			// Show multi-step loader, then show success modal
+			setShowLoader(true);
+			setTimeout(() => {
+				setShowLoader(false);
+				setShowConfirmModal(true);
+			}, 5000); // Show loader for ~5 seconds
 		} catch {
 			setGeneralError("حدث خطأ، حاول مرة أخرى");
 		} finally {
@@ -105,8 +121,17 @@ export default function RegisterPage() {
 	const passwordStrength = getPasswordStrength(formData.password);
 
 	return (
-		<div className="min-h-screen bg-gray-50 relative overflow-hidden flex items-center justify-center px-4 py-12">
-			{/* Aurora Background - Light Mode */}
+		<>
+			{/* Multi-Step Loader */}
+			<MultiStepLoader
+				loadingStates={registerLoadingStates}
+				loading={showLoader}
+				duration={1200}
+				loop={false}
+			/>
+			
+			<div className="min-h-screen bg-gray-50 relative overflow-hidden flex items-center justify-center px-4 py-12">
+				{/* Aurora Background - Light Mode */}
 			<div className="absolute inset-0 overflow-hidden">
 				<m.div
 					animate={{
@@ -357,5 +382,6 @@ export default function RegisterPage() {
 				</DialogContent>
 			</Dialog>
 		</div>
+		</>
 	);
 }

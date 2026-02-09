@@ -152,7 +152,7 @@ export function InvoiceItemsTable({
                             <Input
                                 type="number"
                                 min="0"
-                                step="1"
+                                step="0.01"
                                 value={item.unit_price}
                                 onChange={(e) =>
                                     onItemChange(

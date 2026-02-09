@@ -9,6 +9,15 @@ import { Eye, EyeClosed, Check, Mail, Lock, ArrowRight, Loader2 } from "lucide-r
 import { useSearchParams } from "next/navigation";
 import { m } from "framer-motion";
 import { AuthError } from "@supabase/supabase-js";
+import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+
+// Loading states for the multi-step loader
+const loginLoadingStates = [
+	{ text: "جارٍ التحقق من بياناتك..." },
+	{ text: "تأمين الاتصال..." },
+	{ text: "تحميل حسابك..." },
+	{ text: "جاهز! لحظة ونوصّلك..." },
+];
 
 function LoginContent() {
 	const [email, setEmail] = useState("");
@@ -21,6 +30,7 @@ function LoginContent() {
 	const [successMessage, setSuccessMessage] = useState("");
 	const [isRedirecting, setIsRedirecting] = useState(false);
 	const [rememberMe, setRememberMe] = useState(false);
+	const [showLoader, setShowLoader] = useState(false);
 
 	// Forgot password states
 	const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -129,16 +139,17 @@ function LoginContent() {
 			}
 
 			setGeneralError("");
-			setSuccessMessage("تم تسجيل الدخول بنجاح!");
 			setIsLoading(false);
+			setShowLoader(true);
 
+			// Let the loader show all steps before redirecting
 			setTimeout(() => {
 				setIsRedirecting(true);
 				router.refresh();
 				setTimeout(() => {
 					router.push("/dashboard");
 				}, 500);
-			}, 800);
+			}, 6500); // Allow loader to complete all 4 steps (~1.5s each)
 		} catch (err: unknown) {
 			const error = err as Error;
 			console.error("Login Error:", error);
@@ -217,8 +228,17 @@ function LoginContent() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 relative overflow-hidden flex items-center justify-center px-4 py-12">
-			{/* Aurora Background */}
+		<>
+			{/* Multi-Step Loader */}
+			<MultiStepLoader
+				loadingStates={loginLoadingStates}
+				loading={showLoader}
+				duration={1500}
+				loop={false}
+			/>
+			
+			<div className="min-h-screen bg-gray-50 relative overflow-hidden flex items-center justify-center px-4 py-12">
+				{/* Aurora Background */}
 			<div className="absolute inset-0 overflow-hidden">
 				<m.div
 					animate={{
@@ -536,8 +556,9 @@ function LoginContent() {
 						)}
 					</m.div>
 				</div>
-			)}
-		</div>
+				)}
+			</div>
+		</>
 	);
 }
 
