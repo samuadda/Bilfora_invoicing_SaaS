@@ -26,7 +26,8 @@ export async function getBrowser() {
         args: isProd ? chromium.args : ["--no-sandbox", "--disable-setuid-sandbox"],
         executablePath,
         headless: true,
-        defaultViewport: { width: 1280, height: 720 },
+        // A4 at 96 DPI: 210mm = 794px, 297mm = 1123px
+        defaultViewport: { width: 794, height: 1123 },
     });
 }
 
@@ -34,20 +35,32 @@ export async function generatePdf(html: string) {
     const browser = await getBrowser();
     try {
         const page = await browser.newPage();
+        
+        // Set timeout for operations
         page.setDefaultTimeout(30000);
         page.setDefaultNavigationTimeout(30000);
 
-        // No external assets -> "load" is more reliable than networkidle0
+        // Load the HTML content
         await page.setContent(html, { waitUntil: "load" });
+        
+        // Emulate screen media type to match browser preview
         await page.emulateMediaType("screen");
+        
+        // Wait for fonts to be fully loaded before rendering
+        await page.evaluate(() => document.fonts.ready);
+        
+        // Small delay to ensure all styles are applied
+        await new Promise(resolve => setTimeout(resolve, 100));
 
         return await page.pdf({
             format: "A4",
             printBackground: true,
-            margin: { top: "18mm", right: "16mm", bottom: "18mm", left: "16mm" },
+            // Zero margins - let HTML control all spacing
+            margin: { top: "0", right: "0", bottom: "0", left: "0" },
             preferCSSPageSize: true,
         });
     } finally {
         await browser.close();
     }
 }
+

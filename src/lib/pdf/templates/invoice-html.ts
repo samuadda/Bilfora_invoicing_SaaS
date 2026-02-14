@@ -153,6 +153,8 @@ export function generateInvoiceHtml(
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         :root {
@@ -167,11 +169,15 @@ export function generateInvoiceHtml(
 
         body {
             font-family: 'Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
             padding: 48px;
             color: var(--text-primary);
             font-size: 14px;
             line-height: 1.6;
             background: white;
+            box-sizing: border-box;
         }
 
         /* ─────────────────────────────────────────────────────────────
@@ -232,7 +238,6 @@ export function generateInvoiceHtml(
             unicode-bidi: isolate;
         }
 
-        /* QR Placeholder */
         .qr-placeholder {
             width: 100px;
             height: 100px;
@@ -246,6 +251,8 @@ export function generateInvoiceHtml(
             color: var(--text-muted);
             font-size: 10px;
             text-align: center;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
         /* ─────────────────────────────────────────────────────────────
@@ -476,6 +483,17 @@ export function generateInvoiceHtml(
         .footer a { color: var(--accent); text-decoration: none; }
 
         @page { size: A4; margin: 0; }
+        
+        @media print {
+            html, body {
+                margin: 0 !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+            }
+            body {
+                padding: 48px !important;
+            }
+        }
     </style>
 </head>
 <body>
