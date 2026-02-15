@@ -16,6 +16,7 @@ import {
 	Loader2
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 import {
 	Profile,
 	UpdateProfileInput,
@@ -657,7 +658,7 @@ export default function ProfilePage() {
 							</div>
 							<div className="space-y-2">
 								<label className="block text-sm font-medium text-gray-700">
-									الرقم الضريبي
+									{IS_ZATCA_ENABLED ? "الرقم الضريبي" : "السجل التجاري"}
 								</label>
 								<div className="relative">
 									<Building2
@@ -669,7 +670,7 @@ export default function ProfilePage() {
 										value={formData.tax_number}
 										onChange={handleInputChange}
 										className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-										placeholder="3xxxxxxxxxxxxx3"
+										placeholder={IS_ZATCA_ENABLED ? "3xxxxxxxxxxxxx3" : "1010xxxxxx"}
 									/>
 								</div>
 							</div>

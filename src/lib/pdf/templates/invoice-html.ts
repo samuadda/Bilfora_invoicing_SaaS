@@ -512,6 +512,7 @@ export function generateInvoiceHtml(
         <div class="brand-col">
             <div class="brand">Bilfora</div>
             ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">VAT: ${safe(sellerTaxNumber)}</div>` : ''}
+            ${!IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">C.R: ${safe(sellerTaxNumber)}</div>` : ''}
         </div>
         
         <div class="invoice-header-col">
@@ -534,6 +535,7 @@ export function generateInvoiceHtml(
             ${sellerAddress ? `<div class="party-detail">${safe(sellerAddress)}</div>` : ''}
             ${sellerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(sellerPhone)}</div>` : ''}
             ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
+            ${!IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="party-detail vat">س.ت: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
         </div>
 
         <!-- Buyer Info -->
