@@ -9,6 +9,7 @@ import { Loader2, AlertCircle, X, ChevronDown } from "lucide-react";
 import { m, AnimatePresence } from "framer-motion";
 import { Heading, Text } from "@/components/ui";
 import { productSchema, type ProductFormValues } from "@/lib/schemas/product";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 import { Product } from "@/types/database";
 
@@ -418,7 +419,8 @@ export default function QuickProductModal({
 										)}
 									</div>
 
-									{/* Tax Toggle */}
+									{/* Tax Toggle (ZATCA only) */}
+									{IS_ZATCA_ENABLED && (
 									<div className="pt-7">
 										<label className="flex items-center gap-3 cursor-pointer group select-none">
 											<div className="relative">
@@ -435,6 +437,7 @@ export default function QuickProductModal({
 											</span>
 										</label>
 									</div>
+									)}
 								</div>
 
 								{/* 5. Smart Category */}
