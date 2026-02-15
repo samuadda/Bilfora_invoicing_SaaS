@@ -428,7 +428,7 @@ export default function LandingPageClient() {
 									<ul className="space-y-3">
 										<li>
 											<Link
-												href="/dashboard"
+												href="/register"
 												className="text-gray-400 hover:text-[#7f2dfb] transition-colors text-sm"
 											>
 												لوحة التحكم
@@ -436,7 +436,7 @@ export default function LandingPageClient() {
 										</li>
 										<li>
 											<Link
-												href="/dashboard/invoices"
+												href="/register"
 												className="text-gray-400 hover:text-[#7f2dfb] transition-colors text-sm"
 											>
 												إنشاء الفواتير
@@ -461,7 +461,7 @@ export default function LandingPageClient() {
 									<ul className="space-y-3">
 										<li>
 											<Link
-												href="/help"
+												href="/contact"
 												className="text-gray-400 hover:text-[#7f2dfb] transition-colors text-sm"
 											>
 												مركز المساعدة

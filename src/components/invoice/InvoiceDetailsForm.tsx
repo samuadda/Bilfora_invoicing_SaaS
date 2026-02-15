@@ -20,6 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/custom-select";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoiceDetailsFormProps {
     formData: CreateInvoiceInput;
@@ -47,7 +48,9 @@ export function InvoiceDetailsForm({
     };
 
     return (
-        <FormRow columns={3} gap="large">
+        <FormRow columns={IS_ZATCA_ENABLED ? 3 : 2} gap="large">
+            {/* Invoice Type (ZATCA only) */}
+            {IS_ZATCA_ENABLED && (
             <Field label="نوع الفاتورة" required error={errors?.invoice_type}>
                 <Select
                     value={formData.invoice_type || "standard_tax"}
@@ -63,6 +66,7 @@ export function InvoiceDetailsForm({
                     </SelectContent>
                 </Select>
             </Field>
+            )}
 
             <Field label="تاريخ الإصدار" required error={errors?.issue_date}>
                 {onDateChange ? (
@@ -177,6 +181,8 @@ export function InvoiceDetailsForm({
                 </Select>
             </Field>
 
+            {/* Tax Rate (ZATCA only — Simple Mode forces 0%) */}
+            {IS_ZATCA_ENABLED && (
             <Field label="معدل الضريبة (%)" error={errors?.tax_rate}>
                 <Input
                     name="tax_rate"
@@ -194,6 +200,7 @@ export function InvoiceDetailsForm({
                     className={errors?.tax_rate ? "border-red-300" : ""}
                 />
             </Field>
+            )}
 
             <Field label="ملاحظات" className="md:col-span-2">
                 <Input

@@ -1,6 +1,6 @@
 "use client";
 
-import { supabasePersistent, supabaseSession } from "@/lib/supabase-clients";
+import { supabasePersistent } from "@/lib/supabase-clients";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -29,7 +29,7 @@ function LoginContent() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
 	const [isRedirecting, setIsRedirecting] = useState(false);
-	const [rememberMe, setRememberMe] = useState(false);
+
 	const [showLoader, setShowLoader] = useState(false);
 
 	// Forgot password states
@@ -50,22 +50,7 @@ function LoginContent() {
 		}
 	}, [searchParams]);
 
-	useEffect(() => {
-		const savedRememberMe = localStorage.getItem("rememberMe");
-		if (savedRememberMe === "true") {
-			setRememberMe(true);
-		}
-	}, []);
 
-	const handleRememberMeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const isChecked = e.target.checked;
-		setRememberMe(isChecked);
-		if (isChecked) {
-			localStorage.setItem("rememberMe", "true");
-		} else {
-			localStorage.removeItem("rememberMe");
-		}
-	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -97,7 +82,7 @@ function LoginContent() {
 		setGeneralError("");
 
 		try {
-			const client = rememberMe ? supabasePersistent : supabaseSession;
+			const client = supabasePersistent;
 
 			const loginPromise = client.auth.signInWithPassword({
 				email,
@@ -113,11 +98,7 @@ function LoginContent() {
 				timeoutPromise,
 			]) as { data: unknown; error: AuthError | null };
 
-			if (!error && rememberMe) {
-				localStorage.setItem("rememberMe", "true");
-			} else if (!error && !rememberMe) {
-				localStorage.removeItem("rememberMe");
-			}
+
 
 			if (error) {
 				let errorMessage = error.message;
@@ -400,25 +381,8 @@ function LoginContent() {
 							{passwordError && <p className="mt-1.5 text-xs text-red-500">{passwordError}</p>}
 						</div>
 
-						{/* Remember Me & Forgot Password */}
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<input
-									id="remember-me"
-									name="remember-me"
-									type="checkbox"
-									checked={rememberMe}
-									onChange={handleRememberMeChange}
-									className="h-4 w-4 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb]"
-								/>
-								<label
-									htmlFor="remember-me"
-									className="text-sm text-gray-600 select-none cursor-pointer"
-								>
-									خلّني داخل
-								</label>
-							</div>
-
+						{/* Forgot Password */}
+						<div className="flex items-center justify-end">
 							<button
 								type="button"
 								onClick={() => setShowForgotPassword(true)}

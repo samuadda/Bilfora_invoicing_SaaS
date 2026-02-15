@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, AlertCircle, X, Phone, Mail, Building2, User, MapPin, Hash, FileText } from "lucide-react";
 import { Heading, Text } from "@/components/ui";
 import { m, AnimatePresence } from "framer-motion";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 // ── ZATCA Tax Number Validation ─────────────────────────────────────────────
 const ZATCA_TAX_NUMBER_REGEX = /^3\d{13}3$/;
@@ -16,13 +17,13 @@ const ZATCA_TAX_NUMBER_REGEX = /^3\d{13}3$/;
 // ── Zod Schema with Conditional Validation ──────────────────────────────────
 const baseSchema = z.object({
 	client_type: z.enum(["individual", "organization"]),
-	name: z.string().min(1, "الاسم مطلوب").min(2, "الاسم يجب أن يكون حرفين على الأقل"),
+	name: z.string().min(1, "اكتب اسم العميل 😊").min(2, "الاسم قصير شوي، كمّله"),
 	phone: z.string()
-		.regex(/^05\d{8}$/, "رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام")
+		.regex(/^05\d{8}$/, "رقم الجوال لازم يبدأ بـ 05 ويكون 10 أرقام")
 		.optional()
 		.or(z.literal("")),
 	landline: z.string().optional().or(z.literal("")),
-	email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
+	email: z.string().email("تأكد من صيغة الإيميل 📧").optional().or(z.literal("")),
 	address: z.string().optional().or(z.literal("")),
 });
 
@@ -40,17 +41,36 @@ const organizationSchema = baseSchema.extend({
 		.or(z.literal(""))
 		.refine(
 			(val) => !val || ZATCA_TAX_NUMBER_REGEX.test(val),
-			"الرقم الضريبي غير صحيح (يجب أن يتكون من 15 رقم ويبدأ وينتهي بـ 3)"
+			"الرقم الضريبي لازم يكون 15 رقم ويبدأ وينتهي بـ 3"
 		),
 	commercial_registration: z.string().optional().or(z.literal("")),
 });
 
-export const clientFormSchema = z.discriminatedUnion("client_type", [
+// ── Simple Beta schema (no ZATCA discrimination) ────────────────────────────
+const simpleSchema = baseSchema.extend({
+	client_type: z.literal("individual").default("individual"),
+	tax_number: z.string().optional().or(z.literal("")),
+	commercial_registration: z.string().optional().or(z.literal("")),
+});
+
+const zatcaFormSchema = z.discriminatedUnion("client_type", [
 	individualSchema,
 	organizationSchema,
 ]);
 
-export type ClientFormData = z.infer<typeof clientFormSchema>;
+export const clientFormSchema = IS_ZATCA_ENABLED ? zatcaFormSchema : simpleSchema;
+
+// Concrete type for useForm — covers all possible fields across both schemas
+export type ClientFormData = {
+	client_type: "individual" | "organization";
+	name: string;
+	phone?: string;
+	landline?: string;
+	email?: string;
+	address?: string;
+	tax_number?: string;
+	commercial_registration?: string;
+};
 
 // ── Component ───────────────────────────────────────────────────────────────
 interface QuickClientModalProps {
@@ -75,7 +95,8 @@ export default function QuickClientModal({
 		reset,
 		formState: { errors },
 	} = useForm<ClientFormData>({
-		resolver: zodResolver(clientFormSchema),
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		resolver: zodResolver(clientFormSchema) as any,
 		defaultValues: {
 			client_type: "individual",
 			name: "",
@@ -193,7 +214,8 @@ export default function QuickClientModal({
 
 						{/* Form - Scrollable */}
 						<form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5 overflow-y-auto flex-1">
-							{/* ── Client Type Toggle ───────────────────────────────────── */}
+							{/* ── Client Type Toggle (ZATCA only) ─────────────────────── */}
+							{IS_ZATCA_ENABLED && (
 							<div className="bg-gray-100 p-1 rounded-xl flex">
 								<label
 									className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg cursor-pointer transition-all text-sm font-medium ${!isOrganization
@@ -226,6 +248,7 @@ export default function QuickClientModal({
 									شركات
 								</label>
 							</div>
+							)}
 
 							{/* ── Name Field ─────────────────────────────────────────── */}
 							<div>
@@ -338,7 +361,8 @@ export default function QuickClientModal({
 								/>
 							</div>
 
-							{/* ── Organization-Only Fields ────────────────────────────── */}
+							{/* ── Organization-Only Fields (ZATCA only) ────────────────── */}
+							{IS_ZATCA_ENABLED && (
 							<AnimatePresence>
 								{isOrganization && (
 									<m.div
@@ -391,6 +415,7 @@ export default function QuickClientModal({
 									</m.div>
 								)}
 							</AnimatePresence>
+							)}
 
 							{/* ── Footer Buttons ──────────────────────────────────────── */}
 							<div className="flex gap-3 pt-2">

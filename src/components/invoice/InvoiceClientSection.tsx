@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import type { Client } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import { clientSchema } from "@/lib/schemas/client";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoiceClientSectionProps {
     clients: Client[];
@@ -198,7 +199,8 @@ export function InvoiceClientSection({
                             </div>
                         )}
 
-                        {/* Client Type Toggle */}
+                        {/* Client Type Toggle (ZATCA only) */}
+                        {IS_ZATCA_ENABLED && (
                         <div className="bg-gray-100 p-1 rounded-xl flex mb-4">
                             <button
                                 type="button"
@@ -227,6 +229,7 @@ export function InvoiceClientSection({
                                 شركات (مؤسسات)
                             </button>
                         </div>
+                        )}
 
                         <div className="space-y-4">
                             {/* Name Field */}
@@ -296,7 +299,8 @@ export function InvoiceClientSection({
                                 </Field>
                             </div>
 
-                            {/* Organization Only Fields */}
+                            {/* Organization Only Fields (ZATCA only) */}
+                            {IS_ZATCA_ENABLED && (
                             <AnimatePresence>
                                 {isOrganization && (
                                     <m.div
@@ -330,6 +334,7 @@ export function InvoiceClientSection({
                                     </m.div>
                                 )}
                             </AnimatePresence>
+                            )}
                         </div>
 
                         <div className="flex justify-end pt-4 border-t border-gray-50 mt-4">

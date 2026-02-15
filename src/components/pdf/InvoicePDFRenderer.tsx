@@ -6,6 +6,7 @@ import { InvoicePDF_Tax } from "./InvoicePDF_Tax";
 import { InvoicePDF_Simplified } from "./InvoicePDF_Simplified";
 import { InvoicePDF_Regular } from "./InvoicePDF_Regular";
 import { InvoicePDF_CreditNote } from "./InvoicePDF_CreditNote";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoicePDFRendererProps {
 	invoice: Omit<InvoiceWithClientAndItems, 'client'> & { client?: Client | null };
@@ -30,6 +31,18 @@ export function InvoicePDFRenderer({
 
 	// Cast invoice for child components (they use separate client prop anyway)
 	const invoiceForPdf = invoice as InvoiceWithClientAndItems;
+
+	// ── Simple Beta: always use Regular template ──────────────────────────────
+	if (!IS_ZATCA_ENABLED) {
+		return (
+			<InvoicePDF_Regular
+				invoice={invoiceForPdf}
+				client={client}
+				items={items}
+				invoiceSettings={invoiceSettings}
+			/>
+		);
+	}
 
 	// Determine which template to use
 	if (documentKind === "credit_note") {

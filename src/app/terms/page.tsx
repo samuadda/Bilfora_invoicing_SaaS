@@ -1,7 +1,7 @@
 "use client";
 import Navbar from "@/components/landing-page/Navbar";
 import { m } from "framer-motion";
-import { FileText, Handshake, AlertCircle, Scale, MessageCircle } from "lucide-react";
+import { FileText, Handshake, AlertCircle, Scale, MessageCircle, CheckCircle2, XCircle } from "lucide-react";
 
 export default function TermsPage() {
 	return (
@@ -55,7 +55,7 @@ export default function TermsPage() {
 					>
 						<div className="flex items-center gap-3 mb-4">
 							<div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
-								<span className="text-xl">✅</span>
+								<CheckCircle2 className="h-5 w-5 text-emerald-600" />
 							</div>
 							<h2 className="text-xl font-bold text-[#012d46]">ايش تقدر تسوي</h2>
 						</div>
@@ -87,7 +87,7 @@ export default function TermsPage() {
 					>
 						<div className="flex items-center gap-3 mb-4">
 							<div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-								<span className="text-xl">🚫</span>
+								<XCircle className="h-5 w-5 text-red-600" />
 							</div>
 							<h2 className="text-xl font-bold text-[#012d46]">ايش ما تقدر تسوي</h2>
 						</div>

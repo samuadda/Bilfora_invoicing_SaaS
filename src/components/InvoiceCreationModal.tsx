@@ -35,6 +35,7 @@ import { InvoiceDetailsForm } from "@/components/invoice/InvoiceDetailsForm";
 import { InvoiceItemsTable } from "@/components/invoice/InvoiceItemsTable";
 import { InvoiceSummary } from "@/components/invoice/InvoiceSummary";
 import QuickProductModal from "@/components/QuickProductModal";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoiceCreationModalProps {
 	isOpen: boolean;
@@ -72,7 +73,7 @@ export default function InvoiceCreationModal({
 		// Default to Net 7 (Agency Standard)
 		due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
 		status: "draft",
-		tax_rate: 15,
+		tax_rate: IS_ZATCA_ENABLED ? 15 : 0,
 		notes: "",
 		items: [{ description: "", quantity: 1, unit_price: 0 }],
 	});
@@ -118,7 +119,7 @@ export default function InvoiceCreationModal({
 				.toISOString()
 				.split("T")[0],
 			status: "draft",
-			tax_rate: 15,
+			tax_rate: IS_ZATCA_ENABLED ? 15 : 0,
 			notes: "",
 			items: [
 				{
@@ -152,9 +153,9 @@ export default function InvoiceCreationModal({
 				});
 				setErrors(newErrors);
 
-				const firstError = parsed.error.issues[0]?.message || "البيانات غير صالحة";
+				const firstError = parsed.error.issues[0]?.message || "في شي ناقص، راجع البيانات";
 				toast({
-					title: "تحقق من المدخلات",
+					title: "لحظة! 🖐️",
 					description: firstError,
 					variant: "destructive",
 				});
@@ -165,9 +166,9 @@ export default function InvoiceCreationModal({
 			const result = await createInvoiceAction(parsed.data);
 
 			if (!result.success || !result.data) {
-				const msg = result.error || "خطأ غير معروف في الخادم";
+				const msg = result.error || "صار شي غريب، جرب مرة ثانية";
 				toast({
-					title: "فشل الإنشاء",
+					title: "ما قدرنا ننشئ الفاتورة 😕",
 					description: msg,
 					variant: "destructive",
 				});
@@ -175,10 +176,10 @@ export default function InvoiceCreationModal({
 			}
 
 			toast({
-				title: "تم إنشاء الفاتورة",
+				title: "تم بنجاح! 🎉",
 				description: result.data.invoice_number
-					? `تم إنشاء الفاتورة بنجاح (${result.data.invoice_number})`
-					: "تم إنشاء الفاتورة بنجاح",
+					? `الفاتورة ${result.data.invoice_number} جاهزة`
+					: "الفاتورة جاهزة",
 			});
 
 			closeModal();
@@ -186,8 +187,8 @@ export default function InvoiceCreationModal({
 		} catch (err) {
 			console.error("Unexpected error:", err);
 			toast({
-				title: "خطأ غير متوقع",
-				description: "حدث خطأ غير متوقع",
+				title: "صار خطأ غير متوقع 😔",
+				description: "جرب مرة ثانية، وإذا استمرت المشكلة تواصل معنا",
 				variant: "destructive",
 			});
 		} finally {

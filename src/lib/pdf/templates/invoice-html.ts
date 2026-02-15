@@ -1,5 +1,6 @@
 import { InvoiceWithClientAndItems, Client, InvoiceItem } from "@/types/database";
 import { SellerProfile } from "@/services/invoice-service";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 // Simple sanitization
 function safe(str?: string | null) {
@@ -77,9 +78,17 @@ export function generateInvoiceHtml(
     }
 
     // Derived flags for layout
-    const isTaxMode = isTax; // General flag for showing tax columns
-    const showBuyerVat = isTax && isOrg; // Only show Buyer VAT in B2B Tax Invoice
-    const showQrPlaceholder = isTax; // Show QR in tax modes
+    let isTaxMode = isTax; // General flag for showing tax columns
+    let showBuyerVat = isTax && isOrg; // Only show Buyer VAT in B2B Tax Invoice
+    let showQrPlaceholder = isTax; // Show QR in tax modes
+
+    // ── Simple Beta: force clean layout ──────────────────────────────────────
+    if (!IS_ZATCA_ENABLED) {
+        invoiceTitle = "فاتورة"; // Generic "Invoice"
+        isTaxMode = false;
+        showBuyerVat = false;
+        showQrPlaceholder = false;
+    }
 
     // ─────────────────────────────────────────────────────────────
     // 2. HELPER: Issue Time
@@ -502,7 +511,7 @@ export function generateInvoiceHtml(
     <div class="top-bar">
         <div class="brand-col">
             <div class="brand">Bilfora</div>
-            ${sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">VAT: ${safe(sellerTaxNumber)}</div>` : ''}
+            ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">VAT: ${safe(sellerTaxNumber)}</div>` : ''}
         </div>
         
         <div class="invoice-header-col">
@@ -524,7 +533,7 @@ export function generateInvoiceHtml(
             <div class="party-name">${safe(sellerName)}</div>
             ${sellerAddress ? `<div class="party-detail">${safe(sellerAddress)}</div>` : ''}
             ${sellerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(sellerPhone)}</div>` : ''}
-            ${sellerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
+            ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
         </div>
 
         <!-- Buyer Info -->
