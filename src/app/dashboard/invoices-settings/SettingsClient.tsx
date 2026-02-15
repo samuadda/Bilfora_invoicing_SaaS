@@ -23,6 +23,7 @@ import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.sch
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface SettingsClientProps {
 	initialSettings: InvoiceSettings | null;
@@ -89,7 +90,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 				logo_url: businessLogo, // Note: this might be blob: url which won't work across sessions. Needs upload.
 				iban: iban || null,
 				invoice_footer: footerNote || null,
-				default_vat_rate: taxRate / 100, // Convert 15 -> 0.15
+				default_vat_rate: IS_ZATCA_ENABLED ? taxRate / 100 : 0, // Force 0 in Simple Mode
 				numbering_prefix: prefix,
 				currency: "SAR" as const,
 				timezone: "Asia/Riyadh",
@@ -157,6 +158,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{IS_ZATCA_ENABLED && (
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							الرقم الضريبي (VAT)
@@ -174,6 +176,7 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 							/>
 						</div>
 					</div>
+					)}
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							السجل التجاري (CR)
@@ -321,10 +324,14 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 				className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm"
 			>
 				<h2 className="text-xl font-bold text-[#012d46] mb-6 flex items-center gap-2">
-					<Percent className="text-[#7f2dfb]" size={24} />
-					الضرائب والشروط
+					{IS_ZATCA_ENABLED ? (
+						<><Percent className="text-[#7f2dfb]" size={24} />الضرائب والشروط</>
+					) : (
+						<><FileText className="text-[#7f2dfb]" size={24} />إعدادات الفاتورة</>
+					)}
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					{IS_ZATCA_ENABLED && (
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							نسبة الضريبة (%)
@@ -342,27 +349,24 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 							/>
 						</div>
 					</div>
+					)}
 					<label className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer bg-white">
 						<span className="flex items-center gap-2 text-sm font-medium text-gray-700">
 							<Send size={18} className="text-[#7f2dfb]" /> إرسال تلقائي
 						</span>
-						<input
-							type="checkbox"
-							checked={autoSend}
-							onChange={(e) => setAutoSend(e.target.checked)}
-							className="w-5 h-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb]"
-						/>
+						<div className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={autoSend} onChange={(e) => setAutoSend(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</div>
 					</label>
 					<label className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer bg-white">
 						<span className="flex items-center gap-2 text-sm font-medium text-gray-700">
 							<FileText size={18} className="text-[#7f2dfb]" /> دفع جزئي
 						</span>
-						<input
-							type="checkbox"
-							checked={allowPartials}
-							onChange={(e) => setAllowPartials(e.target.checked)}
-							className="w-5 h-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb]"
-						/>
+						<div className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={allowPartials} onChange={(e) => setAllowPartials(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</div>
 					</label>
 				</div>
 				<div className="mt-6 space-y-2">
@@ -393,28 +397,23 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-50 pointer-events-none">
 					{/* ... preserved existing UI code ... */}
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">
+						<label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+							<LayoutTemplate size={15} className="text-gray-400" />
 							القالب
 						</label>
-						<div className="relative">
-							<LayoutTemplate
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<Select
-								value={template}
-								onValueChange={(val) => setTemplate(val as "classic" | "compact" | "modern")}
-							>
-								<SelectTrigger className="w-full h-11">
-									<SelectValue placeholder="اختر القالب" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="classic">كلاسيكي</SelectItem>
-									<SelectItem value="compact">مضغوط</SelectItem>
-									<SelectItem value="modern">عصري</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<Select
+							value={template}
+							onValueChange={(val) => setTemplate(val as "classic" | "compact" | "modern")}
+						>
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+								<SelectValue placeholder="اختر القالب" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="classic">كلاسيكي</SelectItem>
+								<SelectItem value="compact">مضغوط</SelectItem>
+								<SelectItem value="modern">عصري</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">

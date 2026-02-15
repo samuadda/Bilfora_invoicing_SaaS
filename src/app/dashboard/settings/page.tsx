@@ -232,12 +232,10 @@ export default function SettingsPage() {
 							</div>
 							إشعارات البريد الإلكتروني
 						</span>
-						<input
-							type="checkbox"
-							checked={emailNotif}
-							onChange={(e) => setEmailNotif(e.target.checked)}
-							className="h-5 w-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb]"
-						/>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={emailNotif} onChange={(e) => setEmailNotif(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</label>
 					</label>
 					<label className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
 						<span className="flex items-center gap-3 text-sm font-medium text-gray-700">
@@ -246,12 +244,10 @@ export default function SettingsPage() {
 							</div>
 							إشعارات الرسائل القصيرة (SMS)
 						</span>
-						<input
-							type="checkbox"
-							checked={smsNotif}
-							onChange={(e) => setSmsNotif(e.target.checked)}
-							className="h-5 w-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb]"
-						/>
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={smsNotif} onChange={(e) => setSmsNotif(e.target.checked)} className="sr-only peer" />
+							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
+						</label>
 					</label>
 				</div>
 				<div className="mt-6">
@@ -289,75 +285,60 @@ export default function SettingsPage() {
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div className="space-y-2">
-						<label className="block text-sm font-medium text-gray-700">
+						<label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+							<Globe2 size={15} className="text-gray-400" />
 							اللغة
 						</label>
-						<div className="relative">
-							<Globe2
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<Select
-								value={language}
-								onValueChange={(val) => setLanguage(val)}
-							>
-								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="ar">العربية</SelectItem>
-									<SelectItem value="en">English</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<Select
+							value={language}
+							onValueChange={(val) => setLanguage(val)}
+						>
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ar">العربية</SelectItem>
+								<SelectItem value="en">English</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 					<div className="space-y-2">
-						<label className="block text-sm font-medium text-gray-700">
+						<label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+							<CreditCard size={15} className="text-gray-400" />
 							العملة الافتراضية
 						</label>
-						<div className="relative">
-							<CreditCard
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<Select
-								value={currency}
-								onValueChange={(val) => setCurrency(val)}
-							>
-								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="SAR">SAR</SelectItem>
-									<SelectItem value="USD">USD</SelectItem>
-									<SelectItem value="EUR">EUR</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<Select
+							value={currency}
+							onValueChange={(val) => setCurrency(val)}
+						>
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="SAR">SAR</SelectItem>
+								<SelectItem value="USD">USD</SelectItem>
+								<SelectItem value="EUR">EUR</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 					<div className="space-y-2">
-						<label className="block text-sm font-medium text-gray-700">
+						<label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+							<Clock4 size={15} className="text-gray-400" />
 							المنطقة الزمنية
 						</label>
-						<div className="relative">
-							<Clock4
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<Select
-								value={timezone}
-								onValueChange={(val) => setTimezone(val)}
-							>
-								<SelectTrigger className="w-full h-11 bg-white border-gray-200">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="auto">تلقائي</SelectItem>
-									<SelectItem value="Asia/Riyadh">Asia/Riyadh</SelectItem>
-									<SelectItem value="UTC">UTC</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+						<Select
+							value={timezone}
+							onValueChange={(val) => setTimezone(val)}
+						>
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="auto">تلقائي</SelectItem>
+								<SelectItem value="Asia/Riyadh">Asia/Riyadh</SelectItem>
+								<SelectItem value="UTC">UTC</SelectItem>
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 			</m.div>

@@ -293,7 +293,7 @@ export default function NotificationsPage() {
 											checked={state[row.key].email}
 											onChange={(e) => setTypeChannel(row.key, "email", e.target.checked)}
 											disabled={emailDisabled}
-											className="w-5 h-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb] disabled:opacity-40 cursor-pointer"
+											className="w-5 h-5 rounded border-gray-300 focus:ring-[#7f2dfb] disabled:opacity-40 cursor-pointer accent-[#7f2dfb]"
 										/>
 									</td>
 									<td className="px-4 py-4 text-center">
@@ -302,7 +302,7 @@ export default function NotificationsPage() {
 											checked={state[row.key].sms}
 											onChange={(e) => setTypeChannel(row.key, "sms", e.target.checked)}
 											disabled={smsDisabled}
-											className="w-5 h-5 rounded border-gray-300 text-[#7f2dfb] focus:ring-[#7f2dfb] disabled:opacity-40 cursor-pointer"
+											className="w-5 h-5 rounded border-gray-300 focus:ring-[#7f2dfb] disabled:opacity-40 cursor-pointer accent-[#7f2dfb]"
 										/>
 									</td>
 								</tr>
@@ -352,32 +352,51 @@ export default function NotificationsPage() {
 							</label>
 						</div>
 						<div className="flex items-center gap-2">
-							<input
-								type="time"
+							<Select
 								value={state.dnd.start}
-								onChange={(e) => setState((s) => ({ ...s, dnd: { ...s.dnd, start: e.target.value } }))}
-								className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm bg-white"
+								onValueChange={(val) => setState((s) => ({ ...s, dnd: { ...s.dnd, start: val } }))}
 								disabled={!state.dnd.enabled}
-							/>
-							<span className="text-gray-400 font-medium">إلى</span>
-							<input
-								type="time"
+							>
+								<SelectTrigger className="flex-1 h-11 bg-white border-gray-200">
+									<SelectValue placeholder="من" />
+								</SelectTrigger>
+								<SelectContent>
+									{Array.from({ length: 24 }, (_, i) => {
+										const h = String(i).padStart(2, "0");
+										return <SelectItem key={h} value={`${h}:00`}>{`${h}:00`}</SelectItem>;
+									})}
+								</SelectContent>
+							</Select>
+							<span className="text-gray-400 font-medium text-sm">إلى</span>
+							<Select
 								value={state.dnd.end}
-								onChange={(e) => setState((s) => ({ ...s, dnd: { ...s.dnd, end: e.target.value } }))}
-								className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm bg-white"
+								onValueChange={(val) => setState((s) => ({ ...s, dnd: { ...s.dnd, end: val } }))}
 								disabled={!state.dnd.enabled}
-							/>
+							>
+								<SelectTrigger className="flex-1 h-11 bg-white border-gray-200">
+									<SelectValue placeholder="إلى" />
+								</SelectTrigger>
+								<SelectContent>
+									{Array.from({ length: 24 }, (_, i) => {
+										const h = String(i).padStart(2, "0");
+										return <SelectItem key={h} value={`${h}:00`}>{`${h}:00`}</SelectItem>;
+									})}
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 
 					<div className="p-4 rounded-xl bg-red-50 border border-red-100">
 						<label className="flex items-center gap-3 cursor-pointer">
-							<input
-								type="checkbox"
-								checked={state.pausedAll}
-								onChange={(e) => setState((s) => ({ ...s, pausedAll: e.target.checked }))}
-								className="w-5 h-5 rounded border-red-300 text-red-600 focus:ring-red-500"
-							/>
+							<div className="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									checked={state.pausedAll}
+									onChange={(e) => setState((s) => ({ ...s, pausedAll: e.target.checked }))}
+									className="sr-only peer"
+								/>
+								<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+							</div>
 							<span className="text-sm font-bold text-red-800">إيقاف جميع الإشعارات مؤقتاً</span>
 						</label>
 						{state.pausedAll && (
