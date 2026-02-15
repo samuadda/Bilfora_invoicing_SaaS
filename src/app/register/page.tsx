@@ -73,7 +73,7 @@ export default function RegisterPage() {
 		setGeneralError("");
 
 		try {
-			const { error } = await supabase.auth.signUp({
+			const { data, error } = await supabase.auth.signUp({
 				email: formData.email,
 				password: formData.password,
 				options: {
@@ -92,6 +92,14 @@ export default function RegisterPage() {
 				return;
 			}
 			
+			// Supabase returns a fake user with empty identities for existing emails
+			// (to prevent email enumeration). Detect and block this.
+			if (data?.user?.identities?.length === 0) {
+				setGeneralError("هذا البريد مسجّل مسبقًا. سجّل دخولك أو استعد كلمة المرور");
+				setFormData((p) => ({ ...p, password: "" }));
+				return;
+			}
+
 			// Show multi-step loader, then show success modal
 			setShowLoader(true);
 			setTimeout(() => {
