@@ -13,8 +13,6 @@ import {
 	Users,
 	Settings,
 	LogOut,
-	UserCircle,
-	Bell,
 	HelpCircle,
 	ShoppingCart,
 	BarChart3,
@@ -106,14 +104,7 @@ export default function Sidebar() {
 	];
 
 	const bottomNavItems = [
-		{ href: "/dashboard/profile", label: "الملف الشخصي", icon: UserCircle },
-		{ href: "/dashboard/notifications", label: "الإشعارات", icon: Bell },
 		{ href: "/dashboard/settings", label: "الإعدادات", icon: Settings },
-		{
-			href: "/dashboard/invoices-settings",
-			label: "إعدادات الفواتير",
-			icon: FileText,
-		},
 		{ href: "/dashboard/help", label: "المساعدة", icon: HelpCircle },
 	];
 
