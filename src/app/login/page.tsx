@@ -182,7 +182,13 @@ function LoginContent() {
 			);
 
 			if (error) {
-				setResetEmailError("حدث خطأ: " + error.message);
+				let errorMessage = "حدث خطأ غير متوقع. حاول مرة أخرى.";
+				if (error.message.includes("rate limit")) {
+					errorMessage = "حاول مرة ثانية بعد ساعة.";
+				} else if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+					errorMessage = "فشل الاتصال بالخادم. تأكد من اتصالك بالإنترنت.";
+				}
+				setResetEmailError(errorMessage);
 			} else {
 				setResetSuccess(true);
 			}
