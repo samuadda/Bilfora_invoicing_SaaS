@@ -35,19 +35,19 @@ export const Features = () => {
                 </div>
 
                 <div className={cn("grid grid-cols-12", layout.gap.large)}>
-                    {/* Feature 1: VAT Compliance - Primary Feature */}
-                    <BounceCard className="col-span-12 md:col-span-6 bg-gradient-to-br from-green-50 to-emerald-50 border-none">
+                    {/* Feature 1: Professional Invoicing - Primary Feature */}
+                    <BounceCard className="col-span-12 md:col-span-6 bg-gradient-to-br from-indigo-50 to-blue-50 border-none">
                         <div className="flex items-center justify-center gap-2 mb-2">
-                            <Shield className="h-6 w-6 text-green-600" />
-                            <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full">معتمد</span>
+                            <Shield className="h-6 w-6 text-indigo-600" />
+                            <span className="text-xs font-semibold text-indigo-700 bg-indigo-100 px-2 py-1 rounded-full">احترافي</span>
                         </div>
-                        <CardTitle>متوافق 100% مع هيئة الزكاة والضريبة</CardTitle>
+                        <CardTitle>فواتير رسمية بتنسيق عالمي</CardTitle>
                         <p className="text-gray-600 mt-3 text-center text-sm relative z-10">
-                            لا تقلق من الأخطاء. جميع الفواتير تلتزم بالمتطلبات السعودية تلقائياً.
+                            نماذج فواتير جاهزة، مرتبة، وتعكس هويتك. أرسلها لعملائك وأنت واثق.
                         </p>
                         <div className="absolute bottom-0 left-0 right-0 flex justify-center translate-y-12 transition-transform duration-500 group-hover:translate-y-4">
                             <div className="relative">
-                                <Shield className="w-32 h-32 text-green-500 opacity-20" strokeWidth={1.5} />
+                                <Shield className="w-32 h-32 text-indigo-500 opacity-20" strokeWidth={1.5} />
                             </div>
                         </div>
                     </BounceCard>

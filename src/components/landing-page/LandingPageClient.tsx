@@ -98,7 +98,7 @@ export default function LandingPageClient() {
 								<Text variant="body-large" color="muted" className="sm:text-2xl max-w-3xl mx-auto leading-relaxed">
 									لا تحتاج محاسب ولا خبرة سابقة.
 									<br className="hidden sm:block" />
-									نظام فواتير ذكي يصمم لك، يحسب لك، ويضمن حقك.
+									أنشئ فواتير احترافية بثوانٍ. ودع الإكسل، وابدأ تظهر كأنك شركة كبيرة.
 									<br />
 									<span className="font-bold text-[#012d46] bg-purple-50 px-2 rounded-md border border-purple-100 mt-2 inline-block">
 										خلّي المحاسبة علينا، وركّز أنت في تجارتك
@@ -128,7 +128,7 @@ export default function LandingPageClient() {
 									بدون بطاقة ائتمان
 									<span className="text-gray-300 mx-1">|</span>
 									<span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-									معتمد من الزكاة والضريبة
+									مصمم للمستقلين والشركات
 								</p>
 							</m.div>
 

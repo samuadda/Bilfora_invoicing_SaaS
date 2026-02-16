@@ -3,7 +3,7 @@ import React from "react";
 export const heroWords = [
     { text: "فواتير", className: "text-[#012d46]" },
     { text: "احترافية.", className: "text-[#012d46]" },
-    { text: "معتمدة.", className: "text-[#012d46]" },
+    { text: "رائعة.", className: "text-[#012d46]" },
     { text: "وبدون", className: "text-[#012d46]" },
     { text: "تعقيد.", className: "text-[#7f2dfb]" },
 ];
@@ -20,12 +20,12 @@ export const content = [
         ),
     },
     {
-        title: "ريح بالك من هم الزكاة والضريبة",
+        title: "نظم فواتيرك وتابع الدفعات",
         description:
-            "نظامنا مربوط ومحدث دائماً مع متطلبات الهيئة. أي فاتورة تطلعها تكون نظامية 100% وفيها كل الباركودات والبيانات المطلوبة. لا تشيل هم الغرامات.",
+            "تابع حالة الفواتير (مسددة، مستحقة، ملغاة) في مكان واحد. اعرف مين دفع ومين باقي عليه، وحافظ على تدفقك المالي بسهولة.",
         content: (
             <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] text-white text-2xl font-bold p-8 text-center rounded-xl shadow-2xl">
-                متوافق ومعتمد ✅
+                احترافي ومنظم ✅
             </div>
         ),
     },

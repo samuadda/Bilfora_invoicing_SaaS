@@ -15,7 +15,6 @@ import {
 	Lock,
 	Trash2,
 	Download,
-	ShieldCheck,
 } from "lucide-react";
 import { supabasePersistent } from "@/lib/supabase-clients";
 import { Profile, UpdateProfileInput, Gender } from "@/types/database";
@@ -34,9 +33,7 @@ export default function GeneralSettingsPage() {
 	const [emailInput, setEmailInput] = useState("");
 	const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
 
-	// Security toggles (placeholder)
-	const [twoFA, setTwoFA] = useState(false);
-	const [alertLogins, setAlertLogins] = useState(true);
+
 
 	const [formData, setFormData] = useState({
 		full_name: "",
@@ -69,6 +66,7 @@ export default function GeneralSettingsPage() {
 				dob: p.dob || "",
 				gender: (p.gender as Gender) || "",
 			});
+
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "خطأ في تحميل البيانات");
 		} finally {
@@ -224,6 +222,8 @@ export default function GeneralSettingsPage() {
 		}
 	};
 
+
+
 	if (loading) {
 		return <LoadingState message="جاري تحميل البيانات..." />;
 	}
@@ -376,41 +376,7 @@ export default function GeneralSettingsPage() {
 				</form>
 			</div>
 
-			{/* Security Toggles */}
-			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
-					<ShieldCheck className="text-[#7f2dfb]" size={20} />
-					الأمان والحماية
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
-						<div className="flex items-center gap-3">
-							<div className="p-2 bg-green-100 text-green-600 rounded-lg"><ShieldCheck size={18} /></div>
-							<div>
-								<p className="text-sm font-bold text-gray-900">التحقق بخطوتين (2FA)</p>
-								<p className="text-xs text-gray-500">حماية إضافية لحسابك</p>
-							</div>
-						</div>
-						<label className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={twoFA} onChange={(e) => setTwoFA(e.target.checked)} className="sr-only peer" />
-							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-						</label>
-					</div>
-					<div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 border border-gray-100">
-						<div className="flex items-center gap-3">
-							<div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Lock size={18} /></div>
-							<div>
-								<p className="text-sm font-bold text-gray-900">تنبيهات الدخول</p>
-								<p className="text-xs text-gray-500">تنبيه عند تسجيل الدخول من جهاز جديد</p>
-							</div>
-						</div>
-						<label className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={alertLogins} onChange={(e) => setAlertLogins(e.target.checked)} className="sr-only peer" />
-							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-						</label>
-					</div>
-				</div>
-			</div>
+
 
 			{/* Danger Zone */}
 			<div className="bg-white rounded-2xl border border-red-100 p-6 shadow-sm">

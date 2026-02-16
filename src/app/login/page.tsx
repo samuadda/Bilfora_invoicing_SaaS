@@ -424,7 +424,7 @@ function LoginContent() {
 					<p className="text-center text-xs text-gray-400 mt-6">
 						ما عندك حساب؟{" "}
 						<Link href="/register" className="text-[#7f2dfb] hover:underline font-medium">
-							أنشئ واحد مجاناً
+							ابدأهي مجاناً
 						</Link>
 					</p>
 				</div>
