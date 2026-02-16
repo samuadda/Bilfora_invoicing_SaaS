@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فعّل حسابك - بِلفورا</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f0ff; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; direction: rtl;">
+
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f0ff; padding: 40px 0;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(127, 45, 251, 0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background: linear-gradient(135deg, #7f2dfb 0%, #a855f7 100%); padding: 32px 24px;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px;">بِلفورا</h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 36px 32px 24px;">
+              <h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #012d46; text-align: center;">
+                أهلاً!
+              </h2>
+              <p style="margin: 0 0 24px; font-size: 15px; color: #64748b; line-height: 1.7; text-align: center;">
+                حسابك جاهز — بس فعّله من الزر تحت وابدأ تفوتر.
+              </p>
+
+              <!-- Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 8px 0 28px;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display: inline-block; background-color: #7f2dfb; color: #ffffff; font-size: 16px; font-weight: 700; text-decoration: none; padding: 14px 40px; border-radius: 12px; box-shadow: 0 4px 14px rgba(127, 45, 251, 0.3);">
+                      فعّل حسابي
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 0 0 20px;" />
+
+              <!-- Backup link -->
+              <p style="margin: 0; font-size: 13px; color: #94a3b8; line-height: 1.7; text-align: center;">
+                لو الزر ما اشتغل، انسخ هالرابط وافتحه في المتصفح:
+              </p>
+              <p style="margin: 8px 0 0; font-size: 12px; color: #7f2dfb; word-break: break-all; text-align: center; direction: ltr;">
+                {{ .ConfirmationURL }}
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 20px 32px 28px; background-color: #faf8ff;">
+              <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center; line-height: 1.6;">
+                لو ما سجّلت في بِلفورا، تجاهل هالرسالة.
+              </p>
+              <p style="margin: 8px 0 0; font-size: 11px; color: #cbd5e1; text-align: center;">
+                © بِلفورا — نظام فوترة بسيط للأعمال الصغيرة
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
