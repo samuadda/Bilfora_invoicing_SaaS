@@ -28,7 +28,7 @@ const zatcaInvoiceSchema = z.object({
 const simpleInvoiceSchema = z.object({
     client_id: z.string().uuid("اختر عميل أولاً 😊"),
     order_id: z.string().uuid().nullable().optional().or(z.literal("")),
-    invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"]).default("standard_tax"),
+    invoice_type: z.enum(["standard_tax", "simplified_tax", "non_tax"]).default("simplified_tax"),
     document_kind: z.enum(["invoice", "credit_note", "debit_note"]).optional(),
     issue_date: z.string().min(1, "حدد تاريخ الإصدار 📅"),
     issue_time: z.string().optional(),
