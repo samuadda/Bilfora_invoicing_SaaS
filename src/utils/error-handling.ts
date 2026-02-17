@@ -20,7 +20,7 @@ export function getAuthErrorMessage(error: unknown): string {
 		lowerMsg.includes("user already registered") ||
 		lowerMsg.includes("already registered") ||
 		lowerMsg.includes("already exists") ||
-		(error as any)?.code === "user_already_registered"
+		(error as { code?: string })?.code === "user_already_registered"
 	) {
 		return "هذا البريد الإلكتروني مسجل بالفعل. هل تود تسجيل الدخول؟";
 	}
