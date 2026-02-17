@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { m } from "framer-motion";
 import { AuthError } from "@supabase/supabase-js";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+import { getAuthErrorMessage } from "@/utils/error-handling";
 
 // Loading states for the multi-step loader
 const loginLoadingStates = [
@@ -101,21 +102,7 @@ function LoginContent() {
 
 
 			if (error) {
-				let errorMessage = error.message;
-
-				if (error.message.includes("Failed to fetch") ||
-					error.message.includes("NetworkError") ||
-					error.message.includes("fetch failed")) {
-					errorMessage = "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.";
-				} else if (error.message.includes("Invalid login credentials")) {
-					errorMessage = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
-				} else if (error.message.includes("Email not confirmed")) {
-					errorMessage =
-						"البريد الإلكتروني غير مفعل. يرجى التحقق من بريدك الإلكتروني";
-				} else if (error.message.includes("Too many requests")) {
-					errorMessage = "تم إرسال طلبات كثيرة. يرجى المحاولة لاحقاً";
-				}
-				setGeneralError(errorMessage);
+				setGeneralError(getAuthErrorMessage(error));
 				return;
 			}
 
@@ -135,22 +122,7 @@ function LoginContent() {
 			const error = err as Error;
 			console.error("Login Error:", error);
 
-			let errorMessage = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.";
-
-			if (
-				error?.message?.includes("Failed to fetch") ||
-				error?.message?.includes("NetworkError") ||
-				error?.message?.includes("fetch failed") ||
-				error?.message?.includes("timeout") ||
-				error?.message?.includes("Connection timeout") ||
-				error?.message?.includes("ERR_CONNECTION_TIMED_OUT") ||
-				error?.name === "TypeError" ||
-				error?.name === "ConnectionTimeout"
-			) {
-				errorMessage = "فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.";
-			}
-
-			setGeneralError(errorMessage);
+			setGeneralError(getAuthErrorMessage(error));
 		} finally {
 			setIsLoading(false);
 		}
@@ -182,19 +154,13 @@ function LoginContent() {
 			);
 
 			if (error) {
-				let errorMessage = "حدث خطأ غير متوقع. حاول مرة أخرى.";
-				if (error.message.includes("rate limit")) {
-					errorMessage = "حاول مرة ثانية بعد ساعة.";
-				} else if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
-					errorMessage = "فشل الاتصال بالخادم. تأكد من اتصالك بالإنترنت.";
-				}
-				setResetEmailError(errorMessage);
+				setResetEmailError(getAuthErrorMessage(error));
 			} else {
 				setResetSuccess(true);
 			}
 		} catch (err) {
 			console.error("Password reset error:", err);
-			setResetEmailError("حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+			setResetEmailError(getAuthErrorMessage(err));
 		} finally {
 			setIsResetting(false);
 		}

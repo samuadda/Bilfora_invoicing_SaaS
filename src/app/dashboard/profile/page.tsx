@@ -26,6 +26,7 @@ import {
 import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
+import { getAuthErrorMessage } from "@/utils/error-handling";
 
 
 export default function ProfilePage() {
@@ -35,6 +36,9 @@ export default function ProfilePage() {
 	const [emailSaving, setEmailSaving] = useState(false);
 	const [passwordSaving, setPasswordSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [avatarError, setAvatarError] = useState<string | null>(null);
+	const [emailError, setEmailError] = useState<string | null>(null);
+	const [passwordError, setPasswordError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [emailInput, setEmailInput] = useState("");
 	const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
@@ -125,7 +129,7 @@ export default function ProfilePage() {
 
 		try {
 			setSaving(true);
-			setError(null);
+			setAvatarError(null);
 			const { data: { user } } = await supabase.auth.getUser();
 			if (!user) throw new Error("غير مسجل");
 
@@ -153,12 +157,7 @@ export default function ProfilePage() {
 			setSuccess("تم تحديث الصورة الشخصية");
 		} catch (err: unknown) {
 			console.error("Avatar upload error:", err);
-			const error = err as Error;
-			if (error?.message?.includes("Bucket not found")) {
-				setError("خطأ في الإعدادات: لم يتم العثور على مجلد الصور (avatars). يرجى التواصل مع الدعم الفني.");
-			} else {
-				setError(error?.message || "فشل رفع الصورة");
-			}
+			setAvatarError(getAuthErrorMessage(err));
 		} finally {
 			setSaving(false);
 		}
@@ -224,18 +223,18 @@ export default function ProfilePage() {
 		e.stopPropagation();
 
 		setEmailSaving(true);
-		setError(null);
+		setEmailError(null);
 		setSuccess(null);
 
 		// Validate email - same rules as registration
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailInput.trim()) {
-			setError("البريد الإلكتروني مطلوب");
+			setEmailError("البريد الإلكتروني مطلوب");
 			setEmailSaving(false);
 			return;
 		}
 		if (!emailRegex.test(emailInput.trim())) {
-			setError("البريد الإلكتروني غير صالح");
+			setEmailError("البريد الإلكتروني غير صالح");
 			setEmailSaving(false);
 			return;
 		}
@@ -243,7 +242,7 @@ export default function ProfilePage() {
 		// Check if email is different from current
 		const { data: { user } } = await supabase.auth.getUser();
 		if (user?.email && emailInput.trim().toLowerCase() === user.email.toLowerCase()) {
-			setError("البريد الإلكتروني الجديد يجب أن يكون مختلفاً عن الحالي");
+			setEmailError("البريد الإلكتروني الجديد يجب أن يكون مختلفاً عن الحالي");
 			setEmailSaving(false);
 			return;
 		}
@@ -266,19 +265,7 @@ export default function ProfilePage() {
 
 			if (updateError) {
 				console.error("Email update error details:", updateError);
-				// Check for specific error codes
-				if (updateError.message?.includes('already registered') ||
-					updateError.message?.includes('already exists') ||
-					updateError.message?.includes('User already registered')) {
-					setError("هذا البريد الإلكتروني مستخدم بالفعل");
-				} else if (updateError.message?.includes('rate limit') ||
-					updateError.message?.includes('too many requests')) {
-					setError("تم إرسال الكثير من الطلبات. يرجى المحاولة لاحقاً");
-				} else if (updateError.message?.includes('Email rate limit')) {
-					setError("تم إرسال الكثير من رسائل البريد الإلكتروني. يرجى الانتظار قليلاً");
-				} else {
-					setError(updateError.message || "فشل تحديث البريد الإلكتروني");
-				}
+				setEmailError(getAuthErrorMessage(updateError));
 				setEmailSaving(false);
 				return;
 			}
@@ -291,11 +278,11 @@ export default function ProfilePage() {
 				setSuccess("تم إرسال رابط تأكيد إلى البريد الجديد. الرجاء التحقق من بريدك الإلكتروني (والبريد العشوائي) والنقر على الرابط لتأكيد التغيير.");
 				setEmailInput("");
 			} else {
-				setError("حدث خطأ أثناء تحديث البريد الإلكتروني");
+				setEmailError("حدث خطأ أثناء تحديث البريد الإلكتروني");
 			}
 		} catch (err: unknown) {
 			console.error("Email update error:", err);
-			setError((err as Error)?.message || "فشل تحديث البريد الإلكتروني");
+			setEmailError(getAuthErrorMessage(err));
 		} finally {
 			setEmailSaving(false);
 		}
@@ -306,12 +293,12 @@ export default function ProfilePage() {
 		e.stopPropagation();
 
 		setPasswordSaving(true);
-		setError(null);
+		setPasswordError(null);
 		setSuccess(null);
 
 		// Validate current password
 		if (!passwords.current) {
-			setError("كلمة المرور الحالية مطلوبة");
+			setPasswordError("كلمة المرور الحالية مطلوبة");
 			setPasswordSaving(false);
 			return;
 		}
@@ -319,24 +306,24 @@ export default function ProfilePage() {
 		// Validate new password - same rules as registration
 		const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 		if (!passwords.newPass) {
-			setError("كلمة المرور الجديدة مطلوبة");
+			setPasswordError("كلمة المرور الجديدة مطلوبة");
 			setPasswordSaving(false);
 			return;
 		}
 		if (!passwordRegex.test(passwords.newPass)) {
-			setError("كلمة المرور يجب أن تكون 8 خانات على الأقل، وتحتوي على حرف ورقم على الأقل");
+			setPasswordError("كلمة المرور يجب أن تكون 8 خانات على الأقل، وتحتوي على حرف ورقم على الأقل");
 			setPasswordSaving(false);
 			return;
 		}
 
 		// Validate confirmation
 		if (!passwords.confirm) {
-			setError("تأكيد كلمة المرور مطلوب");
+			setPasswordError("تأكيد كلمة المرور مطلوب");
 			setPasswordSaving(false);
 			return;
 		}
 		if (passwords.newPass !== passwords.confirm) {
-			setError("كلمات المرور غير متطابقة");
+			setPasswordError("كلمات المرور غير متطابقة");
 			setPasswordSaving(false);
 			return;
 		}
@@ -354,7 +341,7 @@ export default function ProfilePage() {
 			});
 
 			if (signInError) {
-				setError("كلمة المرور الحالية غير صحيحة");
+				setPasswordError("كلمة المرور الحالية غير صحيحة");
 				setPasswordSaving(false);
 				return;
 			}
@@ -372,7 +359,7 @@ export default function ProfilePage() {
 			setPasswords({ current: "", newPass: "", confirm: "" });
 		} catch (err: unknown) {
 			console.error("Password change error:", err);
-			setError((err as Error)?.message || "فشل تغيير كلمة المرور");
+			setPasswordError(getAuthErrorMessage(err));
 		} finally {
 			setPasswordSaving(false);
 		}
@@ -459,6 +446,9 @@ export default function ProfilePage() {
 						<Text variant="body-small" color="muted" className="mt-1">
 							{profile?.account_type === "business" ? "حساب أعمال" : "حساب فردي"}
 						</Text>
+						{avatarError && (
+							<p className="mt-2 text-sm text-red-600 font-medium">{avatarError}</p>
+						)}
 						<div className="mt-3 max-w-[200px]">
 							<div className="flex justify-between text-xs text-gray-500 mb-1">
 								<span>اكتمال الملف</span>
@@ -747,9 +737,9 @@ export default function ProfilePage() {
 								<Mail className="text-[#7f2dfb]" size={20} />
 								البريد الإلكتروني
 							</h2>
-							{error && error.includes("البريد") && (
+							{emailError && (
 								<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-									<p className="text-red-800 text-sm font-medium">{error}</p>
+									<p className="text-red-800 text-sm font-medium">{emailError}</p>
 								</div>
 							)}
 							{success && success.includes("رابط تأكيد") && (
@@ -796,11 +786,12 @@ export default function ProfilePage() {
 								<Building2 className="text-[#7f2dfb]" size={20} />
 								تغيير كلمة المرور
 							</h2>
-							{error && error.includes("كلمة المرور") && (
+							{passwordError && (
 								<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
-									<p className="text-red-800 text-sm font-medium">{error}</p>
+									<p className="text-red-800 text-sm font-medium">{passwordError}</p>
 								</div>
 							)}
+
 							{success && success.includes("كلمة المرور") && (
 								<div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl">
 									<p className="text-green-800 text-sm font-medium">{success}</p>
@@ -903,7 +894,7 @@ export default function ProfilePage() {
 										الشركة
 									</span>
 									<span className="font-bold text-gray-900">
-										{profile.company_name}
+										{profile?.company_name}
 									</span>
 								</div>
 							)}
@@ -913,7 +904,7 @@ export default function ProfilePage() {
 										المدينة
 									</span>
 									<span className="font-bold text-gray-900">
-										{profile.city}
+										{profile?.city}
 									</span>
 								</div>
 							)}

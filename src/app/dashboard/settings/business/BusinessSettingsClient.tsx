@@ -75,12 +75,44 @@ export default function BusinessSettingsClient({ initialSettings, userId }: Busi
 		loadProfile();
 	}, [userId]);
 
-	const onLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// Logo Upload
+	const onLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (file) {
-			const url = URL.createObjectURL(file);
-			setBusinessLogo(url);
-			toast({ title: "تنبيه", description: "رفع الشعار غير مفعل حالياً، سيتم عرضه محلياً فقط", variant: "destructive" });
+		if (!file) return;
+
+        // Basic validation
+        if (file.size > 2 * 1024 * 1024) {
+             toast({ title: "خطأ", description: "حجم الصورة يجب أن لا يتجاوز 2 ميجابايت", variant: "destructive" });
+             return;
+        }
+
+		try {
+            setLoading(true); // Show loading while uploading
+            
+            // 1. Upload to Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${userId}-${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabasePersistent.storage
+                .from('business-logos') // Make sure this bucket exists
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // 2. Get Public URL
+            const { data: { publicUrl } } = supabasePersistent.storage
+                .from('business-logos')
+                .getPublicUrl(filePath);
+
+            // 3. Update State
+			setBusinessLogo(publicUrl);
+            setLoading(false);
+
+		} catch (error) {
+            console.error(error);
+			toast({ title: "خطأ", description: "فشل رفع الشعار، تأكد من الاتصال بالإنترنت", variant: "destructive" });
+             setLoading(false);
 		}
 	};
 
@@ -165,22 +197,27 @@ export default function BusinessSettingsClient({ initialSettings, userId }: Busi
 							</SelectContent>
 						</Select>
 					</div>
-					<div className="space-y-2">
-						<label className="block text-sm font-medium text-gray-700">اسم الشركة</label>
-						<div className="relative">
-							<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="اسم الشركة" />
-						</div>
-					</div>
-					<div className="space-y-2">
-						<label className="block text-sm font-medium text-gray-700">
-							{IS_ZATCA_ENABLED ? "الرقم الضريبي" : "السجل التجاري"}
-						</label>
-						<div className="relative">
-							<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input value={taxNumber} onChange={(e) => setTaxNumber(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder={IS_ZATCA_ENABLED ? "3xxxxxxxxxxxxx3" : "1010xxxxxx"} />
-						</div>
-					</div>
+
+                    {accountType === "business" && (
+                        <>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">اسم الشركة</label>
+                                <div className="relative">
+                                    <Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="اسم الشركة" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    {IS_ZATCA_ENABLED ? "الرقم الضريبي" : "السجل التجاري"}
+                                </label>
+                                <div className="relative">
+                                    <Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <input value={taxNumber} onChange={(e) => setTaxNumber(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder={IS_ZATCA_ENABLED ? "3xxxxxxxxxxxxx3" : "1010xxxxxx"} />
+                                </div>
+                            </div>
+                        </>
+                    )}
 				</div>
 			</div>
 

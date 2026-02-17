@@ -16,6 +16,8 @@ import {
 import { Eye, EyeClosed, Check, Mail, User, Lock, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MultiStepLoader } from "@/components/ui/multi-step-loader";
+import { getAuthErrorMessage } from "@/utils/error-handling";
+import { Building2 } from "lucide-react";
 
 // Loading states for the multi-step loader
 const registerLoadingStates = [
@@ -27,10 +29,11 @@ const registerLoadingStates = [
 
 export default function RegisterPage() {
 	const [formData, setFormData] = useState({
-		fullname: "",
-		email: "",
-		password: "",
-	});
+        fullname: "",
+        email: "",
+        password: "",
+        accountType: "individual" as "individual" | "business",
+    });
 
 	const router = useRouter();
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -78,16 +81,15 @@ export default function RegisterPage() {
 				password: formData.password,
 				options: {
 					emailRedirectTo: `${location.origin}/confirmed`,
-					data: { full_name: formData.fullname },
+					data: {
+						full_name: formData.fullname,
+						account_type: formData.accountType,
+					},
 				},
 			});
 
 			if (error) {
-				if ((error as { code?: string }).code === "user_already_registered") {
-					setGeneralError("هذا البريد مسجّل مسبقًا");
-				} else {
-					setGeneralError(error.message);
-				}
+				setGeneralError(getAuthErrorMessage(error));
 				setFormData((p) => ({ ...p, password: "" }));
 				return;
 			}
@@ -106,8 +108,8 @@ export default function RegisterPage() {
 				setShowLoader(false);
 				setShowConfirmModal(true);
 			}, 5000); // Show loader for ~5 seconds
-		} catch {
-			setGeneralError("حدث خطأ، حاول مرة أخرى");
+		} catch (error) {
+			setGeneralError(getAuthErrorMessage(error));
 		} finally {
 			setIsLoading(false);
 		}
@@ -222,6 +224,36 @@ export default function RegisterPage() {
 					)}
 
 					<form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Account Type Selection */}
+                        <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, accountType: "individual" }))}
+                                className={cn(
+                                    "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
+                                    formData.accountType === "individual"
+                                        ? "bg-white text-[#7f2dfb] shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <User size={16} />
+                                فرد / مستقل
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, accountType: "business" }))}
+                                className={cn(
+                                    "flex-1 py-2 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2",
+                                    formData.accountType === "business"
+                                        ? "bg-white text-[#7f2dfb] shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                <Building2 size={16} />
+                                منشأة / شركة
+                            </button>
+                        </div>
+
 						{/* Name */}
 						<div>
 							<label htmlFor="fullname" className="block text-sm font-medium text-gray-700 mb-2">

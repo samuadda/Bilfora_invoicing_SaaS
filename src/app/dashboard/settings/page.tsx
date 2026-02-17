@@ -21,6 +21,7 @@ import { Profile, UpdateProfileInput, Gender } from "@/types/database";
 import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
+import { getAuthErrorMessage } from "@/utils/error-handling";
 
 export default function GeneralSettingsPage() {
 	const [profile, setProfile] = useState<Profile | null>(null);
@@ -28,7 +29,11 @@ export default function GeneralSettingsPage() {
 	const [saving, setSaving] = useState(false);
 	const [emailSaving, setEmailSaving] = useState(false);
 	const [passwordSaving, setPasswordSaving] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null); // Global/Loading error
+	const [avatarError, setAvatarError] = useState<string | null>(null);
+	const [personalInfoError, setPersonalInfoError] = useState<string | null>(null);
+	const [emailError, setEmailError] = useState<string | null>(null);
+	const [passwordError, setPasswordError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [emailInput, setEmailInput] = useState("");
 	const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
@@ -68,7 +73,7 @@ export default function GeneralSettingsPage() {
 			});
 
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "خطأ في تحميل البيانات");
+			setError(getAuthErrorMessage(err));
 		} finally {
 			setLoading(false);
 		}
@@ -85,7 +90,7 @@ export default function GeneralSettingsPage() {
 		const file = e.target.files?.[0];
 		if (!file || !profile) return;
 		setSaving(true);
-		setError(null);
+		setAvatarError(null);
 		try {
 			const filePath = `${profile.id}/${Date.now()}-${file.name}`;
 			const { error: uploadError } = await supabasePersistent.storage
@@ -93,20 +98,21 @@ export default function GeneralSettingsPage() {
 				.upload(filePath, file, { upsert: true });
 			if (uploadError) {
 				if (uploadError.message?.includes("Bucket not found")) {
-					setError("لم يتم إعداد مخزن الصور بعد. تواصل مع الدعم الفني.");
+					setAvatarError("لم يتم إعداد مخزن الصور بعد. تواصل مع الدعم الفني.");
 				} else {
-					setError("فشل رفع الصورة: " + uploadError.message);
+					setAvatarError("فشل رفع الصورة: " + uploadError.message);
 				}
 				return;
 			}
 			const { data: urlData } = supabasePersistent.storage
 				.from("avatars")
 				.getPublicUrl(filePath);
-			await saveProfile({ avatar_url: urlData.publicUrl });
-			setProfile((prev) => prev ? { ...prev, avatar_url: urlData.publicUrl } : prev);
-			setSuccess("تم تحديث الصورة الشخصية");
-		} catch {
-			setError("خطأ في رفع الصورة");
+			
+			const err = await saveProfile({ avatar_url: urlData.publicUrl });
+			if (err) setAvatarError(err);
+			else setSuccess("تم تحديث الصورة الشخصية");
+		} catch (err) {
+			setAvatarError(getAuthErrorMessage(err));
 		} finally {
 			setSaving(false);
 		}
@@ -115,17 +121,18 @@ export default function GeneralSettingsPage() {
 	const handleSavePersonalInfo = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setSaving(true);
-		await saveProfile({
+		setPersonalInfoError(null);
+		const err = await saveProfile({
 			full_name: formData.full_name,
 			phone: formData.phone,
 			dob: formData.dob,
 			gender: formData.gender as Gender,
 		});
+		if (err) setPersonalInfoError(err);
 		setSaving(false);
 	};
 
-	const saveProfile = async (updates: Partial<UpdateProfileInput>) => {
-		setError(null);
+	const saveProfile = async (updates: Partial<UpdateProfileInput>): Promise<string | null> => {
 		setSuccess(null);
 		try {
 			const { data: { user } } = await supabasePersistent.auth.getUser();
@@ -137,42 +144,37 @@ export default function GeneralSettingsPage() {
 			if (updateError) throw updateError;
 			setProfile((prev) => prev ? { ...prev, ...updates } as Profile : prev);
 			setSuccess("تم حفظ التغييرات بنجاح ✓");
+			return null;
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "خطأ في الحفظ");
+			return getAuthErrorMessage(err);
 		}
 	};
 
 	const handleEmailUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setEmailSaving(true);
-		setError(null);
+		setEmailError(null);
 		setSuccess(null);
 		try {
 			if (!emailInput || !emailInput.includes("@")) {
-				setError("البريد الإلكتروني غير صالح");
+				setEmailError("البريد الإلكتروني غير صالح");
 				return;
 			}
 			const { data: { user } } = await supabasePersistent.auth.getUser();
 			if (!user) throw new Error("غير مسجل");
 			if (emailInput === user.email) {
-				setError("البريد الجديد مطابق للبريد الحالي");
+				setEmailError("البريد الجديد مطابق للبريد الحالي");
 				return;
 			}
 			const { error: updateError } = await supabasePersistent.auth.updateUser({ email: emailInput });
 			if (updateError) {
-				if (updateError.message?.toLowerCase().includes("rate limit")) {
-					setError("عدد المحاولات كثير. حاول بعد دقيقة.");
-				} else if (updateError.message?.toLowerCase().includes("same")) {
-					setError("البريد الجديد مطابق للبريد الحالي");
-				} else {
-					setError("فشل تحديث البريد: " + updateError.message);
-				}
+				setEmailError(getAuthErrorMessage(updateError));
 				return;
 			}
 			setSuccess("تم إرسال رابط تأكيد إلى البريد الجديد. تفقد صندوق الوارد.");
 			setEmailInput("");
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "خطأ في تحديث البريد الإلكتروني");
+			setEmailError(getAuthErrorMessage(err));
 		} finally {
 			setEmailSaving(false);
 		}
@@ -181,19 +183,19 @@ export default function GeneralSettingsPage() {
 	const handlePasswordChange = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setPasswordSaving(true);
-		setError(null);
+		setPasswordError(null);
 		setSuccess(null);
 		try {
 			if (passwords.newPass !== passwords.confirm) {
-				setError("كلمة المرور الجديدة غير متطابقة مع التأكيد");
+				setPasswordError("كلمة المرور الجديدة غير متطابقة مع التأكيد");
 				return;
 			}
 			if (passwords.newPass.length < 8) {
-				setError("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+				setPasswordError("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
 				return;
 			}
 			if (!/\d/.test(passwords.newPass) || !/[a-zA-Z]/.test(passwords.newPass)) {
-				setError("كلمة المرور يجب أن تحتوي على حرف ورقم على الأقل");
+				setPasswordError("كلمة المرور يجب أن تحتوي على حرف ورقم على الأقل");
 				return;
 			}
 			const { error: signInError } = await supabasePersistent.auth.signInWithPassword({
@@ -201,22 +203,18 @@ export default function GeneralSettingsPage() {
 				password: passwords.current,
 			});
 			if (signInError) {
-				setError("كلمة المرور الحالية غير صحيحة");
+				setPasswordError("كلمة المرور الحالية غير صحيحة");
 				return;
 			}
 			const { error: updateError } = await supabasePersistent.auth.updateUser({ password: passwords.newPass });
 			if (updateError) {
-				if (updateError.message?.toLowerCase().includes("same")) {
-					setError("كلمة المرور الجديدة لا يمكن أن تكون نفس كلمة المرور الحالية");
-				} else {
-					setError("فشل تغيير كلمة المرور: " + updateError.message);
-				}
+				setPasswordError(getAuthErrorMessage(updateError));
 				return;
 			}
 			setSuccess("تم تغيير كلمة المرور بنجاح ✓");
 			setPasswords({ current: "", newPass: "", confirm: "" });
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "خطأ في تغيير كلمة المرور");
+			setPasswordError(getAuthErrorMessage(err));
 		} finally {
 			setPasswordSaving(false);
 		}
@@ -267,6 +265,9 @@ export default function GeneralSettingsPage() {
 					<Text variant="body-small" color="muted" className="mt-0.5">
 						{profile?.account_type === "business" ? "حساب أعمال" : "حساب فردي"}
 					</Text>
+					{avatarError && (
+						<p className="mt-2 text-sm text-red-600 font-medium">{avatarError}</p>
+					)}
 				</div>
 			</div>
 
@@ -276,6 +277,9 @@ export default function GeneralSettingsPage() {
 					<User className="text-[#7f2dfb]" size={20} />
 					المعلومات الشخصية
 				</h2>
+				{personalInfoError && (
+					<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 text-sm font-medium">{personalInfoError}</p></div>
+				)}
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 					<div className="space-y-2">
 						<label className="block text-sm font-medium text-gray-700">الاسم الكامل *</label>
@@ -325,8 +329,8 @@ export default function GeneralSettingsPage() {
 						<Mail className="text-[#7f2dfb]" size={20} />
 						البريد الإلكتروني
 					</h2>
-					{error && error.includes("البريد") && (
-						<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 text-sm font-medium">{error}</p></div>
+					{emailError && (
+						<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 text-sm font-medium">{emailError}</p></div>
 					)}
 					{success && success.includes("رابط تأكيد") && (
 						<div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl"><p className="text-green-800 text-sm font-medium">{success}</p></div>
@@ -349,8 +353,8 @@ export default function GeneralSettingsPage() {
 						<Lock className="text-[#7f2dfb]" size={20} />
 						تغيير كلمة المرور
 					</h2>
-					{error && error.includes("كلمة المرور") && (
-						<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 text-sm font-medium">{error}</p></div>
+					{passwordError && (
+						<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl"><p className="text-red-800 text-sm font-medium">{passwordError}</p></div>
 					)}
 					{success && success.includes("كلمة المرور") && (
 						<div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl"><p className="text-green-800 text-sm font-medium">{success}</p></div>

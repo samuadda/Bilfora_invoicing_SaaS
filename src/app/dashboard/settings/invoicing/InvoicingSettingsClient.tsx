@@ -40,7 +40,6 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 
 	// Toggles
 	const [autoSend, setAutoSend] = useState(false);
-	const [allowPartials, setAllowPartials] = useState(true);
 
 	// Footer
 	const [footerNote, setFooterNote] = useState(initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا");
@@ -92,7 +91,7 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">بادئة الفاتورة</label>
+						<label className="text-sm font-medium text-gray-700">بداية الفاتورة</label>
 						<div className="relative">
 							<Hash className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 							<input value={prefix} onChange={(e) => setPrefix(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="INV-" />
@@ -137,15 +136,6 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 						</span>
 						<div className="relative inline-flex items-center cursor-pointer">
 							<input type="checkbox" checked={autoSend} onChange={(e) => setAutoSend(e.target.checked)} className="sr-only peer" />
-							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-						</div>
-					</label>
-					<label className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer bg-white">
-						<span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-							<FileText size={18} className="text-[#7f2dfb]" /> دفع جزئي
-						</span>
-						<div className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={allowPartials} onChange={(e) => setAllowPartials(e.target.checked)} className="sr-only peer" />
 							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
 						</div>
 					</label>
@@ -199,7 +189,7 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 						</div>
 					</div>
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">رابط QR أو نص للدفع (غير مفعل)</label>
+						<label className="text-sm font-medium text-gray-700">تعليمات دفع إضافية</label>
 						<div className="relative">
 							<QrCode className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 							<input value={qrValue} onChange={(e) => setQrValue(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="رابط بوابة الدفع أو تعليمات" disabled />
