@@ -578,7 +578,7 @@ export function generateInvoiceHtml(
                 <th style="width: 5%" class="center">#</th>
                 <th style="width: ${isTaxMode ? '35%' : '45%'}">الوصف</th>
                 <th style="width: 10%" class="center">الكمية</th>
-                <th style="width: 15%" class="left">سعر الوحدة</th>
+                <th style="width: 15%" class="left">${IS_ZATCA_ENABLED ? 'سعر الوحدة' : 'السعر'}</th>
                 ${isTaxMode ? `<th style="width: 15%" class="left tax-col">الضريبة (${taxRate}%)</th>` : ''}
                 <th style="width: 15%" class="left">الإجمالي</th>
             </tr>
@@ -621,7 +621,7 @@ export function generateInvoiceHtml(
     <div class="totals-wrapper">
         <div class="totals-section">
             <div class="totals-row subtotal">
-                <span class="totals-label">المجموع (غير شامل الضريبة)</span>
+                <span class="totals-label">${IS_ZATCA_ENABLED ? 'المجموع (غير شامل الضريبة)' : 'المجموع'}</span>
                 <span class="totals-value">${formatCurrency(subtotal)}</span>
             </div>
             

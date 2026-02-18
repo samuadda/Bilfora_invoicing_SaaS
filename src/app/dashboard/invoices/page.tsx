@@ -47,6 +47,7 @@ import { layout } from "@/lib/ui/tokens";
 import { formatDate } from "@/lib/formatters";
 import { Pagination } from "@/components/ui/pagination";
 import { BulkActions, BulkActionButton } from "@/components/dashboard/BulkActions";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 const statusConfig = {
 	draft: {
@@ -808,6 +809,11 @@ function InvoicesContent() {
 								<th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
 									رقم الفاتورة
 								</th>
+                                {IS_ZATCA_ENABLED && (
+								<th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
+									النوع (Beta)
+								</th>
+                                )}
 								<th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
 									المشتري
 								</th>
@@ -930,7 +936,7 @@ function InvoicesContent() {
 																إشعار دائن
 															</span>
 														)}
-													{(() => {
+													{IS_ZATCA_ENABLED && (() => {
 														// Use invoice_type directly (DB enum format), fallback to legacy type field if needed
 														const invoiceType: InvoiceType =
 															invoice.invoice_type ?? (invoice.type as InvoiceType) ?? "standard_tax";

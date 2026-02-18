@@ -315,7 +315,7 @@ export default function QuickProductModal({
 									{/* Selling Price */}
 									<div>
 										<label className="block text-sm font-medium text-gray-700 mb-1">
-											سعر البيع <span className="text-red-500">*</span>
+											{IS_ZATCA_ENABLED ? "سعر البيع (غير شامل الضريبة)" : "سعر البيع"} <span className="text-red-500">*</span>
 										</label>
 										<input
 											type="number"

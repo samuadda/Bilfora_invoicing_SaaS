@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { layout } from "@/lib/ui/tokens";
 import type { CreateInvoiceItemInput, Product } from "@/types/database";
+import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoiceItemsTableProps {
     items: CreateInvoiceItemInput[];
@@ -148,7 +149,9 @@ export function InvoiceItemsTable({
                         </div>
 
                         <div className="col-span-4 md:col-span-2 space-y-1">
-                            <label className="text-xs font-medium text-gray-500">سعر الوحدة</label>
+                            <label className="text-xs font-medium text-gray-500">
+                                {IS_ZATCA_ENABLED ? "سعر الوحدة (غير شامل)" : "سعر الوحدة"}
+                            </label>
                             <Input
                                 type="number"
                                 min="0"
