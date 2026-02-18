@@ -122,7 +122,7 @@ export function InvoicePDF_Tax({
 
 				{/* Buyer Information */}
 				<View style={s.infoSection}>
-					<Text style={s.infoSectionTitle}>Buyer Information / معلومات المشتري</Text>
+					<Text style={s.infoSectionTitle}>Buyer Information / معلومات البائع</Text>
 					<View style={s.infoBox}>
 						<View style={s.infoRow}>
 							<Text style={s.infoLabel}>Name / الاسم:</Text>

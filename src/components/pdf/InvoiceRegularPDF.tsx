@@ -100,7 +100,7 @@ export function InvoiceRegularPDF({
 
 				{/* Client Info Section */}
 				<View style={s.section}>
-					<Text style={s.sectionTitle}>معلومات العميل</Text>
+					<Text style={s.sectionTitle}>معلومات المشتري</Text>
 					<View style={s.clientInfo}>
 						<Text style={s.clientName}>
 							{safeString(client?.name || "غير محدد")}

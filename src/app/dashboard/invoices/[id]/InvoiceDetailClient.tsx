@@ -376,7 +376,7 @@ export default function InvoiceDetailClient({
 										fontWeight: 600,
 									}}
 								>
-									المورد (Seller)
+									البائع (Seller)
 								</h3>
 								<div className="flex justify-between items-center mb-1">
 									<span className="font-semibold text-gray-500 text-[13px]">
@@ -398,7 +398,7 @@ export default function InvoiceDetailClient({
 										fontWeight: 600,
 									}}
 								>
-									العميل (Buyer)
+									المشتري (Buyer)
 								</h3>
 								{client ? (
 									<>

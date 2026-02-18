@@ -92,7 +92,7 @@ export function InvoiceSimplifiedPDF({
 
 					{/* Child 2: Buyer (To) -> Visual Left */}
 					<View style={s.card}>
-						<Text style={s.cardTitle}>إلى (العميل)</Text>
+						<Text style={s.cardTitle}>إلى (المشتري)</Text>
 						<View style={s.cardContent}>
 							{client ? (
 								<>

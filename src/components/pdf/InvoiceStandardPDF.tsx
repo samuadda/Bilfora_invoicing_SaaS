@@ -115,7 +115,7 @@ export function InvoiceStandardPDF({
 
 				{/* Buyer Info Section */}
 				<View style={s.section}>
-					<Text style={s.sectionTitle}>معلومات المشتري</Text>
+					<Text style={s.sectionTitle}>معلومات البائع</Text>
 					<View style={s.clientInfo}>
 						<Text style={s.clientName}>
 							{safeString(client?.name || "غير محدد")}

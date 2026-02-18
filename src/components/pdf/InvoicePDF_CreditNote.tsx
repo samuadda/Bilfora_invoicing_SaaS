@@ -118,7 +118,7 @@ export function InvoicePDF_CreditNote({
 
 				{/* Buyer Information */}
 				<View style={s.infoSection}>
-					<Text style={s.infoSectionTitle}>معلومات المشتري</Text>
+					<Text style={s.infoSectionTitle}>معلومات البائع</Text>
 					<View style={s.infoBox}>
 						<View style={s.infoRow}>
 							<Text style={s.infoLabel}>الاسم:</Text>

@@ -17,7 +17,7 @@ const ZATCA_TAX_NUMBER_REGEX = /^3\d{13}3$/;
 // ── Zod Schema with Conditional Validation ──────────────────────────────────
 const baseSchema = z.object({
 	client_type: z.enum(["individual", "organization"]),
-	name: z.string().min(1, "اكتب اسم العميل 😊").min(2, "الاسم قصير شوي، كمّله"),
+	name: z.string().min(1, "اكتب اسم المشتري 😊").min(2, "الاسم قصير شوي، كمّله"),
 	phone: z.string()
 		.regex(/^05\d{8}$/, "رقم الجوال لازم يبدأ بـ 05 ويكون 10 أرقام")
 		.optional()
@@ -157,7 +157,7 @@ export default function QuickClientModal({
 
 			toast({
 				title: "تمت الإضافة",
-				description: "تم حفظ العميل بنجاح",
+				description: "تم حفظ المشتري بنجاح",
 			});
 
 			handleClose();
@@ -200,7 +200,7 @@ export default function QuickClientModal({
 							<div>
 								<Heading variant="h3">إضافة عميل جديد</Heading>
 								<Text variant="body-small" color="muted" className="mt-1">
-									أضِف بيانات العميل الجديد لبدء إنشاء الفواتير بسهولة.
+									أضِف بيانات المشتري الجديد لبدء إنشاء الفواتير بسهولة.
 								</Text>
 							</div>
 							<button
@@ -437,7 +437,7 @@ export default function QuickClientModal({
 											جاري الحفظ...
 										</>
 									) : (
-										"إضافة العميل"
+										"إضافة المشتري"
 									)}
 								</button>
 							</div>

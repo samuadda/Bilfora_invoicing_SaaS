@@ -155,7 +155,7 @@ export default function AnalyticsFiltersComponent({
 								{/* Customer Filter */}
 								<div>
 									<label className="block text-sm font-medium text-gray-700 mb-2">
-										العميل
+										المشتري
 									</label>
 									<Select
 										value={filters.customerId}

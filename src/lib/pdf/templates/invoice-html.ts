@@ -533,7 +533,7 @@ export function generateInvoiceHtml(
     <div class="info-grid">
         <!-- Seller Info -->
         <div class="info-column">
-            <div class="column-label">مِن (المورد)</div>
+            <div class="column-label">مِن (البائع)</div>
             <div class="party-name">${safe(sellerName)}</div>
             ${sellerAddress ? `<div class="party-detail">${safe(sellerAddress)}</div>` : ''}
             ${sellerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(sellerPhone)}</div>` : ''}
@@ -543,7 +543,7 @@ export function generateInvoiceHtml(
 
         <!-- Buyer Info -->
         <div class="info-column">
-            <div class="column-label">إلى (العميل)</div>
+            <div class="column-label">إلى (المشتري)</div>
             <div class="party-name">${safe(buyerName)}</div>
             ${buyerAddress ? `<div class="party-detail">${safe(buyerAddress)}</div>` : ''}
             ${buyerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(buyerPhone)}</div>` : ''}

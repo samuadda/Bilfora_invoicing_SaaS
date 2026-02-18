@@ -368,7 +368,7 @@ export default function InvoiceCreationModal({
 									{errors.client_id && (
 										<p className="text-xs text-red-600 font-medium mt-1 mr-1 flex items-center gap-1">
 											<AlertCircle size={12} />
-											العميل مطلوب
+											المشتري مطلوب
 										</p>
 									)}
 								</div>
@@ -418,7 +418,7 @@ export default function InvoiceCreationModal({
 									</Text>
 								) : (
 									<Text variant="body-small" color="muted">
-										يرجى اختيار العميل أولاً
+										يرجى اختيار المشتري أولاً
 									</Text>
 								)}
 							</div>
