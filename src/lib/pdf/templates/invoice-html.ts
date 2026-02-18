@@ -510,9 +510,12 @@ export function generateInvoiceHtml(
     <!-- TOP BAR -->
     <div class="top-bar">
         <div class="brand-col">
-            <div class="brand">Bilfora</div>
+            ${seller?.logo_url 
+                ? `<img src="${safe(seller.logo_url)}" alt="Logo" style="max-height: 80px; max-width: 200px; object-fit: contain; margin-bottom: 8px;" />` 
+                : `<div class="brand">${safe(seller?.company_name || 'Bilfora')}</div>`
+            }
             ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">VAT: ${safe(sellerTaxNumber)}</div>` : ''}
-            ${!IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="invoice-type-tag" style="direction:ltr">C.R: ${safe(sellerTaxNumber)}</div>` : ''}
+            ${!IS_ZATCA_ENABLED && seller?.cr_number ? `<div class="invoice-type-tag" style="direction:ltr">C.R: ${safe(seller.cr_number)}</div>` : ''}
         </div>
         
         <div class="invoice-header-col">
@@ -535,7 +538,7 @@ export function generateInvoiceHtml(
             ${sellerAddress ? `<div class="party-detail">${safe(sellerAddress)}</div>` : ''}
             ${sellerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(sellerPhone)}</div>` : ''}
             ${IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="party-detail vat">الرقم الضريبي: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
-            ${!IS_ZATCA_ENABLED && sellerTaxNumber ? `<div class="party-detail vat">س.ت: <span style="direction:ltr; unicode-bidi:isolate;">${safe(sellerTaxNumber)}</span></div>` : ''}
+            ${!IS_ZATCA_ENABLED && seller?.cr_number ? `<div class="party-detail vat">س.ت: <span style="direction:ltr; unicode-bidi:isolate;">${safe(seller.cr_number)}</span></div>` : ''}
         </div>
 
         <!-- Buyer Info -->

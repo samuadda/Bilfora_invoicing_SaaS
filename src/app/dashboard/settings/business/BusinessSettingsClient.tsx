@@ -111,7 +111,7 @@ export default function BusinessSettingsClient({ initialSettings, userId }: Busi
 
 		} catch (error) {
             console.error(error);
-			toast({ title: "خطأ", description: "فشل رفع الشعار، تأكد من الاتصال بالإنترنت", variant: "destructive" });
+			toast({ title: "خطأ", description: `فشل رفع الشعار: ${(error as Error).message}`, variant: "destructive" });
              setLoading(false);
 		}
 	};

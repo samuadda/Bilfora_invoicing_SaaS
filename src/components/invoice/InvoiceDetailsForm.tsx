@@ -53,7 +53,7 @@ export function InvoiceDetailsForm({
             {IS_ZATCA_ENABLED && (
             <Field label="نوع الفاتورة" required error={errors?.invoice_type}>
                 <Select
-                    value={formData.invoice_type || "simplified_tax"}
+                    value={formData.invoice_type || "standard_tax"}
                     onValueChange={(val) => onTypeChange(val as InvoiceType)}
                 >
                     <SelectTrigger className={errors?.invoice_type ? "border-red-300 ring-red-100" : ""}>

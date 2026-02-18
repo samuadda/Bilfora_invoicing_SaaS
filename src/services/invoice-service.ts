@@ -12,6 +12,8 @@ export interface SellerProfile {
     email?: string | null;
     iban?: string | null;
     bank_name?: string | null;
+    logo_url?: string | null;
+    cr_number?: string | null;
 }
 
 export async function getInvoiceForPdf(invoiceId: string, userId: string) {
@@ -43,13 +45,34 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         .eq("id", userId)
         .single();
 
+    // Fetch Invoice Settings (for logo, additional tax info, overrides)
+    const { data: settingsData } = await supabase
+        .from("invoice_settings")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
     // Cast to the expected structure
     const invoiceBase = invoiceData as unknown as InvoiceWithClientAndItems;
     const clientData = (invoiceData as unknown as { client?: Client | null }).client ?? null;
     const itemsData = (invoiceData as unknown as { items?: InvoiceItem[] }).items ?? [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paymentsData = (invoiceData as unknown as { payments: any[] }).payments ?? [];
-    const sellerData: SellerProfile | null = profileData ?? null;
+
+    // Merge Profile + Settings (Settings take precedence for business identity)
+    const sellerData: SellerProfile = {
+        id: userId,
+        full_name: profileData?.full_name,
+        company_name: settingsData?.seller_name || profileData?.company_name, // Settings name > Profile name
+        tax_number: settingsData?.vat_number || profileData?.tax_number,      // Settings VAT > Profile Tax
+        address: settingsData?.seller_address || profileData?.address,        // Settings Address > Profile Address
+        phone: settingsData?.seller_phone || profileData?.phone,
+        email: settingsData?.seller_email || profileData?.email,
+        iban: settingsData?.iban,
+        bank_name: settingsData?.bank_name,
+        logo_url: settingsData?.logo_url,
+        cr_number: settingsData?.cr_number,
+    };
 
     return {
         invoice: invoiceBase,

@@ -66,7 +66,7 @@ export default function InvoiceCreationModal({
 	const [invoiceFormData, setInvoiceFormData] = useState<CreateInvoiceInput>({
 		client_id: "",
 		order_id: null,
-		invoice_type: "simplified_tax",
+		invoice_type: "standard_tax",
 		document_kind: "invoice",
 		issue_date: new Date().toISOString().split("T")[0],
 		issue_time: new Date().toLocaleTimeString("en-GB", { hour12: false }), // HH:MM:SS
@@ -110,7 +110,7 @@ export default function InvoiceCreationModal({
 		setInvoiceFormData({
 			client_id: "",
 			order_id: "",
-			invoice_type: "simplified_tax",
+			invoice_type: "standard_tax",
 			document_kind: "invoice",
 			issue_date: new Date().toISOString().split("T")[0],
 			issue_time: new Date().toLocaleTimeString("en-GB", { hour12: false }),
