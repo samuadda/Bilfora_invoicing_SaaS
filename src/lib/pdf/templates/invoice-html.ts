@@ -664,6 +664,12 @@ export function generateInvoiceHtml(
     </div>
     ` : ''}
 
+    ${seller?.invoice_footer ? `
+    <div style="margin-top: 24px; text-align: center; font-size: 13px; color: var(--text-secondary);">
+        ${safe(seller.invoice_footer)}
+    </div>
+    ` : ''}
+
     <div class="footer">
         تم الإنشاء بواسطة منصة <a href="https://bilfora.com" target="_blank">Bilfora</a> للفواتير الإلكترونية
     </div>

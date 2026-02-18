@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
 	Hash,
-	CalendarClock,
+
 	Percent,
 	CreditCard,
 	Send,
@@ -32,8 +32,7 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 
 	// Numbering
 	const [prefix, setPrefix] = useState(initialSettings?.numbering_prefix ?? "INV-");
-	const [nextNumber] = useState(101);
-	const [dueDays, setDueDays] = useState(30);
+
 
 	// Tax
 	const [taxRate, setTaxRate] = useState(initialSettings?.default_vat_rate ? initialSettings.default_vat_rate * 100 : 15);
@@ -95,17 +94,6 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 						<div className="relative">
 							<Hash className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 							<input value={prefix} onChange={(e) => setPrefix(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="INV-" />
-						</div>
-					</div>
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">الرقم التالي (تجريبي)</label>
-						<input type="number" value={nextNumber} disabled className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-gray-50 text-gray-500 cursor-not-allowed" />
-					</div>
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">فترة الاستحقاق (أيام - تجريبي)</label>
-						<div className="relative">
-							<CalendarClock className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input type="number" value={dueDays} onChange={(e) => setDueDays(parseInt(e.target.value || "0", 10))} disabled className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm bg-gray-50 text-gray-500 cursor-not-allowed" />
 						</div>
 					</div>
 				</div>

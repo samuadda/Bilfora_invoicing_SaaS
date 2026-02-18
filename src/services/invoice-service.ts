@@ -9,6 +9,7 @@ export interface SellerProfile {
     tax_number?: string | null;
     address?: string | null;
     phone?: string | null;
+    invoice_footer?: string | null;
     email?: string | null;
     iban?: string | null;
     bank_name?: string | null;
@@ -72,6 +73,7 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         bank_name: settingsData?.bank_name,
         logo_url: settingsData?.logo_url,
         cr_number: settingsData?.cr_number,
+        invoice_footer: settingsData?.invoice_footer,
     };
 
     return {
