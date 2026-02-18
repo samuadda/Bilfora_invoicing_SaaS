@@ -94,6 +94,10 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 				numbering_prefix: prefix,
 				currency: "SAR" as const,
 				timezone: "Asia/Riyadh",
+				brand_color: primaryColor,
+				bank_name: null,
+				payment_notes: null,
+				default_terms: "Net 30", 
 			};
 
 			const result = await updateSettingsAction(payload);

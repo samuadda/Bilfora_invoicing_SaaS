@@ -422,7 +422,7 @@ function InvoicesContent() {
 		// Define columns
 		worksheet.columns = [
 			{ header: "رقم الفاتورة", key: "invoice_number", width: 15 },
-			{ header: "اسم المشتري", key: "client_name", width: 20 },
+			{ header: "اسم العميل", key: "client_name", width: 20 },
 			{ header: "البريد الإلكتروني", key: "client_email", width: 25 },
 			{ header: "المبلغ", key: "amount", width: 15 },
 			{ header: "الحالة", key: "status", width: 15 },
@@ -646,7 +646,7 @@ function InvoicesContent() {
 						/>
 						<Input
 							type="text"
-							placeholder="البحث برقم الفاتورة، اسم المشتري..."
+							placeholder="البحث برقم الفاتورة، اسم العميل..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							className="pr-12 bg-gray-50"
@@ -723,7 +723,7 @@ function InvoicesContent() {
 									}
 								>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="المشتري" />
+										<SelectValue placeholder="العميل" />
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="all">كل العملاء</SelectItem>
@@ -815,7 +815,7 @@ function InvoicesContent() {
 								</th>
                                 )}
 								<th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-									المشتري
+									العميل
 								</th>
 								<th
 									className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"

@@ -3,150 +3,352 @@
 import { useState } from "react";
 import {
 	Hash,
-
-	Percent,
 	CreditCard,
-	Send,
-	FileText,
+	Palette,
+	Building2,
 	Globe,
 	Loader2,
 	Save,
+	LayoutTemplate,
+	FileText,
+	CalendarClock,
 } from "lucide-react";
 
 import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
+import {
+	Select,
+	SelectTrigger,
+	SelectValue,
+	SelectContent,
+	SelectItem,
+} from "@/components/ui/custom-select"; // Correct import path for select? Usually @/components/ui/select
 import { IS_ZATCA_ENABLED } from "@/config/features";
+import Image from "next/image";
 
 interface InvoicingSettingsClientProps {
 	initialSettings: InvoiceSettings | null;
 }
 
-export default function InvoicingSettingsClient({ initialSettings }: InvoicingSettingsClientProps) {
+export default function InvoicingSettingsClient({
+	initialSettings,
+}: InvoicingSettingsClientProps) {
 	const { toast } = useToast();
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Numbering
-	const [prefix, setPrefix] = useState(initialSettings?.numbering_prefix ?? "INV-");
+	// --- State Management ---
 
+	// Card 1: Brand Identity
+	const [brandColor, setBrandColor] = useState(
+		initialSettings?.brand_color ?? "#7f2dfb"
+	);
+	const [logoUrl, setLogoUrl] = useState<string | null>(
+		initialSettings?.logo_url ?? null
+	);
 
-	// Tax
-	const [taxRate, setTaxRate] = useState(initialSettings?.default_vat_rate ? initialSettings.default_vat_rate * 100 : 15);
-
-	// Toggles
-	const [autoSend, setAutoSend] = useState(false);
-
-	// Footer
-	const [footerNote, setFooterNote] = useState(initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا");
-
-	// Payment
+	// Card 2: Banking & Payments
+	const [bankName, setBankName] = useState(initialSettings?.bank_name ?? "");
 	const [iban, setIban] = useState(initialSettings?.iban ?? "");
+	const [paymentNotes, setPaymentNotes] = useState(
+		initialSettings?.payment_notes ?? ""
+	);
+
+	// Card 3: Defaults & Numbering
+	const [prefix, setPrefix] = useState(
+		initialSettings?.numbering_prefix ?? "INV-"
+	);
+	const [defaultTerms, setDefaultTerms] = useState(
+		initialSettings?.default_terms ?? "Net 30"
+	);
+	const [footerNote, setFooterNote] = useState(
+		initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا"
+	);
+	
+	// Legacy/ZATCA fields (Hidden if Zatca disabled, but kept in state)
+	const [taxRate, setTaxRate] = useState(
+		initialSettings?.default_vat_rate
+			? initialSettings.default_vat_rate * 100
+			: 15
+	);
+
+	// --- Handlers ---
+
+	const onLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			const url = URL.createObjectURL(file);
+			setLogoUrl(url);
+			// TODO: Implement actual upload logic to Supabase Storage and get public URL
+			toast({
+				title: "تنبيه",
+				description: "رفع الشعار للعرض فقط حالياً (نسخة تجريبية)",
+			});
+		}
+	};
 
 	const handleSave = async () => {
 		setIsLoading(true);
 		try {
 			const result = await updateSettingsAction({
+				// Preserved or Default Fields
 				seller_name: initialSettings?.seller_name || "My Business",
 				vat_number: initialSettings?.vat_number || "300000000000003",
 				cr_number: initialSettings?.cr_number || null,
 				address_line1: initialSettings?.address_line1 || null,
 				city: initialSettings?.city || null,
-				logo_url: initialSettings?.logo_url ?? null,
+				
+				// Updated Fields
+				logo_url: logoUrl,
+				brand_color: brandColor,
+				
+				bank_name: bankName || null,
 				iban: iban || null,
-				invoice_footer: footerNote || null,
-				default_vat_rate: IS_ZATCA_ENABLED ? taxRate / 100 : 0,
+				payment_notes: paymentNotes || null,
+				
 				numbering_prefix: prefix,
-				currency: "SAR" as const,
+				default_terms: defaultTerms,
+				invoice_footer: footerNote || null,
+				
+				// Logic
+				default_vat_rate: IS_ZATCA_ENABLED ? taxRate / 100 : 0,
+				currency: "SAR",
 				timezone: "Asia/Riyadh",
 			});
+
 			if (result.success) {
-				toast({ title: "تم الحفظ بنجاح", description: "تم تحديث إعدادات الفواتير" });
+				toast({
+					title: "تم الحفظ بنجاح",
+					description: "تم تحديث إعدادات الفواتير",
+				});
 			} else {
-				toast({ variant: "destructive", title: "خطأ في الحفظ", description: result.error || "تأكد من إدخال جميع البيانات المطلوبة" });
+				toast({
+					variant: "destructive",
+					title: "خطأ في الحفظ",
+					description:
+						result.error || "تأكد من إدخال جميع البيانات المطلوبة",
+				});
 			}
 		} catch {
-			toast({ variant: "destructive", title: "خطأ", description: "حدث خطأ غير متوقع" });
+			toast({
+				variant: "destructive",
+				title: "خطأ",
+				description: "حدث خطأ غير متوقع",
+			});
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	return (
-		<div className="space-y-6">
-			{/* Numbering */}
+		<div className="space-y-6 pb-20">
+			{/* --- Card 1: Brand Identity --- */}
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
-					<Hash className="text-[#7f2dfb]" size={20} />
-					إعدادات الترقيم
+					<Palette className="text-[#7f2dfb]" size={20} />
+					هوية الفاتورة (Brand Identity)
 				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* Logo Upload */}
 					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">بداية الفاتورة</label>
-						<div className="relative">
-							<Hash className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input value={prefix} onChange={(e) => setPrefix(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="INV-" />
+						<label className="text-sm font-medium text-gray-700">
+							شعار الفاتورة
+						</label>
+						<div className="flex items-center gap-4">
+							<div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+								{logoUrl ? (
+									<img
+										src={logoUrl}
+										alt="Logo"
+										className="object-contain w-full h-full"
+									/>
+								) : (
+									<Building2 className="text-gray-300" size={24} />
+								)}
+							</div>
+							<label className="px-4 py-2 rounded-xl bg-purple-50 text-[#7f2dfb] text-sm font-bold hover:bg-purple-100 cursor-pointer transition-colors">
+								رفع صورة
+								<input
+									type="file"
+									accept="image/*"
+									onChange={onLogoChange}
+									className="hidden"
+								/>
+							</label>
+						</div>
+					</div>
+
+					{/* Brand Color */}
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							لون الهوية (Brand Color)
+						</label>
+						<div className="flex items-center gap-3">
+							<input
+								type="color"
+								value={brandColor}
+								onChange={(e) => setBrandColor(e.target.value)}
+								className="h-10 w-20 rounded cursor-pointer border-0 p-0"
+							/>
+							<span className="text-sm text-gray-500 font-mono">
+								{brandColor}
+							</span>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			{/* Tax & Toggles & Footer */}
-			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
-					{IS_ZATCA_ENABLED ? (
-						<><Percent className="text-[#7f2dfb]" size={20} />الضرائب والشروط</>
-					) : (
-						<><FileText className="text-[#7f2dfb]" size={20} />إعدادات الفاتورة</>
-					)}
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-					{IS_ZATCA_ENABLED && (
-						<div className="space-y-2">
-							<label className="text-sm font-medium text-gray-700">نسبة الضريبة (%)</label>
-							<div className="relative">
-								<Percent className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-								<input type="number" value={taxRate} onChange={(e) => setTaxRate(parseFloat(e.target.value || "0"))} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" />
-							</div>
-						</div>
-					)}
-					<label className="flex items-center justify-between p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer bg-white">
-						<span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-							<Send size={18} className="text-[#7f2dfb]" /> إرسال تلقائي
-						</span>
-						<div className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={autoSend} onChange={(e) => setAutoSend(e.target.checked)} className="sr-only peer" />
-							<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7f2dfb]"></div>
-						</div>
-					</label>
-				</div>
-				<div className="mt-5 space-y-2">
-					<label className="text-sm font-medium text-gray-700">ملاحظة تذييل الفاتورة</label>
-					<textarea rows={3} value={footerNote} onChange={(e) => setFooterNote(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all resize-none" placeholder="مثال: شكراً لتعاملكم معنا، يرجى التحويل خلال 30 يوم" />
-				</div>
-			</div>
-
-			{/* Payment Info */}
+			{/* --- Card 2: Banking & Payments --- */}
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
 					<CreditCard className="text-[#7f2dfb]" size={20} />
-					بيانات الدفع
+					بيانات الدفع (Banking & Payments)
 				</h2>
-				<div className="space-y-2">
-					<label className="text-sm font-medium text-gray-700">رقم الآيبان (IBAN)</label>
-					<div className="relative">
-						<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-						<input value={iban} onChange={(e) => setIban(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="SAxx xxxx xxxx xxxx xxxx xx" />
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							اسم البنك
+						</label>
+						<div className="relative">
+							<Building2
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+								size={18}
+							/>
+							<input
+								value={bankName}
+								onChange={(e) => setBankName(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="مثال: مصرف الراجحي"
+							/>
+						</div>
 					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							رقم الآيبان (IBAN)
+						</label>
+						<div className="relative">
+							<Globe
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+								size={18}
+							/>
+							<input
+								value={iban}
+								onChange={(e) => setIban(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								style={{ direction: "ltr", textAlign: "right" }}
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div className="mt-5 space-y-2">
+					<label className="text-sm font-medium text-gray-700">
+						معلومات دفع إضافية (STC Pay / PayPal / ملاحظات)
+					</label>
+					<textarea
+						rows={2}
+						value={paymentNotes}
+						onChange={(e) => setPaymentNotes(e.target.value)}
+						className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all resize-none"
+						placeholder="أي تفاصيل أخرى لطرق الدفع..."
+					/>
 				</div>
 			</div>
 
-			{/* Save */}
-			<div className="flex justify-end">
-				<button onClick={handleSave} disabled={isLoading} className="px-8 py-3 rounded-xl bg-[#7f2dfb] text-white text-base font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+			{/* --- Card 3: Defaults & Numbering --- */}
+			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
+					<Hash className="text-[#7f2dfb]" size={20} />
+					الإعدادات الافتراضية (Defaults)
+				</h2>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							بادئة الفاتورة (Prefix)
+						</label>
+						<div className="relative">
+							<LayoutTemplate
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+								size={18}
+							/>
+							<input
+								value={prefix}
+								onChange={(e) => setPrefix(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="INV-"
+								style={{ direction: "ltr", textAlign: "right" }}
+							/>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							التسلسل التالي (Next No.)
+						</label>
+						<div className="relative">
+							<Hash
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+								size={18}
+							/>
+							{/* Placeholder for now found in DB sequence table usually */}
+							<input
+								disabled
+								value={"---"} 
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+							/>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							شروط الدفع (Terms)
+						</label>
+						<Select
+							value={defaultTerms}
+							onValueChange={setDefaultTerms}
+						>
+							<SelectTrigger className="w-full h-[46px] rounded-xl border-gray-200">
+								<SelectValue placeholder="اختر المدة" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="Due on Receipt">
+									عند الاستلام
+								</SelectItem>
+								<SelectItem value="Net 7">7 أيام</SelectItem>
+								<SelectItem value="Net 14">14 يوم</SelectItem>
+								<SelectItem value="Net 30">30 يوم</SelectItem>
+								<SelectItem value="Net 60">60 يوم</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+				</div>
+
+				<div className="mt-5 space-y-2">
+					<label className="text-sm font-medium text-gray-700">
+						ملاحظة تذييل الفاتورة (Footer Note)
+					</label>
+					<textarea
+						rows={2}
+						value={footerNote}
+						onChange={(e) => setFooterNote(e.target.value)}
+						className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all resize-none"
+						placeholder="مثال: شكراً لتعاملكم معنا..."
+					/>
+				</div>
+			</div>
+
+			{/* Save Action */}
+			<div className="flex justify-end pt-4">
+				<button
+					onClick={handleSave}
+					disabled={isLoading}
+					className="px-8 py-3 rounded-xl bg-[#7f2dfb] text-white text-base font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+				>
 					{isLoading && <Loader2 className="animate-spin w-4 h-4" />}
 					<Save size={18} />
-					حفظ إعدادات الفواتير
+					حفظ التغييرات
 				</button>
 			</div>
 		</div>

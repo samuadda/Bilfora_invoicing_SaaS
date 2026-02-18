@@ -673,7 +673,7 @@ export default function OrdersPage() {
 									رقم الطلب
 								</th>
 								<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-									المشتري
+									العميل
 								</th>
 								<th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
 									العناصر
@@ -866,7 +866,7 @@ export default function OrdersPage() {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
 									<label className="block text-sm text-gray-600 mb-1">
-										المشتري *
+										العميل *
 									</label>
 									<select
 										name="client_id"
@@ -875,7 +875,7 @@ export default function OrdersPage() {
 										className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-200"
 										required
 									>
-										<option value="">اختر المشتري</option>
+										<option value="">اختر العميل</option>
 										{clients.map((client) => (
 											<option
 												key={client.id}

@@ -195,7 +195,7 @@ export default function TopCustomersPage() {
 									الترتيب
 								</th>
 								<th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
-									اسم المشتري
+									اسم العميل
 								</th>
 								<th
 									className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"

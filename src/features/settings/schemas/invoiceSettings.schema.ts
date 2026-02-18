@@ -17,6 +17,10 @@ export const invoiceSettingsSchema = z.object({
   currency: z.literal('SAR'),
   timezone: z.string().min(1),
   numbering_prefix: z.string().min(1),
+  brand_color: z.string().optional().nullable(),
+  bank_name: z.string().optional().nullable(),
+  default_terms: z.string().optional().nullable(),
+  payment_notes: z.string().optional().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -35,6 +39,10 @@ export const invoiceSettingsInputSchema = z
     currency: z.literal('SAR').default('SAR'),
     timezone: z.string().min(1).default('Asia/Riyadh'),
     numbering_prefix: z.string().min(1).default('BLF-'),
+    brand_color: z.string().optional().nullable().default('#7f2dfb'),
+    bank_name: z.string().optional().nullable(),
+    default_terms: z.string().optional().nullable().default('Net 30'),
+    payment_notes: z.string().optional().nullable(),
   })
   .strict();
 

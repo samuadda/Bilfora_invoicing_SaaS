@@ -171,7 +171,7 @@ export function generateInvoiceHtml(
             --text-secondary: #64748b;
             --text-muted: #94a3b8;
             --border: #e2e8f0;
-            --accent: #7f2dfb;
+            --accent: ${seller?.brand_color || '#7f2dfb'};
             --bg-subtle: #f8fafc;
             --bg-qr: #f1f5f9;
         }
@@ -543,7 +543,7 @@ export function generateInvoiceHtml(
 
         <!-- Buyer Info -->
         <div class="info-column">
-            <div class="column-label">إلى (المشتري)</div>
+            <div class="column-label">إلى (العميل)</div>
             <div class="party-name">${safe(buyerName)}</div>
             ${buyerAddress ? `<div class="party-detail">${safe(buyerAddress)}</div>` : ''}
             ${buyerPhone ? `<div class="party-detail" style="direction:ltr; unicode-bidi:isolate;">${safe(buyerPhone)}</div>` : ''}
@@ -659,6 +659,12 @@ export function generateInvoiceHtml(
         <div class="payment-row">
             <span class="payment-label">IBAN</span>
             <span class="payment-value">${safe(sellerIban)}</span>
+        </div>
+        ` : ''}
+        ${seller?.payment_notes ? `
+        <div class="payment-row" style="margin-top: 8px; display: block;">
+            <div class="payment-label" style="margin-bottom: 4px;">ملاحظات الدفع</div>
+            <div class="payment-value" style="white-space: pre-wrap; font-size: 13px;">${safe(seller.payment_notes)}</div>
         </div>
         ` : ''}
     </div>

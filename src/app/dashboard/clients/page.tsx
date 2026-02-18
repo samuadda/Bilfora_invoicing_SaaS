@@ -60,7 +60,7 @@ type SortOption =
 	| "alphabetical";
 
 const clientSchema = z.object({
-	name: z.string().min(2, "اسم المشتري قصير جداً"),
+	name: z.string().min(2, "اسم العميل قصير جداً"),
 	email: z.string().email("البريد الإلكتروني غير صالح").optional().or(z.literal("")),
 	phone: z.string().min(9, "رقم الجوال غير صالح"),
 	company_name: z.string().nullable().optional(),
@@ -331,7 +331,7 @@ export default function ClientsPage() {
 				if (error) throw error;
 				toast({
 					title: "تم التحديث",
-					description: "تم تحديث بيانات المشتري بنجاح",
+					description: "تم تحديث بيانات العميل بنجاح",
 				});
 			} else {
 				const payload = pickUpdatableFields(formData);
@@ -341,7 +341,7 @@ export default function ClientsPage() {
 				if (error) throw error;
 				toast({
 					title: "تم الإضافة",
-					description: "تمت إضافة المشتري بنجاح",
+					description: "تمت إضافة العميل بنجاح",
 				});
 			}
 			setShowModal(false);
@@ -366,14 +366,14 @@ export default function ClientsPage() {
 				.eq("id", id);
 			toast({
 				title: "تم الحذف",
-				description: "تم حذف المشتري بنجاح",
+				description: "تم حذف العميل بنجاح",
 			});
 			setDeleteCandidate(null);
 			await loadClients();
 		} catch {
 			toast({
 				title: "خطأ",
-				description: "فشل في حذف المشتري",
+				description: "فشل في حذف العميل",
 				variant: "destructive",
 			});
 		}
@@ -713,7 +713,7 @@ export default function ClientsPage() {
 										)}
 									</button>
 								</th>
-								<th className="p-5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">المشتري</th>
+								<th className="p-5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">العميل</th>
 								<th className="p-5 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">الشركة</th>
 								<th className="p-5 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">الفواتير</th>
 								<th className="p-5 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">الحالة</th>
@@ -912,7 +912,7 @@ export default function ClientsPage() {
 							<div className="p-6 border-b border-gray-100 bg-gray-50/50">
 								<div className="flex items-center justify-between">
 									<h2 className="text-xl font-bold text-gray-900">
-										تعديل بيانات المشتري
+										تعديل بيانات العميل
 									</h2>
 									<button
 										onClick={() => setShowModal(false)}
@@ -923,7 +923,7 @@ export default function ClientsPage() {
 								</div>
 								{!editingClient && (
 									<p className="text-sm text-gray-500 mt-1">
-										أضِف بيانات المشتري الجديد لبدء إنشاء الفواتير بسهولة.
+										أضِف بيانات العميل الجديد لبدء إنشاء الفواتير بسهولة.
 									</p>
 								)}
 							</div>
@@ -1057,7 +1057,7 @@ export default function ClientsPage() {
 											onChange={handleInputChange}
 											rows={3}
 											className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#7f2dfb] focus:ring-[#7f2dfb] text-sm"
-											placeholder="أي ملاحظات إضافية عن المشتري..."
+											placeholder="أي ملاحظات إضافية عن العميل..."
 										/>
 									</div>
 								</div>
@@ -1076,7 +1076,7 @@ export default function ClientsPage() {
 										className="px-6 py-2.5 rounded-xl bg-[#7f2dfb] text-white font-medium hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-colors text-sm flex items-center gap-2"
 									>
 										{saving && <Loader2 size={16} className="animate-spin" />}
-										{saving ? "جاري الحفظ..." : (editingClient ? "حفظ التعديلات" : "إضافة المشتري")}
+										{saving ? "جاري الحفظ..." : (editingClient ? "حفظ التعديلات" : "إضافة العميل")}
 									</button>
 								</div>
 							</form>
@@ -1095,7 +1095,7 @@ export default function ClientsPage() {
 						<div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
 							<Trash2 className="w-8 h-8 text-red-500" />
 						</div>
-						<p className="text-gray-600 mb-2">هل أنت متأكد من حذف المشتري؟</p>
+						<p className="text-gray-600 mb-2">هل أنت متأكد من حذف العميل؟</p>
 						<p className="font-bold text-gray-900 text-lg">{deleteCandidate?.name}</p>
 					</div>
 					<DialogFooter className="gap-2 sm:justify-center">
@@ -1111,7 +1111,7 @@ export default function ClientsPage() {
 							onClick={() => deleteCandidate && handleDeleteClient(deleteCandidate.id)}
 							className="rounded-xl flex-1 bg-red-600 hover:bg-red-700"
 						>
-							حذف المشتري
+							حذف العميل
 						</Button>
 					</DialogFooter>
 				</DialogContent>

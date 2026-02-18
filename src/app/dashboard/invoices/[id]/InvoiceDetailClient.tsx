@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from "react";
 import { INVOICE_TOKENS } from "@/lib/invoice-design/tokens";
-
+import { IS_ZATCA_ENABLED } from "@/config/features";
 import { Loader2, Printer, ArrowLeft, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { m } from "framer-motion";
@@ -62,8 +62,11 @@ export default function InvoiceDetailClient({
 	const invoiceType: InvoiceType =
 		invoice.invoice_type ?? (invoice.type as InvoiceType) ?? "standard_tax";
 	const documentKind: DocumentKind = invoice.document_kind || "invoice";
-	const isTax = invoiceType === "standard_tax" || invoiceType === "simplified_tax";
-	const isNonTax = invoiceType === "non_tax";
+	
+	// Force non-tax mode if ZATCA is disabled
+	const isTax = IS_ZATCA_ENABLED && (invoiceType === "standard_tax" || invoiceType === "simplified_tax");
+	const isNonTax = !IS_ZATCA_ENABLED || invoiceType === "non_tax";
+	
 	const isCredit = documentKind === "credit_note";
 	const taxRate = isNonTax ? 0 : Number(invoice.tax_rate ?? 0);
 	const currency = invoiceSettings?.currency ?? "SAR";
@@ -132,20 +135,21 @@ export default function InvoiceDetailClient({
 	// Robust check for download readiness
 	const isReadyForDownload = useMemo(() => {
 		if (!invoiceSettings?.seller_name) return false;
-		// For tax invoices, VAT number is mandatory
-		if (isTax && !invoiceSettings?.vat_number) return false;
+		// For tax invoices, VAT number is mandatory ONLY if ZATCA is enabled
+		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.vat_number) return false;
 		return true;
 	}, [invoiceSettings, isTax]);
 
 	const getMissingSettingsMessage = () => {
 		if (!invoiceSettings?.seller_name) return "أكمل اسم المنشأة لتنزيل PDF";
-		if (isTax && !invoiceSettings?.vat_number) return "أكمل الرقم الضريبي لتنزيل PDF";
+		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.vat_number) return "أكمل الرقم الضريبي لتنزيل PDF";
 		return "أكمل بيانات المنشأة لتنزيل PDF";
 	};
 
 	/* Removed QR generation effect */
 
 	const getTitle = () => {
+		if (!IS_ZATCA_ENABLED) return "فاتورة";
 		if (isCredit) return "إشعار دائن";
 		return getInvoiceTypeLabel(invoiceType);
 	};
@@ -202,9 +206,11 @@ export default function InvoiceDetailClient({
 									<h1 className="text-2xl md:text-3xl font-bold text-[#012d46]">
 										{getTitle()} #{invoice.invoice_number || invoice.id}
 									</h1>
-									<span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
-										{getInvoiceTypeLabel(invoiceType)}
-									</span>
+									{IS_ZATCA_ENABLED && (
+										<span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium">
+											{getInvoiceTypeLabel(invoiceType)}
+										</span>
+									)}
 								</div>
 								{isCredit && invoice?.related_invoice_id && (
 									<p className="text-sm text-gray-500 mt-1">
@@ -398,7 +404,7 @@ export default function InvoiceDetailClient({
 										fontWeight: 600,
 									}}
 								>
-									المشتري (Buyer)
+									العميل (Buyer)
 								</h3>
 								{client ? (
 									<>
@@ -501,7 +507,7 @@ export default function InvoiceDetailClient({
 												width: "15%",
 											}}
 										>
-											سعر الوحدة
+											{IS_ZATCA_ENABLED ? 'سعر الوحدة' : 'السعر'}
 										</th>
 										<th
 											style={{

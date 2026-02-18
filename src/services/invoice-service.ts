@@ -15,6 +15,8 @@ export interface SellerProfile {
     bank_name?: string | null;
     logo_url?: string | null;
     cr_number?: string | null;
+    brand_color?: string | null;
+    payment_notes?: string | null;
 }
 
 export async function getInvoiceForPdf(invoiceId: string, userId: string) {
@@ -74,6 +76,8 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         logo_url: settingsData?.logo_url,
         cr_number: settingsData?.cr_number,
         invoice_footer: settingsData?.invoice_footer,
+        brand_color: settingsData?.brand_color,
+        payment_notes: settingsData?.payment_notes,
     };
 
     return {

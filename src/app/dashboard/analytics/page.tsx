@@ -559,7 +559,7 @@ function AnalyticsContent() {
 	const exportToCSV = () => {
 		const headers = [
 			"رقم الفاتورة",
-			"المشتري",
+			"العميل",
 			"المبلغ",
 			"الحالة",
 			"تاريخ الإصدار",
@@ -604,7 +604,7 @@ function AnalyticsContent() {
 
 		worksheet.columns = [
 			{ header: "رقم الفاتورة", key: "invoice_number", width: 15 },
-			{ header: "المشتري", key: "client_name", width: 20 },
+			{ header: "العميل", key: "client_name", width: 20 },
 			{ header: "المبلغ", key: "amount", width: 12 },
 			{ header: "الحالة", key: "status", width: 12 },
 			{ header: "تاريخ الإصدار", key: "issue_date", width: 15 },

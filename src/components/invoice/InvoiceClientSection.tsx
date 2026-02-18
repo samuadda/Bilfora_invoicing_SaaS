@@ -136,7 +136,7 @@ export function InvoiceClientSection({
 
             if (customerError) {
                 console.error("Error creating customer:", customerError);
-                setNewCustomerError("فشل في إنشاء المشتري");
+                setNewCustomerError("فشل في إنشاء العميل");
                 return;
             }
 
@@ -162,7 +162,7 @@ export function InvoiceClientSection({
                     )}
                 >
                     <User size={20} className="text-[#7f2dfb]" />
-                    <Heading variant="h3-subsection">بيانات المشتري</Heading>
+                    <Heading variant="h3-subsection">بيانات العميل</Heading>
                 </div>
                 <button
                     type="button"
@@ -182,7 +182,7 @@ export function InvoiceClientSection({
                     }))}
                     value={selectedClientId}
                     onChange={(val) => onClientChange(val)}
-                    placeholder="اختر المشتري"
+                    placeholder="اختر العميل"
                     searchPlaceholder="بحث عن عميل..."
                     emptyText="لا يوجد عملاء بهذا الاسم"
                 />
@@ -347,7 +347,7 @@ export function InvoiceClientSection({
                                 className="w-full sm:w-auto"
                             >
                                 {savingCustomer && <Loader2 size={16} className="animate-spin ml-2" />}
-                                حفظ المشتري
+                                حفظ العميل
                             </Button>
                         </div>
                     </Card>
