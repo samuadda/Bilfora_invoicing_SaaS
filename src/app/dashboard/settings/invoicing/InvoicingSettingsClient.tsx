@@ -8,9 +8,6 @@ import {
 	CreditCard,
 	Send,
 	FileText,
-	LayoutTemplate,
-	Palette,
-	QrCode,
 	Globe,
 	Loader2,
 	Save,
@@ -43,13 +40,8 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 	// Footer
 	const [footerNote, setFooterNote] = useState(initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا");
 
-	// Branding (disabled)
-	const [template, setTemplate] = useState<"classic" | "compact" | "modern">("classic");
-	const [primaryColor, setPrimaryColor] = useState("#7f2dfb");
-
 	// Payment
 	const [iban, setIban] = useState(initialSettings?.iban ?? "");
-	const [qrValue, setQrValue] = useState("");
 
 	const handleSave = async () => {
 		setIsLoading(true);
@@ -134,54 +126,17 @@ export default function InvoicingSettingsClient({ initialSettings }: InvoicingSe
 				</div>
 			</div>
 
-			{/* Branding (Disabled) */}
-			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
-					<Palette className="text-[#7f2dfb]" size={20} />
-					التصميم (قريباً)
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-5 opacity-50 pointer-events-none">
-					<div className="space-y-2">
-						<label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-							<LayoutTemplate size={15} className="text-gray-400" />
-							القالب
-						</label>
-						<Select value={template} onValueChange={(val) => setTemplate(val as "classic" | "compact" | "modern")}>
-							<SelectTrigger className="w-full h-11 bg-white border-gray-200"><SelectValue placeholder="اختر القالب" /></SelectTrigger>
-							<SelectContent>
-								<SelectItem value="classic">كلاسيكي</SelectItem>
-								<SelectItem value="compact">مضغوط</SelectItem>
-								<SelectItem value="modern">عصري</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">اللون الأساسي</label>
-						<input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-full h-12 rounded-xl border border-gray-200 p-1 cursor-pointer" />
-					</div>
-				</div>
-			</div>
-
 			{/* Payment Info */}
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
 					<CreditCard className="text-[#7f2dfb]" size={20} />
 					بيانات الدفع
 				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">رقم الآيبان (IBAN)</label>
-						<div className="relative">
-							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input value={iban} onChange={(e) => setIban(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="SAxx xxxx xxxx xxxx xxxx xx" />
-						</div>
-					</div>
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">تعليمات دفع إضافية</label>
-						<div className="relative">
-							<QrCode className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-							<input value={qrValue} onChange={(e) => setQrValue(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="رابط بوابة الدفع أو تعليمات" disabled />
-						</div>
+				<div className="space-y-2">
+					<label className="text-sm font-medium text-gray-700">رقم الآيبان (IBAN)</label>
+					<div className="relative">
+						<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+						<input value={iban} onChange={(e) => setIban(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="SAxx xxxx xxxx xxxx xxxx xx" />
 					</div>
 				</div>
 			</div>
