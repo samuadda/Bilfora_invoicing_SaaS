@@ -16,13 +16,6 @@ import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.sch
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
 import { supabasePersistent } from "@/lib/supabase-clients";
-import {
-	Select,
-	SelectTrigger,
-	SelectValue,
-	SelectContent,
-	SelectItem,
-} from "@/components/ui/custom-select"; // Correct import path for select? Usually @/components/ui/select
 import { IS_ZATCA_ENABLED } from "@/config/features";
 
 interface InvoicingSettingsClientProps {
@@ -58,7 +51,7 @@ export default function InvoicingSettingsClient({
 	const [prefix, setPrefix] = useState(
 		initialSettings?.numbering_prefix ?? "INV-"
 	);
-	const [defaultTerms, setDefaultTerms] = useState(
+	const [defaultTerms] = useState(
 		initialSettings?.default_terms ?? "Net 30"
 	);
 	const [footerNote, setFooterNote] = useState(
@@ -169,7 +162,7 @@ export default function InvoicingSettingsClient({
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
 					<Palette className="text-[#7f2dfb]" size={20} />
-					هوية الفاتورة (Brand Identity)
+					هوية الفاتورة
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{/* Logo Upload */}
@@ -226,7 +219,7 @@ export default function InvoicingSettingsClient({
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
 					<CreditCard className="text-[#7f2dfb]" size={20} />
-					بيانات الدفع (Banking & Payments)
+					بيانات الدفع
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 					<div className="space-y-2">
@@ -285,9 +278,9 @@ export default function InvoicingSettingsClient({
 			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
 					<Hash className="text-[#7f2dfb]" size={20} />
-					الإعدادات الافتراضية (Defaults)
+					الإعدادات الافتراضية
 				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							بادئة الفاتورة (Prefix)
@@ -323,29 +316,6 @@ export default function InvoicingSettingsClient({
 								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
 							/>
 						</div>
-					</div>
-
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">
-							شروط الدفع (Terms)
-						</label>
-						<Select
-							value={defaultTerms}
-							onValueChange={setDefaultTerms}
-						>
-							<SelectTrigger className="w-full h-[46px] rounded-xl border-gray-200">
-								<SelectValue placeholder="اختر المدة" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="Due on Receipt">
-									عند الاستلام
-								</SelectItem>
-								<SelectItem value="Net 7">7 أيام</SelectItem>
-								<SelectItem value="Net 14">14 يوم</SelectItem>
-								<SelectItem value="Net 30">30 يوم</SelectItem>
-								<SelectItem value="Net 60">60 يوم</SelectItem>
-							</SelectContent>
-						</Select>
 					</div>
 				</div>
 
