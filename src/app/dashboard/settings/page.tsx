@@ -15,13 +15,18 @@ import {
 	Lock,
 	Trash2,
 	Download,
+	Building2,
+	MapPin
 } from "lucide-react";
 import { supabasePersistent } from "@/lib/supabase-clients";
-import { Profile, UpdateProfileInput, Gender } from "@/types/database";
+import { Profile, UpdateProfileInput, Gender, AccountType } from "@/types/database";
 import { m } from "framer-motion";
 import LoadingState from "@/components/LoadingState";
 import { Heading, Text, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui";
 import { getAuthErrorMessage } from "@/utils/error-handling";
+import { IS_ZATCA_ENABLED } from "@/config/features";
+import { updateSettingsAction } from "@/actions/settings";
+import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 
 export default function GeneralSettingsPage() {
 	const [profile, setProfile] = useState<Profile | null>(null);
@@ -38,7 +43,17 @@ export default function GeneralSettingsPage() {
 	const [emailInput, setEmailInput] = useState("");
 	const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
 
+	// Profile fields (from profiles table)
+	const [accountType, setAccountType] = useState<AccountType>("individual");
+	const [companyName, setCompanyName] = useState("");
+	const [taxNumber, setTaxNumber] = useState("");
+	const [address, setAddress] = useState("");
+	const [city, setCity] = useState("");
 
+	// Invoice settings fields
+	const [initialInvoiceSettings, setInitialInvoiceSettings] = useState<InvoiceSettings | null>(null);
+	const [addressLine, setAddressLine] = useState("");
+	const [invoiceCity, setInvoiceCity] = useState("");
 
 	const [formData, setFormData] = useState({
 		full_name: "",
@@ -64,6 +79,19 @@ export default function GeneralSettingsPage() {
 				.single();
 			if (fetchError) throw fetchError;
 			const p = data as Profile;
+
+			// Fetch invoice settings
+			const { data: invoiceData, error: invoiceError } = await supabasePersistent
+				.from("invoice_settings")
+				.select("*")
+				.eq("user_id", user.id)
+				.maybeSingle();
+
+			if (!invoiceError && invoiceData) {
+				setInitialInvoiceSettings(invoiceData as InvoiceSettings);
+				setAddressLine(invoiceData.address_line1 || "");
+				setInvoiceCity(invoiceData.city || "");
+			}
 			setProfile(p);
 			setFormData({
 				full_name: p.full_name || "",
@@ -71,11 +99,80 @@ export default function GeneralSettingsPage() {
 				dob: p.dob || "",
 				gender: (p.gender as Gender) || "",
 			});
+			setAccountType(p.account_type || "individual");
+			setCompanyName(p.company_name || "");
+			setTaxNumber(p.tax_number || "");
+			setAddress(p.address || "");
+			setCity(p.city || "");
 
 		} catch (err) {
 			setError(getAuthErrorMessage(err));
 		} finally {
 			setLoading(false);
+		}
+	};
+
+	const handleSaveBusinessInfo = async () => {
+		setSaving(true);
+		setError(null);
+		setSuccess(null);
+		try {
+			const { data: { user } } = await supabasePersistent.auth.getUser();
+			if (!user) throw new Error("غير مسجل");
+
+			// Save profile fields
+			const { error: profileError } = await supabasePersistent
+				.from("profiles")
+				.update({
+					account_type: accountType,
+					company_name: companyName || null,
+					tax_number: taxNumber || null,
+					address: address || null,
+					city: city || null,
+				} as Partial<UpdateProfileInput>)
+				.eq("id", user.id);
+			if (profileError) throw profileError;
+
+			// Save invoice settings fields
+			const result = await updateSettingsAction({
+				seller_name: initialInvoiceSettings?.seller_name ?? "My Business",
+				vat_number: initialInvoiceSettings?.vat_number ?? "300000000000003",
+				cr_number: initialInvoiceSettings?.cr_number ?? null,
+				address_line1: addressLine || null,
+				city: invoiceCity || null,
+				logo_url: initialInvoiceSettings?.logo_url ?? null,
+				iban: initialInvoiceSettings?.iban ?? null,
+				invoice_footer: initialInvoiceSettings?.invoice_footer ?? null,
+				default_vat_rate: initialInvoiceSettings?.default_vat_rate ?? 0,
+				numbering_prefix: initialInvoiceSettings?.numbering_prefix ?? "INV-",
+				currency: "SAR" as const,
+				timezone: "Asia/Riyadh",
+				brand_color: initialInvoiceSettings?.brand_color ?? null,
+				default_terms: initialInvoiceSettings?.default_terms ?? "Net 30",
+				bank_name: initialInvoiceSettings?.bank_name ?? null,
+				payment_notes: initialInvoiceSettings?.payment_notes ?? null,
+			});
+
+			if (!result.success) {
+				setError(result.error || "خطأ في حفظ إعدادات الفواتير");
+				return;
+			}
+
+			// Update local profile state
+			setProfile((prev) => prev ? { 
+				...prev, 
+				account_type: accountType,
+				company_name: companyName || null,
+				tax_number: taxNumber || null,
+				address: address || null,
+				city: city || null
+			} as Profile : prev);
+
+			setSuccess("تم حفظ بيانات المنشأة بنجاح ✓");
+		} catch (err) {
+			setError(getAuthErrorMessage(err));
+		} finally {
+			setSaving(false);
 		}
 	};
 
@@ -320,6 +417,85 @@ export default function GeneralSettingsPage() {
 					</button>
 				</div>
 			</form>
+
+			{/* Profile Business Info */}
+			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
+					<Building2 className="text-[#7f2dfb]" size={20} />
+					الحساب والمنشأة
+				</h2>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div className="space-y-2">
+						<label className="block text-sm font-medium text-gray-700">نوع الحساب *</label>
+						<Select value={accountType} onValueChange={(val) => setAccountType(val as AccountType)}>
+							<SelectTrigger className="w-full h-11 bg-white border-gray-200"><SelectValue /></SelectTrigger>
+							<SelectContent>
+								<SelectItem value="individual">فرد</SelectItem>
+								<SelectItem value="business">مؤسسة</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
+					{accountType === "business" && (
+						<>
+							<div className="space-y-2">
+								<label className="block text-sm font-medium text-gray-700">اسم الشركة</label>
+								<div className="relative">
+									<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+									<input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="اسم الشركة" />
+								</div>
+							</div>
+							<div className="space-y-2">
+								<label className="block text-sm font-medium text-gray-700">
+									{IS_ZATCA_ENABLED ? "الرقم الضريبي" : "السجل التجاري"}
+								</label>
+								<div className="relative">
+									<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+									<input value={taxNumber} onChange={(e) => setTaxNumber(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder={IS_ZATCA_ENABLED ? "3xxxxxxxxxxxxx3" : "1010xxxxxx"} />
+								</div>
+							</div>
+						</>
+					)}
+				</div>
+			</div>
+
+			{/* Address */}
+			<div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+				<h2 className="text-lg font-bold text-[#012d46] mb-5 flex items-center gap-2">
+					<MapPin className="text-[#7f2dfb]" size={20} />
+					العنوان
+				</h2>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">المدينة (الملف الشخصي)</label>
+						<div className="relative">
+							<MapPin className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="الرياض" />
+						</div>
+					</div>
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">العنوان التفصيلي (الملف الشخصي)</label>
+						<input value={address} onChange={(e) => setAddress(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="اسم الشارع، رقم المبنى، الحي" />
+					</div>
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">المدينة (على الفاتورة)</label>
+						<input value={invoiceCity} onChange={(e) => setInvoiceCity(e.target.value)} className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="الرياض" />
+					</div>
+					<div className="md:col-span-2 space-y-2">
+						<label className="text-sm font-medium text-gray-700">عنوان الفاتورة</label>
+						<div className="relative">
+							<MapPin className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input value={addressLine} onChange={(e) => setAddressLine(e.target.value)} className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all" placeholder="الشارع، الحي، رقم المبنى" />
+						</div>
+					</div>
+				</div>
+				<div className="flex justify-end mt-5 pt-5 border-t border-gray-50">
+					<button onClick={handleSaveBusinessInfo} disabled={saving} className="px-6 py-2.5 rounded-xl bg-[#7f2dfb] text-white text-sm font-bold hover:bg-[#6a1fd8] shadow-lg shadow-purple-200 transition-all flex items-center gap-2">
+						{saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+						حفظ بيانات المنشأة
+					</button>
+				</div>
+			</div>
 
 			{/* Email & Password side by side */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

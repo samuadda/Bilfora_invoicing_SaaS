@@ -10,13 +10,12 @@ import {
 	Loader2,
 	Save,
 	LayoutTemplate,
-	FileText,
-	CalendarClock,
 } from "lucide-react";
 
 import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
+import { supabasePersistent } from "@/lib/supabase-clients";
 import {
 	Select,
 	SelectTrigger,
@@ -25,14 +24,15 @@ import {
 	SelectItem,
 } from "@/components/ui/custom-select"; // Correct import path for select? Usually @/components/ui/select
 import { IS_ZATCA_ENABLED } from "@/config/features";
-import Image from "next/image";
 
 interface InvoicingSettingsClientProps {
 	initialSettings: InvoiceSettings | null;
+	userId: string;
 }
 
 export default function InvoicingSettingsClient({
 	initialSettings,
+	userId,
 }: InvoicingSettingsClientProps) {
 	const { toast } = useToast();
 	const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function InvoicingSettingsClient({
 	);
 	
 	// Legacy/ZATCA fields (Hidden if Zatca disabled, but kept in state)
-	const [taxRate, setTaxRate] = useState(
+	const [taxRate] = useState(
 		initialSettings?.default_vat_rate
 			? initialSettings.default_vat_rate * 100
 			: 15
@@ -74,16 +74,39 @@ export default function InvoicingSettingsClient({
 
 	// --- Handlers ---
 
-	const onLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const onLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (file) {
-			const url = URL.createObjectURL(file);
-			setLogoUrl(url);
-			// TODO: Implement actual upload logic to Supabase Storage and get public URL
-			toast({
-				title: "تنبيه",
-				description: "رفع الشعار للعرض فقط حالياً (نسخة تجريبية)",
-			});
+		if (!file) return;
+
+		if (file.size > 2 * 1024 * 1024) {
+			toast({ title: "خطأ", description: "حجم الصورة يجب أن لا يتجاوز 2 ميجابايت", variant: "destructive" });
+			return;
+		}
+
+		try {
+			setIsLoading(true);
+			
+			const fileExt = file.name.split('.').pop();
+			const fileName = `${userId}-${Math.random()}.${fileExt}`;
+			const filePath = `${fileName}`;
+
+			const { error: uploadError } = await supabasePersistent.storage
+				.from('business-logos')
+				.upload(filePath, file);
+
+			if (uploadError) throw uploadError;
+
+			const { data: { publicUrl } } = supabasePersistent.storage
+				.from('business-logos')
+				.getPublicUrl(filePath);
+
+			setLogoUrl(publicUrl);
+			toast({ title: "تم الرفع", description: "تم تحديث الشعار بنجاح" });
+		} catch (error) {
+			console.error(error);
+			toast({ title: "خطأ", description: `فشل رفع الشعار: ${(error as Error).message}`, variant: "destructive" });
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -157,6 +180,7 @@ export default function InvoicingSettingsClient({
 						<div className="flex items-center gap-4">
 							<div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
 								{logoUrl ? (
+									/* eslint-disable-next-line @next/next/no-img-element */
 									<img
 										src={logoUrl}
 										alt="Logo"

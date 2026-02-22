@@ -14,5 +14,5 @@ export default async function InvoicingSettingsPage() {
 	if (!user) redirect("/auth/login");
 
 	const settings = await getInvoiceSettings(supabase, user.id);
-	return <InvoicingSettingsClient initialSettings={settings} />;
+	return <InvoicingSettingsClient initialSettings={settings} userId={user.id} />;
 }
