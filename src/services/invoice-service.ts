@@ -68,9 +68,9 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         full_name: profileData?.full_name,
         company_name: settingsData?.seller_name || profileData?.company_name, // Settings name > Profile name
         tax_number: settingsData?.vat_number || profileData?.tax_number,      // Settings VAT > Profile Tax
-        address: settingsData?.seller_address || profileData?.address,        // Settings Address > Profile Address
-        phone: settingsData?.seller_phone || profileData?.phone,
-        email: settingsData?.seller_email || profileData?.email,
+        address: [settingsData?.address_line1, settingsData?.city].filter(Boolean).join(", ") || profileData?.address,
+        phone: profileData?.phone,
+        email: profileData?.email,
         iban: settingsData?.iban,
         bank_name: settingsData?.bank_name,
         logo_url: settingsData?.logo_url,
