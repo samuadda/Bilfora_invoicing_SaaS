@@ -1,0 +1,11 @@
+{
+  "error_object": {
+    "code": "PGRST204",
+    "details": null,
+    "hint": null,
+    "message": "Could not find the 'name' column of 'invoice_settings' in the schema cache"
+  },
+  "message": "Could not find the 'name' column of 'invoice_settings' in the schema cache",
+  "details": null,
+  "code": "PGRST204"
+}

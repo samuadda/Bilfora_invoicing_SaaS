@@ -31,20 +31,33 @@ export async function upsertInvoiceSettings(
   userId: string,
   payload: InvoiceSettingsInput,
 ): Promise<InvoiceSettings> {
-  const validated = invoiceSettingsInputSchema.parse(payload);
+  let validated;
+  try {
+    validated = invoiceSettingsInputSchema.parse(payload);
+  } catch (zodErr) {
+    console.error("Zod input parse error:", zodErr);
+    throw zodErr;
+  }
 
   const { data, error } = await supabase
     .from(TABLE)
     .upsert(
-      // Cast to any to work around schema mismatch - the validated data matches
-      // the actual database schema, but the generated types may be out of sync
       { ...validated, user_id: userId } as unknown as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       { onConflict: 'user_id', ignoreDuplicates: false },
     )
     .select()
     .single();
 
-  if (error) throw error;
-  return invoiceSettingsSchema.parse(data);
+  if (error) {
+    console.error("Supabase settings upsert error:", error);
+    throw error;
+  }
+  
+  try {
+    return invoiceSettingsSchema.parse(data);
+  } catch(zodReturnErr) {
+    console.error("Zod return parse error:", zodReturnErr);
+    throw zodReturnErr;
+  }
 }
 

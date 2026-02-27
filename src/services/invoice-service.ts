@@ -84,18 +84,18 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
     const sellerData: SellerProfile = {
         id: userId,
         full_name: profileData?.full_name,
-        company_name: settingsData?.seller_name || profileData?.company_name, // Settings name > Profile name
-        tax_number: settingsData?.vat_number || profileData?.tax_number,      // Settings VAT > Profile Tax
+        company_name: settingsData?.name || profileData?.company_name, // Settings name > Profile name
+        tax_number: settingsData?.tax_number || profileData?.tax_number,      // Settings VAT > Profile Tax
         address: [settingsData?.address_line1, settingsData?.city].filter(Boolean).join(", ") || profileData?.address,
         phone: profileData?.phone,
         email: profileData?.email,
         iban: activeIban,
         bank_name: activeBankName,
         logo_url: settingsData?.logo_url,
-        cr_number: settingsData?.cr_number,
+        cr_number: undefined,
         invoice_footer: settingsData?.invoice_footer,
-        brand_color: settingsData?.brand_color,
-        payment_notes: settingsData?.payment_notes,
+        brand_color: undefined,
+        payment_notes: undefined,
     };
 
     return {

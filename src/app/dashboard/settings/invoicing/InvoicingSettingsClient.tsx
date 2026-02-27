@@ -32,10 +32,6 @@ export default function InvoicingSettingsClient({
 
 	// --- State Management ---
 
-	// Card 1: Brand Identity
-	const [brandColor, setBrandColor] = useState(
-		initialSettings?.brand_color ?? "#7f2dfb"
-	);
 	const [logoUrl, setLogoUrl] = useState<string | null>(
 		initialSettings?.logo_url ?? null
 	);
@@ -47,16 +43,10 @@ export default function InvoicingSettingsClient({
 	const [iban2, setIban2] = useState(initialSettings?.iban_2 ?? "");
 	const [bankName3, setBankName3] = useState(initialSettings?.bank_name_3 ?? "");
 	const [iban3, setIban3] = useState(initialSettings?.iban_3 ?? "");
-	const [paymentNotes, setPaymentNotes] = useState(
-		initialSettings?.payment_notes ?? ""
-	);
 
 	// Card 3: Defaults & Numbering
 	const [prefix, setPrefix] = useState(
 		initialSettings?.numbering_prefix ?? "INV-"
-	);
-	const [defaultTerms] = useState(
-		initialSettings?.default_terms ?? "Net 30"
 	);
 	const [footerNote, setFooterNote] = useState(
 		initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا"
@@ -112,15 +102,15 @@ export default function InvoicingSettingsClient({
 		try {
 			const result = await updateSettingsAction({
 				// Preserved or Default Fields
-				seller_name: initialSettings?.seller_name || "My Business",
-				vat_number: initialSettings?.vat_number || "300000000000003",
-				cr_number: initialSettings?.cr_number || null,
+				name: initialSettings?.name || "My Business",
+				tax_number: initialSettings?.tax_number || "300000000000003",
 				address_line1: initialSettings?.address_line1 || null,
 				city: initialSettings?.city || null,
+				email: initialSettings?.email || "admin@example.com",
+				phone: initialSettings?.phone || "0500000000",
 				
 				// Updated Fields
 				logo_url: logoUrl,
-				brand_color: brandColor,
 				
 				bank_name: bankName || null,
 				iban: iban || null,
@@ -128,10 +118,8 @@ export default function InvoicingSettingsClient({
 				iban_2: iban2 || null,
 				bank_name_3: bankName3 || null,
 				iban_3: iban3 || null,
-				payment_notes: paymentNotes || null,
 				
 				numbering_prefix: prefix,
-				default_terms: defaultTerms,
 				invoice_footer: footerNote || null,
 				
 				// Logic
@@ -203,23 +191,6 @@ export default function InvoicingSettingsClient({
 						</div>
 					</div>
 
-					{/* Brand Color */}
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">
-							لون الهوية (Brand Color)
-						</label>
-						<div className="flex items-center gap-3">
-							<input
-								type="color"
-								value={brandColor}
-								onChange={(e) => setBrandColor(e.target.value)}
-								className="h-10 w-20 rounded cursor-pointer border-0 p-0"
-							/>
-							<span className="text-sm text-gray-500 font-mono">
-								{brandColor}
-							</span>
-						</div>
-					</div>
 				</div>
 			</div>
 
@@ -259,9 +230,13 @@ export default function InvoicingSettingsClient({
 							/>
 							<input
 								value={iban}
-								onChange={(e) => setIban(e.target.value)}
-								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								onChange={(e) => {
+									const val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+									if (val.length <= 24) setIban(val);
+								}}
+								maxLength={24}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all uppercase"
+								placeholder="SAxxxxxxxxxxxxxxxxxxxxxx"
 								style={{ direction: "ltr", textAlign: "right" }}
 							/>
 						</div>
@@ -292,9 +267,13 @@ export default function InvoicingSettingsClient({
 							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 							<input
 								value={iban2}
-								onChange={(e) => setIban2(e.target.value)}
-								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								onChange={(e) => {
+									const val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+									if (val.length <= 24) setIban2(val);
+								}}
+								maxLength={24}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all uppercase"
+								placeholder="SAxxxxxxxxxxxxxxxxxxxxxx"
 								style={{ direction: "ltr", textAlign: "right" }}
 							/>
 						</div>
@@ -325,26 +304,17 @@ export default function InvoicingSettingsClient({
 							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
 							<input
 								value={iban3}
-								onChange={(e) => setIban3(e.target.value)}
-								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								onChange={(e) => {
+									const val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+									if (val.length <= 24) setIban3(val);
+								}}
+								maxLength={24}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all uppercase"
+								placeholder="SAxxxxxxxxxxxxxxxxxxxxxx"
 								style={{ direction: "ltr", textAlign: "right" }}
 							/>
 						</div>
 					</div>
-				</div>
-
-				<div className="mt-5 space-y-2">
-					<label className="text-sm font-medium text-gray-700">
-						معلومات دفع إضافية (STC Pay / PayPal / ملاحظات)
-					</label>
-					<textarea
-						rows={2}
-						value={paymentNotes}
-						onChange={(e) => setPaymentNotes(e.target.value)}
-						className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all resize-none"
-						placeholder="أي تفاصيل أخرى لطرق الدفع..."
-					/>
 				</div>
 			</div>
 

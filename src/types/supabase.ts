@@ -146,6 +146,12 @@ export type Database = {
                     default_vat_rate: number
                     email: string
                     iban: string | null
+                    iban_2: string | null
+                    iban_3: string | null
+                    bank_name: string | null
+                    bank_name_2: string | null
+                    bank_name_3: string | null
+                    payment_notes: string | null
                     id: string
                     invoice_footer: string | null
                     logo_url: string | null
@@ -165,6 +171,12 @@ export type Database = {
                     default_vat_rate?: number
                     email: string
                     iban?: string | null
+                    iban_2?: string | null
+                    iban_3?: string | null
+                    bank_name?: string | null
+                    bank_name_2?: string | null
+                    bank_name_3?: string | null
+                    payment_notes?: string | null
                     id?: string
                     invoice_footer?: string | null
                     logo_url?: string | null
@@ -184,6 +196,12 @@ export type Database = {
                     default_vat_rate?: number
                     email?: string
                     iban?: string | null
+                    iban_2?: string | null
+                    iban_3?: string | null
+                    bank_name?: string | null
+                    bank_name_2?: string | null
+                    bank_name_3?: string | null
+                    payment_notes?: string | null
                     id?: string
                     invoice_footer?: string | null
                     logo_url?: string | null

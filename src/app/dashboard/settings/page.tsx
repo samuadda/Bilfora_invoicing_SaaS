@@ -135,22 +135,20 @@ export default function GeneralSettingsPage() {
 
 			// Save invoice settings fields
 			const result = await updateSettingsAction({
-				seller_name: initialInvoiceSettings?.seller_name ?? "My Business",
-				vat_number: initialInvoiceSettings?.vat_number ?? "300000000000003",
-				cr_number: initialInvoiceSettings?.cr_number ?? null,
+				name: initialInvoiceSettings?.name ?? "My Business",
+				tax_number: initialInvoiceSettings?.tax_number ?? "300000000000003",
 				address_line1: addressLine || null,
 				city: invoiceCity || null,
+				email: initialInvoiceSettings?.email ?? "admin@example.com",
+				phone: initialInvoiceSettings?.phone ?? "0500000000",
 				logo_url: initialInvoiceSettings?.logo_url ?? null,
 				iban: initialInvoiceSettings?.iban ?? null,
+				bank_name: initialInvoiceSettings?.bank_name ?? null,
 				invoice_footer: initialInvoiceSettings?.invoice_footer ?? null,
 				default_vat_rate: initialInvoiceSettings?.default_vat_rate ?? 0,
 				numbering_prefix: initialInvoiceSettings?.numbering_prefix ?? "INV-",
 				currency: "SAR" as const,
-				timezone: "Asia/Riyadh",
-				brand_color: initialInvoiceSettings?.brand_color ?? null,
-				default_terms: initialInvoiceSettings?.default_terms ?? "Net 30",
-				bank_name: initialInvoiceSettings?.bank_name ?? null,
-				payment_notes: initialInvoiceSettings?.payment_notes ?? null,
+				timezone: "Asia/Riyadh"
 			});
 
 			if (!result.success) {

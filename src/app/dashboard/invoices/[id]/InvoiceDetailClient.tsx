@@ -134,15 +134,15 @@ export default function InvoiceDetailClient({
 
 	// Robust check for download readiness
 	const isReadyForDownload = useMemo(() => {
-		if (!invoiceSettings?.seller_name) return false;
+		if (!invoiceSettings?.name) return false;
 		// For tax invoices, VAT number is mandatory ONLY if ZATCA is enabled
-		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.vat_number) return false;
+		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.tax_number) return false;
 		return true;
 	}, [invoiceSettings, isTax]);
 
 	const getMissingSettingsMessage = () => {
-		if (!invoiceSettings?.seller_name) return "أكمل اسم المنشأة لتنزيل PDF";
-		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.vat_number) return "أكمل الرقم الضريبي لتنزيل PDF";
+		if (!invoiceSettings?.name) return "أكمل اسم المنشأة لتنزيل PDF";
+		if (IS_ZATCA_ENABLED && isTax && !invoiceSettings?.tax_number) return "أكمل الرقم الضريبي لتنزيل PDF";
 		return "أكمل بيانات المنشأة لتنزيل PDF";
 	};
 

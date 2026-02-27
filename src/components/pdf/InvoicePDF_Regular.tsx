@@ -24,9 +24,9 @@ export function InvoicePDF_Regular({
 	items,
 	invoiceSettings,
 }: InvoicePDF_RegularProps) {
-	const sellerName = invoiceSettings.seller_name;
-	const vatNumber = invoiceSettings.vat_number;
-	const crNumber = invoiceSettings.cr_number;
+	const sellerName = invoiceSettings.name;
+	const vatNumber = invoiceSettings.tax_number;
+	const crNumber = null;
 	const address = [invoiceSettings.address_line1, invoiceSettings.city].filter(Boolean).join("، ");
 	const iban = invoiceSettings.iban;
 

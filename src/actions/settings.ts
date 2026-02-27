@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { upsertInvoiceSettings } from "@/features/settings/data/settings.repo";
 import { InvoiceSettingsInput } from "@/features/settings/schemas/invoiceSettings.schema";
 import { revalidatePath } from "next/cache";
+import fs from "fs";
 
 export async function updateSettingsAction(payload: InvoiceSettingsInput) {
 	try {
@@ -21,9 +22,38 @@ export async function updateSettingsAction(payload: InvoiceSettingsInput) {
         // Also revalidate invoices since they use these settings
         revalidatePath("/dashboard/invoices"); 
 		return { success: true };
-	} catch (err) {
+	} catch (err: any) {
 		console.error("Error updating settings:", err);
-		const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
-		return { success: false, error: `Failed to update settings: ${errorMessage}` };
+		try {
+			fs.writeFileSync('error_log.json', JSON.stringify({
+				error_object: err,
+				message: err?.message,
+				details: err?.details,
+				stack: err?.stack,
+				code: err?.code
+			}, null, 2));
+		} catch (e) {
+			// ignore fs errors
+		}
+		let errorMessage = "Unknown error occurred";
+		if (err instanceof Error && err.name === "ZodError" && Array.isArray((err as any).issues)) {
+			// Extract just the message from the first Zod issue
+			errorMessage = (err as any).issues.map((i: any) => i.message).join(', ');
+		} else if (err?.message) {
+			try {
+				const parsed = JSON.parse(err.message);
+				if (Array.isArray(parsed) && parsed[0]?.message) {
+					errorMessage = parsed.map((i: any) => i.message).join(', ');
+				} else {
+					errorMessage = err.message;
+				}
+			} catch {
+				errorMessage = err.message;
+			}
+		} else {
+			errorMessage = err?.details || JSON.stringify(err);
+		}
+		
+		return { success: false, error: errorMessage };
 	}
 }

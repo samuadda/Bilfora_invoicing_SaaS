@@ -12,7 +12,8 @@ CREATE OR REPLACE FUNCTION public.create_invoice_with_items(
   p_status text,
   p_tax_rate numeric,
   p_notes text,
-  p_items jsonb
+  p_items jsonb,
+  p_payment_info jsonb DEFAULT NULL
 )
 RETURNS TABLE(id uuid, invoice_number text)
 LANGUAGE plpgsql
@@ -87,6 +88,7 @@ BEGIN
     tax_amount,
     vat_amount,
     total_amount,
+    payment_info,
     created_at,
     updated_at
   ) VALUES (
@@ -106,6 +108,7 @@ BEGIN
     v_tax_amount,
     v_vat_amount,
     v_total_amount,
+    p_payment_info,
     now(),
     now()
   )

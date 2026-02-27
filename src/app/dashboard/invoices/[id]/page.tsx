@@ -55,8 +55,8 @@ export default async function InvoiceDetailPage({ params }: Props) {
 	const invoiceSettings: InvoiceSettings | null = await getInvoiceSettings(supabase, user.id);
 
 	const isSettingsReady =
-		Boolean(invoiceSettings?.seller_name) &&
-		Boolean(invoiceSettings?.vat_number);
+		Boolean(invoiceSettings?.name) &&
+		Boolean(invoiceSettings?.tax_number);
 
 	return (
 		<InvoiceDetailClient

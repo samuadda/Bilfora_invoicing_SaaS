@@ -99,6 +99,15 @@ export default function InvoiceCreationModal({
 
 	// ... existing useEffects ...
 
+	useEffect(() => {
+		if (isOpen) {
+			// Ensure we have the freshest data when reopening the modal
+			queryClient.invalidateQueries({ queryKey: ["settings"] });
+			queryClient.invalidateQueries({ queryKey: ["clients"] });
+			queryClient.invalidateQueries({ queryKey: ["products"] });
+		}
+	}, [isOpen, queryClient]);
+
 	// Smart Date Logic: Auto-correct due_date if issue_date moves ahead of it
 	useEffect(() => {
 		const issueDate = new Date(invoiceFormData.issue_date);

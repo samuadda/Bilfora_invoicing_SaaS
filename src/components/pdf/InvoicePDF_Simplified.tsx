@@ -26,10 +26,10 @@ export function InvoicePDF_Simplified({
 	qrDataUrl,
 	invoiceSettings,
 }: InvoicePDF_SimplifiedProps) {
-	const sellerName = invoiceSettings.seller_name;
-	const vatNumber = invoiceSettings.vat_number;
+	const sellerName = invoiceSettings.name;
+	const vatNumber = invoiceSettings.tax_number;
 	const address = [invoiceSettings.address_line1, invoiceSettings.city].filter(Boolean).join("، ");
-	const crNumber = invoiceSettings.cr_number;
+	const crNumber = null;
 	const iban = invoiceSettings.iban;
 
 	// Calculate totals
