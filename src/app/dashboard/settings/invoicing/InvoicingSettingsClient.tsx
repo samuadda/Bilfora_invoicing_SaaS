@@ -43,6 +43,10 @@ export default function InvoicingSettingsClient({
 	// Card 2: Banking & Payments
 	const [bankName, setBankName] = useState(initialSettings?.bank_name ?? "");
 	const [iban, setIban] = useState(initialSettings?.iban ?? "");
+	const [bankName2, setBankName2] = useState(initialSettings?.bank_name_2 ?? "");
+	const [iban2, setIban2] = useState(initialSettings?.iban_2 ?? "");
+	const [bankName3, setBankName3] = useState(initialSettings?.bank_name_3 ?? "");
+	const [iban3, setIban3] = useState(initialSettings?.iban_3 ?? "");
 	const [paymentNotes, setPaymentNotes] = useState(
 		initialSettings?.payment_notes ?? ""
 	);
@@ -120,6 +124,10 @@ export default function InvoicingSettingsClient({
 				
 				bank_name: bankName || null,
 				iban: iban || null,
+				bank_name_2: bankName2 || null,
+				iban_2: iban2 || null,
+				bank_name_3: bankName3 || null,
+				iban_3: iban3 || null,
 				payment_notes: paymentNotes || null,
 				
 				numbering_prefix: prefix,
@@ -252,6 +260,72 @@ export default function InvoicingSettingsClient({
 							<input
 								value={iban}
 								onChange={(e) => setIban(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								style={{ direction: "ltr", textAlign: "right" }}
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							اسم البنك الإضافي 1
+						</label>
+						<div className="relative">
+							<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input
+								value={bankName2}
+								onChange={(e) => setBankName2(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="مثال: البنك الأهلي"
+							/>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							رقم الآيبان (IBAN) للإضافي 1
+						</label>
+						<div className="relative">
+							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input
+								value={iban2}
+								onChange={(e) => setIban2(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
+								style={{ direction: "ltr", textAlign: "right" }}
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							اسم البنك الإضافي 2
+						</label>
+						<div className="relative">
+							<Building2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input
+								value={bankName3}
+								onChange={(e) => setBankName3(e.target.value)}
+								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
+								placeholder="مثال: بنك الإنماء"
+							/>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							رقم الآيبان (IBAN) للإضافي 2
+						</label>
+						<div className="relative">
+							<Globe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+							<input
+								value={iban3}
+								onChange={(e) => setIban3(e.target.value)}
 								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
 								placeholder="SAxx xxxx xxxx xxxx xxxx xx"
 								style={{ direction: "ltr", textAlign: "right" }}

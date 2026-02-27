@@ -62,6 +62,24 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const paymentsData = (invoiceData as unknown as { payments: any[] }).payments ?? [];
 
+    const paymentInfo = invoiceBase.payment_info;
+    
+    // Resolve which bank info to use
+    let activeBankName = settingsData?.bank_name;
+    let activeIban = settingsData?.iban;
+
+    if (paymentInfo) {
+        if (paymentInfo.bank_name === null && paymentInfo.iban === null) {
+            // "None" option was selected
+            activeBankName = null;
+            activeIban = null;
+        } else {
+            // Specific bank was selected
+            activeBankName = paymentInfo.bank_name || null;
+            activeIban = paymentInfo.iban || null;
+        }
+    }
+
     // Merge Profile + Settings (Settings take precedence for business identity)
     const sellerData: SellerProfile = {
         id: userId,
@@ -71,8 +89,8 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         address: [settingsData?.address_line1, settingsData?.city].filter(Boolean).join(", ") || profileData?.address,
         phone: profileData?.phone,
         email: profileData?.email,
-        iban: settingsData?.iban,
-        bank_name: settingsData?.bank_name,
+        iban: activeIban,
+        bank_name: activeBankName,
         logo_url: settingsData?.logo_url,
         cr_number: settingsData?.cr_number,
         invoice_footer: settingsData?.invoice_footer,

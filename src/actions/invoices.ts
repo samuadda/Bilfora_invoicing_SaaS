@@ -38,6 +38,7 @@ export async function createInvoiceAction(data: CreateInvoiceSchema): Promise<Ac
         status,
         tax_rate,
         notes,
+        payment_info,
         items,
     } = result.data;
 
@@ -97,6 +98,7 @@ export async function createInvoiceAction(data: CreateInvoiceSchema): Promise<Ac
             p_tax_rate: finalTaxRate,
             p_notes: notes ?? "",
             p_items: itemsPayload,
+            p_payment_info: payment_info ?? null,
         });
 
         if (error) {
@@ -208,6 +210,7 @@ export async function duplicateInvoiceAction(originalId: string): Promise<Action
             p_tax_rate: Number(original.tax_rate) || 0,
             p_notes: original.notes,
             p_items: itemsPayload,
+            p_payment_info: original.payment_info,
         });
 
         if (createError) {

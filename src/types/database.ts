@@ -45,6 +45,7 @@ export type Invoice = Tables<"invoices"> & {
 	// Map database fields to application logic if needed, 
 	// but Tables interface should cover most:
 	// subtotal, tax_amount etc are all numbers in generated types
+	payment_info?: { bank_name?: string | null; iban?: string | null } | null;
 };
 
 export type InvoiceItem = Tables<"invoice_items">;
@@ -153,6 +154,7 @@ export interface CreateInvoiceInput {
 	status?: InvoiceStatus;
 	tax_rate?: number;
 	notes?: string | null;
+	payment_info?: { bank_name?: string | null; iban?: string | null } | null;
 	items: CreateInvoiceItemInput[];
 }
 

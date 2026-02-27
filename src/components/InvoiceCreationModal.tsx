@@ -16,6 +16,7 @@ import { createInvoiceAction } from "@/actions/invoices";
 import { useQueryClient } from "@tanstack/react-query";
 import { useClients } from "@/hooks/useClients";
 import { useProducts } from "@/hooks/useProducts";
+import { useSettings } from "@/hooks/useSettings";
 import type {
 	Client,
 	CreateInvoiceInput,
@@ -28,6 +29,13 @@ import {
 	Text,
 	Button,
 } from "@/components/ui";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/custom-select";
 import { format } from "date-fns";
 import { layout } from "@/lib/ui/tokens";
 import { InvoiceClientSection } from "@/components/invoice/InvoiceClientSection";
@@ -59,6 +67,7 @@ export default function InvoiceCreationModal({
 	const queryClient = useQueryClient();
 	const { data: clients = [] } = useClients();
 	const { data: products = [] } = useProducts();
+	const { data: settings } = useSettings();
 	// const [clients, setClients] = useState<Client[]>([]); // Replaced by hook
 	// const [products, setProducts] = useState<Product[]>([]); // Replaced by hook
 	const [saving, setSaving] = useState(false);
@@ -78,6 +87,7 @@ export default function InvoiceCreationModal({
 		items: [{ description: "", quantity: 1, unit_price: 0 }],
 	});
 
+	const [selectedPaymentOption, setSelectedPaymentOption] = useState("default");
 	const [error, setError] = useState<string | null>(null);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const { toast } = useToast();
@@ -128,7 +138,9 @@ export default function InvoiceCreationModal({
 					unit_price: 0,
 				},
 			],
+			payment_info: undefined,
 		});
+		setSelectedPaymentOption("default");
 		setError(null);
 		setErrors({});
 	};
@@ -142,8 +154,25 @@ export default function InvoiceCreationModal({
 			setError(null);
 			setErrors({});
 
+			// Resolve payment_info based on selected option
+			let payment_info: { bank_name: string | null; iban: string | null } | null = null;
+			if (selectedPaymentOption === "none") {
+				payment_info = { bank_name: null, iban: null };
+			} else if (selectedPaymentOption === "bank2" && settings?.bank_name_2) {
+				payment_info = { bank_name: settings.bank_name_2, iban: settings.iban_2 };
+			} else if (selectedPaymentOption === "bank3" && settings?.bank_name_3) {
+				payment_info = { bank_name: settings.bank_name_3, iban: settings.iban_3 };
+			} else if (selectedPaymentOption === "default" && settings?.bank_name) {
+				payment_info = { bank_name: settings.bank_name, iban: settings.iban };
+			}
+
+			const payloadToValidate = {
+				...invoiceFormData,
+				payment_info,
+			};
+
 			// Client-Side Validation (Fast Feedback)
-			const parsed = invoiceSchema.safeParse(invoiceFormData);
+			const parsed = invoiceSchema.safeParse(payloadToValidate);
 			if (!parsed.success) {
 				const newErrors: Record<string, string> = {};
 				parsed.error.issues.forEach((issue) => {
@@ -387,6 +416,33 @@ export default function InvoiceCreationModal({
 									}}
 									errors={errors}
 								/>
+
+								{/* Payment Method Selector */}
+								<div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+									<Heading variant="h4" className="mb-4">وسيلة الدفع بالفاتورة</Heading>
+									<div className="w-full md:w-1/2">
+										<Select
+											value={selectedPaymentOption}
+											onValueChange={(val) => setSelectedPaymentOption(val)}
+										>
+											<SelectTrigger>
+												<SelectValue placeholder="اختر وسيلة الدفع" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="default">
+													{settings?.bank_name ? `الرئيسي (${settings.bank_name})` : "الرئيسي (الافتراضي)"}
+												</SelectItem>
+												{settings?.bank_name_2 && (
+													<SelectItem value="bank2">إضافي 1 ({settings.bank_name_2})</SelectItem>
+												)}
+												{settings?.bank_name_3 && (
+													<SelectItem value="bank3">إضافي 2 ({settings.bank_name_3})</SelectItem>
+												)}
+												<SelectItem value="none">بدون بيانات بنكية</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+								</div>
 
 								<InvoiceItemsTable
 									items={invoiceFormData.items}

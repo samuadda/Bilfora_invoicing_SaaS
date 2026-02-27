@@ -22,6 +22,10 @@ const zatcaInvoiceSchema = z.object({
     tax_rate: z.coerce.number().min(0).max(100),
     notes: z.string().optional(),
     items: z.array(itemSchema).min(1, "أضف صنف واحد على الأقل 📦"),
+    payment_info: z.object({
+        bank_name: z.string().nullable().optional(),
+        iban: z.string().nullable().optional()
+    }).nullable().optional(),
 });
 
 // ── Simple Beta schema (no ZATCA) ───────────────────────────────────────────
@@ -37,6 +41,10 @@ const simpleInvoiceSchema = z.object({
     tax_rate: z.coerce.number().default(0),
     notes: z.string().optional(),
     items: z.array(itemSchema).min(1, "أضف صنف واحد على الأقل 📦"),
+    payment_info: z.object({
+        bank_name: z.string().nullable().optional(),
+        iban: z.string().nullable().optional()
+    }).nullable().optional(),
 });
 
 export const invoiceSchema = IS_ZATCA_ENABLED ? zatcaInvoiceSchema : simpleInvoiceSchema;
