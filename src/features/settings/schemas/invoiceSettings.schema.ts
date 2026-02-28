@@ -35,6 +35,7 @@ export const invoiceSettingsSchema = z.object({
   numbering_prefix: z.string().min(1),
   email: z.string().catch(''),
   phone: z.string().catch(''),
+  brand_color: z.string().nullable().catch(null),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -71,6 +72,7 @@ export const invoiceSettingsInputSchema = z
     numbering_prefix: z.string().min(1).default('BLF-'),
     email: z.string().email().optional().or(z.literal('')).catch(''),
     phone: z.string().optional().nullable().catch(''),
+    brand_color: z.string().optional().nullable().catch(null),
   })
   .strict();
 

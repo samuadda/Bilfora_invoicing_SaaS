@@ -35,6 +35,9 @@ export default function InvoicingSettingsClient({
 	const [logoUrl, setLogoUrl] = useState<string | null>(
 		initialSettings?.logo_url ?? null
 	);
+	const [brandColor, setBrandColor] = useState(
+		initialSettings?.brand_color ?? "#7f2dfb"
+	);
 
 	// Card 2: Banking & Payments
 	const [bankName, setBankName] = useState(initialSettings?.bank_name ?? "");
@@ -111,6 +114,7 @@ export default function InvoicingSettingsClient({
 				
 				// Updated Fields
 				logo_url: logoUrl,
+				brand_color: brandColor,
 				
 				bank_name: bankName || null,
 				iban: iban || null,
@@ -188,6 +192,21 @@ export default function InvoicingSettingsClient({
 									className="hidden"
 								/>
 							</label>
+						</div>
+					</div>
+
+					{/* Brand Color */}
+					<div className="space-y-2">
+						<label className="text-sm font-medium text-gray-700">
+							اللون الأساسي للعلامة التجارية
+						</label>
+						<div className="relative flex items-center">
+							<input
+								type="color"
+								value={brandColor}
+								onChange={(e) => setBrandColor(e.target.value)}
+								className="w-full h-[4.5rem] rounded-xl border border-gray-200 p-1.5 cursor-pointer bg-white focus:ring-2 focus:ring-[#7f2dfb] focus:border-transparent transition-all"
+							/>
 						</div>
 					</div>
 

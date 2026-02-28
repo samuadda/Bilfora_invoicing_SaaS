@@ -146,6 +146,39 @@ export default function InvoiceDetailClient({
 		return "أكمل بيانات المنشأة لتنزيل PDF";
 	};
 
+	const getFormattedTime = (dateStr?: string | null, timeStr?: string | null) => {
+		if (timeStr && timeStr.length >= 5) return timeStr.substring(0, 5);
+		if (dateStr && dateStr.includes('T')) {
+			try {
+				const date = new Date(dateStr);
+				if (date.getHours() !== 0 || date.getMinutes() !== 0) {
+					return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+				}
+			} catch { /* ignore */ }
+		}
+		return "";
+	};
+
+    const issueTime = getFormattedTime(invoice.issue_date, invoice.issue_time);
+
+	// Seller Info Derived
+	const sellerName = invoiceSettings?.name || "اسم المنشأة";
+	const sellerTaxNumber = invoiceSettings?.tax_number || "";
+	const sellerCrNumber = invoiceSettings?.cr_number || "";
+	const sellerAddress = invoiceSettings?.address || "";
+	const sellerPhone = invoiceSettings?.phone || "";
+	const sellerBankName = invoiceSettings?.bank_name || "";
+	const sellerIban = invoiceSettings?.iban || "";
+	const invoiceFooter = invoiceSettings?.invoice_footer || "";
+
+	// Buyer Info Derived
+	const buyerName = client?.company_name || client?.name || "عميل نقدي";
+	const buyerTaxNumber = client?.tax_number || "";
+	const buyerAddress = client?.address || "";
+	const buyerPhone = client?.phone || "";
+	const showBuyerVat = isTax && isTax; // simplified check
+
+
 	/* Removed QR generation effect */
 
 	const getTitle = () => {
@@ -382,13 +415,18 @@ export default function InvoiceDetailClient({
 										fontWeight: 600,
 									}}
 								>
-									البائع (Seller)
+									مِن (البائع)
 								</h3>
-								<div className="flex justify-between items-center mb-1">
-									<span className="font-semibold text-gray-500 text-[13px]">
-										الاسم:
-									</span>
-									<span>اسم المنشأة</span> {/* TODO: Use settings */}
+								<div className="flex flex-col gap-1 mt-2">
+									<div className="font-bold text-gray-900">{sellerName}</div>
+									{sellerAddress && <div className="text-gray-600 text-sm">{sellerAddress}</div>}
+									{sellerPhone && <div className="text-gray-600 text-sm ltr-iso text-right">{sellerPhone}</div>}
+									{IS_ZATCA_ENABLED && sellerTaxNumber && (
+										<div className="text-gray-500 text-sm mt-1">الرقم الضريبي: <span className="ltr-iso">{sellerTaxNumber}</span></div>
+									)}
+									{!IS_ZATCA_ENABLED && sellerCrNumber && (
+										<div className="text-gray-500 text-sm mt-1">س.ت: <span className="ltr-iso">{sellerCrNumber}</span></div>
+									)}
 								</div>
 							</div>
 
@@ -404,28 +442,16 @@ export default function InvoiceDetailClient({
 										fontWeight: 600,
 									}}
 								>
-									العميل (Buyer)
+									إلى (العميل)
 								</h3>
-								{client ? (
-									<>
-										<div className="flex justify-between items-center mb-1">
-											<span className="font-semibold text-gray-500 text-[13px]">
-												الاسم:
-											</span>
-											<span>{client.name}</span>
-										</div>
-										{client.company_name && (
-											<div className="flex justify-between items-center mb-1">
-												<span className="font-semibold text-gray-500 text-[13px]">
-													الشركة:
-												</span>
-												<span>{client.company_name}</span>
-											</div>
-										)}
-									</>
-								) : (
-									<div>عميل نقدي</div>
-								)}
+								<div className="flex flex-col gap-1 mt-2">
+									<div className="font-bold text-gray-900">{buyerName}</div>
+									{buyerAddress && <div className="text-gray-600 text-sm">{buyerAddress}</div>}
+									{buyerPhone && <div className="text-gray-600 text-sm ltr-iso text-right">{buyerPhone}</div>}
+									{IS_ZATCA_ENABLED && isTax && buyerTaxNumber && (
+										<div className="text-gray-500 text-sm mt-1">الرقم الضريبي: <span className="ltr-iso">{buyerTaxNumber}</span></div>
+									)}
+								</div>
 							</div>
 						</div>
 
@@ -455,7 +481,10 @@ export default function InvoiceDetailClient({
 									<span className="font-semibold text-gray-500 text-[13px]">
 										تاريخ الإصدار:
 									</span>
-									<span className="ltr-iso">{formatDate(invoice.issue_date)}</span>
+									<span className="ltr-iso">
+										{formatDate(invoice.issue_date)}
+										{issueTime && <span className="text-gray-400 text-sm mr-2 font-medium">{issueTime}</span>}
+									</span>
 								</div>
 								<div className="flex justify-between items-center mb-1">
 									<span className="font-semibold text-gray-500 text-[13px]">
@@ -749,6 +778,37 @@ export default function InvoiceDetailClient({
 								// Optional: Refresh data if not handled by server action revalidation
 							}}
 						/>
+						{/* PAYMENT & NOTES & FOOTER */}
+						{(sellerBankName || sellerIban) && (
+							<div className="mt-12 p-6 bg-[#f8fafc] border border-gray-200 rounded-lg break-inside-avoid">
+								<h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4">
+									تفاصيل الحساب البنكي
+								</h4>
+								{sellerBankName && (
+									<div className="flex justify-between py-2 border-b border-gray-200 text-sm">
+										<span className="text-gray-500">اسم البنك</span>
+										<span className="font-semibold text-gray-900">{sellerBankName}</span>
+									</div>
+								)}
+								{sellerIban && (
+									<div className="flex justify-between py-2 border-b border-gray-200 text-sm">
+										<span className="text-gray-500">IBAN</span>
+										<span className="font-semibold text-gray-900 ltr-iso font-mono">{sellerIban}</span>
+									</div>
+								)}
+							</div>
+						)}
+
+						{invoiceFooter && (
+							<div className="mt-6 text-center text-[13px] text-gray-500">
+								{invoiceFooter}
+							</div>
+						)}
+
+						<div className="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
+							تم الإنشاء بواسطة منصة <span className="font-bold text-[#7f2dfb]">Bilfora</span> للفواتير الإلكترونية
+						</div>
+
 					</m.div>
 				</div>
 			</div>

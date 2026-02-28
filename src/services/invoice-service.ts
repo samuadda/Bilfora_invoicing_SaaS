@@ -94,7 +94,7 @@ export async function getInvoiceForPdf(invoiceId: string, userId: string) {
         logo_url: settingsData?.logo_url,
         cr_number: undefined,
         invoice_footer: settingsData?.invoice_footer,
-        brand_color: undefined,
+        brand_color: settingsData?.brand_color,
         payment_notes: undefined,
     };
 
