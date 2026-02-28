@@ -164,12 +164,13 @@ export default function InvoiceDetailClient({
 	// Seller Info Derived
 	const sellerName = invoiceSettings?.name || "اسم المنشأة";
 	const sellerTaxNumber = invoiceSettings?.tax_number || "";
-	const sellerCrNumber = invoiceSettings?.cr_number || "";
-	const sellerAddress = invoiceSettings?.address || "";
+	const sellerCrNumber = "";
+	const sellerAddress = [invoiceSettings?.address_line1, invoiceSettings?.city].filter(Boolean).join("، ") || "";
 	const sellerPhone = invoiceSettings?.phone || "";
 	const sellerBankName = invoiceSettings?.bank_name || "";
 	const sellerIban = invoiceSettings?.iban || "";
 	const invoiceFooter = invoiceSettings?.invoice_footer || "";
+	const primaryColor = invoiceSettings?.brand_color || INVOICE_TOKENS.primary;
 
 	// Buyer Info Derived
 	const buyerName = client?.company_name || client?.name || "عميل نقدي";
@@ -363,12 +364,32 @@ export default function InvoiceDetailClient({
 						>
 							<div
 								style={{
-									fontSize: "24px",
-									fontWeight: "bold",
-									color: INVOICE_TOKENS.primary,
+									display: "flex",
+									alignItems: "center"
 								}}
 							>
-								Bilfora
+								{invoiceSettings?.logo_url ? (
+									<img
+										src={invoiceSettings.logo_url}
+										alt="Logo"
+										style={{
+											maxHeight: "48px",
+											maxWidth: "140px",
+											display: "block",
+											objectFit: "contain",
+										}}
+									/>
+								) : (
+									<div
+										style={{
+											fontSize: "24px",
+											fontWeight: "bold",
+											color: primaryColor,
+										}}
+									>
+										{sellerName}
+									</div>
+								)}
 							</div>
 							<div>
 								<h1
@@ -407,7 +428,7 @@ export default function InvoiceDetailClient({
 							<div>
 								<h3
 									style={{
-										color: INVOICE_TOKENS.primary,
+										color: primaryColor,
 										fontSize: INVOICE_TOKENS.headings.h3.size,
 										marginBottom: "0.25rem",
 										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
@@ -434,7 +455,7 @@ export default function InvoiceDetailClient({
 							<div>
 								<h3
 									style={{
-										color: INVOICE_TOKENS.primary,
+										color: primaryColor,
 										fontSize: INVOICE_TOKENS.headings.h3.size,
 										marginBottom: "0.25rem",
 										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
@@ -467,7 +488,7 @@ export default function InvoiceDetailClient({
 							<div>
 								<h3
 									style={{
-										color: INVOICE_TOKENS.primary,
+										color: primaryColor,
 										fontSize: INVOICE_TOKENS.headings.h3.size,
 										marginBottom: "0.25rem",
 										borderBottom: `1px solid ${INVOICE_TOKENS.border}`,
@@ -502,7 +523,44 @@ export default function InvoiceDetailClient({
 									<tr>
 										<th
 											style={{
-												backgroundColor: INVOICE_TOKENS.primary,
+												backgroundColor: primaryColor,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "5%",
+											}}
+										>
+											#
+										</th>
+										<th
+											className="desc"
+											style={{
+												backgroundColor: primaryColor,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "right", // Desc right aligned
+												fontSize: "13px",
+												width: "40%",
+											}}
+										>
+											الوصف
+										</th>
+										<th
+											style={{
+												backgroundColor: primaryColor,
+												color: "white",
+												padding: INVOICE_TOKENS.table.cellPadding,
+												textAlign: "center",
+												fontSize: "13px",
+												width: "10%",
+											}}
+										>
+											الكمية
+										</th>
+										<th
+											style={{
+												backgroundColor: primaryColor,
 												color: "white",
 												padding: INVOICE_TOKENS.table.cellPadding,
 												textAlign: "center",
@@ -510,12 +568,12 @@ export default function InvoiceDetailClient({
 												width: "15%",
 											}}
 										>
-											الإجمالي
+											{IS_ZATCA_ENABLED ? 'سعر الوحدة' : 'السعر'}
 										</th>
 										{isTax && (
 											<th
 												style={{
-													backgroundColor: INVOICE_TOKENS.primary,
+													backgroundColor: primaryColor,
 													color: "white",
 													padding: INVOICE_TOKENS.table.cellPadding,
 													textAlign: "center",
@@ -528,7 +586,7 @@ export default function InvoiceDetailClient({
 										)}
 										<th
 											style={{
-												backgroundColor: INVOICE_TOKENS.primary,
+												backgroundColor: primaryColor,
 												color: "white",
 												padding: INVOICE_TOKENS.table.cellPadding,
 												textAlign: "center",
@@ -536,44 +594,7 @@ export default function InvoiceDetailClient({
 												width: "15%",
 											}}
 										>
-											{IS_ZATCA_ENABLED ? 'سعر الوحدة' : 'السعر'}
-										</th>
-										<th
-											style={{
-												backgroundColor: INVOICE_TOKENS.primary,
-												color: "white",
-												padding: INVOICE_TOKENS.table.cellPadding,
-												textAlign: "center",
-												fontSize: "13px",
-												width: "10%",
-											}}
-										>
-											الكمية
-										</th>
-										<th
-											className="desc"
-											style={{
-												backgroundColor: INVOICE_TOKENS.primary,
-												color: "white",
-												padding: INVOICE_TOKENS.table.cellPadding,
-												textAlign: "right", // Desc right aligned
-												fontSize: "13px",
-												width: "40%",
-											}}
-										>
-											الوصف
-										</th>
-										<th
-											style={{
-												backgroundColor: INVOICE_TOKENS.primary,
-												color: "white",
-												padding: INVOICE_TOKENS.table.cellPadding,
-												textAlign: "center",
-												fontSize: "13px",
-												width: "5%",
-											}}
-										>
-											#
+											الإجمالي
 										</th>
 									</tr>
 								</thead>
@@ -597,6 +618,38 @@ export default function InvoiceDetailClient({
 												style={{ borderBottom: `1px solid ${INVOICE_TOKENS.border}` }}
 											>
 												<td
+													className="idx"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "center",
+														direction: "ltr",
+													}}
+												>
+													{index + 1}
+												</td>
+												<td
+													className="desc"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "right",
+													}}
+												>
+													{item.description || "-"}
+												</td>
+												<td
+													className="qty"
+													style={{
+														padding: INVOICE_TOKENS.table.cellPadding,
+														color: INVOICE_TOKENS.textGray,
+														textAlign: "center",
+														direction: "ltr",
+													}}
+												>
+													{qty}
+												</td>
+												<td
 													className="num"
 													style={{
 														padding: INVOICE_TOKENS.table.cellPadding,
@@ -605,7 +658,7 @@ export default function InvoiceDetailClient({
 														direction: "ltr",
 													}}
 												>
-													{formatCurrency(lineTotal)}
+													{formatCurrency(unit)}
 												</td>
 												{isTax && (
 													<td
@@ -629,39 +682,7 @@ export default function InvoiceDetailClient({
 														direction: "ltr",
 													}}
 												>
-													{formatCurrency(unit)}
-												</td>
-												<td
-													className="qty"
-													style={{
-														padding: INVOICE_TOKENS.table.cellPadding,
-														color: INVOICE_TOKENS.textGray,
-														textAlign: "center",
-														direction: "ltr",
-													}}
-												>
-													{qty}
-												</td>
-												<td
-													className="desc"
-													style={{
-														padding: INVOICE_TOKENS.table.cellPadding,
-														color: INVOICE_TOKENS.textGray,
-														textAlign: "right",
-													}}
-												>
-													{item.description || "-"}
-												</td>
-												<td
-													className="idx"
-													style={{
-														padding: INVOICE_TOKENS.table.cellPadding,
-														color: INVOICE_TOKENS.textGray,
-														textAlign: "center",
-														direction: "ltr",
-													}}
-												>
-													{index + 1}
+													{formatCurrency(lineTotal)}
 												</td>
 											</tr>
 										);
