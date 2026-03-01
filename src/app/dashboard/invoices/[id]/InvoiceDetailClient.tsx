@@ -1,7 +1,8 @@
 "use client";
 
 
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
+import Image from "next/image";
 import { INVOICE_TOKENS } from "@/lib/invoice-design/tokens";
 import { IS_ZATCA_ENABLED } from "@/config/features";
 import { Loader2, Printer, ArrowLeft, AlertCircle } from "lucide-react";
@@ -177,7 +178,7 @@ export default function InvoiceDetailClient({
 	const buyerTaxNumber = client?.tax_number || "";
 	const buyerAddress = client?.address || "";
 	const buyerPhone = client?.phone || "";
-	const showBuyerVat = isTax && isTax; // simplified check
+	// simplified check
 
 
 	/* Removed QR generation effect */
@@ -369,9 +370,11 @@ export default function InvoiceDetailClient({
 								}}
 							>
 								{invoiceSettings?.logo_url ? (
-									<img
+									<Image
 										src={invoiceSettings.logo_url}
 										alt="Logo"
+										width={140}
+										height={48}
 										style={{
 											maxHeight: "48px",
 											maxWidth: "140px",

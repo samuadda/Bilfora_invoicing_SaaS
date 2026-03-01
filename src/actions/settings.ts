@@ -22,28 +22,29 @@ export async function updateSettingsAction(payload: InvoiceSettingsInput) {
         // Also revalidate invoices since they use these settings
         revalidatePath("/dashboard/invoices"); 
 		return { success: true };
-	} catch (err: any) {
+	} catch (err: unknown) {
 		console.error("Error updating settings:", err);
 		try {
 			fs.writeFileSync('error_log.json', JSON.stringify({
 				error_object: err,
-				message: err?.message,
-				details: err?.details,
-				stack: err?.stack,
-				code: err?.code
+				message: err instanceof Error ? err.message : (err as { message?: string })?.message,
+				details: (err as { details?: string })?.details,
+				stack: err instanceof Error ? err.stack : (err as { stack?: string })?.stack,
+				code: (err as Error).name
 			}, null, 2));
-		} catch (e) {
+		} catch {
 			// ignore fs errors
 		}
 		let errorMessage = "Unknown error occurred";
-		if (err instanceof Error && err.name === "ZodError" && Array.isArray((err as any).issues)) {
+		if (err instanceof Error && err.name === "ZodError" && "issues" in err && Array.isArray((err as Record<string, unknown>).issues)) {
 			// Extract just the message from the first Zod issue
-			errorMessage = (err as any).issues.map((i: any) => i.message).join(', ');
-		} else if (err?.message) {
+			const issues = (err as Record<string, unknown>).issues as Array<{ message: string }>;
+			errorMessage = issues.map((i) => i.message).join(', ');
+		} else if (err instanceof Error && err.message) {
 			try {
 				const parsed = JSON.parse(err.message);
 				if (Array.isArray(parsed) && parsed[0]?.message) {
-					errorMessage = parsed.map((i: any) => i.message).join(', ');
+					errorMessage = parsed.map((i: unknown) => (i as { message: string }).message).join(', ');
 				} else {
 					errorMessage = err.message;
 				}
@@ -51,7 +52,7 @@ export async function updateSettingsAction(payload: InvoiceSettingsInput) {
 				errorMessage = err.message;
 			}
 		} else {
-			errorMessage = err?.details || JSON.stringify(err);
+			errorMessage = (err && typeof err === 'object' && 'details' in err ? (err as { details: string }).details : null) || JSON.stringify(err);
 		}
 		
 		return { success: false, error: errorMessage };

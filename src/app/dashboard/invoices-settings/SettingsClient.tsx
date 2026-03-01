@@ -42,12 +42,11 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 	// Schema has: vat_rate, currency, timezone, etc.
 
 	// Map schema fields to state
-	const [vatNumber, setVatNumber] = useState(initialSettings?.vat_number ?? "");
-	const [crNumber, setCrNumber] = useState(initialSettings?.cr_number ?? "");
+	const [vatNumber, setVatNumber] = useState(initialSettings?.tax_number ?? "");
 	const [businessLogo, setBusinessLogo] = useState<string | null>(initialSettings?.logo_url ?? null);
 	const [addressLine, setAddressLine] = useState(initialSettings?.address_line1 ?? "");
 	const [city, setCity] = useState(initialSettings?.city ?? "");
-	const [sellerName, setSellerName] = useState(initialSettings?.seller_name ?? "");
+	const [sellerName, setSellerName] = useState(initialSettings?.name ?? "");
 
 	const [iban, setIban] = useState(initialSettings?.iban ?? "");
 	const [footerNote, setFooterNote] = useState(initialSettings?.invoice_footer ?? "شكراً لتعاملكم معنا");
@@ -82,9 +81,8 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 		setIsLoading(true);
 		try {
 			const payload = {
-				seller_name: sellerName || "My Business", // Fallback validation
-				vat_number: vatNumber || "300000000000003",
-				cr_number: crNumber || null,
+				name: sellerName || "My Business", // Fallback validation
+				tax_number: vatNumber || "300000000000003",
 				address_line1: addressLine || null,
 				city: city || null,
 				logo_url: businessLogo, // Note: this might be blob: url which won't work across sessions. Needs upload.
@@ -181,23 +179,6 @@ export default function SettingsClient({ initialSettings }: SettingsClientProps)
 						</div>
 					</div>
 					)}
-					<div className="space-y-2">
-						<label className="text-sm font-medium text-gray-700">
-							السجل التجاري (CR)
-						</label>
-						<div className="relative">
-							<Building2
-								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-								size={18}
-							/>
-							<input
-								value={crNumber}
-								onChange={(e) => setCrNumber(e.target.value)}
-								className="w-full rounded-xl border border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-[#7f2dfb] focus:ring-[#7f2dfb] transition-all"
-								placeholder="1010XXXXXX"
-							/>
-						</div>
-					</div>
 					<div className="space-y-2">
 						<label className="text-sm font-medium text-gray-700">
 							شعار الفواتير
