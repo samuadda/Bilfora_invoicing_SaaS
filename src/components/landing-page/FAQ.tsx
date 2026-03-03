@@ -40,7 +40,7 @@ const faqs = [
   {
     question: "ماذا لو أردت التوقف عن الاستخدام؟",
     answer:
-      "يمكنك تصدير جميع بياناتك (العملاء، الفواتير، الخدمات) في أي وقت بصيغة Excel أو PDF. لا نقفل حسابك أبداً - يمكنك العودة في أي وقت.",
+      "يمكنك تصدير جميع بياناتك (العملاء، الفواتير، الخدمات) في أي وقت بصيغة Excel أو PDF. لا نقفل حسابك أبداً يمكنك العودة في أي وقت.",
     icon: Download,
   },
   {
@@ -136,7 +136,7 @@ export function FAQ() {
           <Text variant="body-large" className="mb-4 font-medium">لا تزال لديك أسئلة؟</Text>
           <Link href="/contact">
             <Button variant="primary" size="md" className="px-6">
-              تواصل معنا - نرد خلال ساعة
+              تواصل معنا نرد خلال ساعة
             </Button>
           </Link>
         </div>

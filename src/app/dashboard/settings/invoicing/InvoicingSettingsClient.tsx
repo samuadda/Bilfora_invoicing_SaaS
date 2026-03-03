@@ -15,6 +15,7 @@ import {
 import { InvoiceSettings } from "@/features/settings/schemas/invoiceSettings.schema";
 import { updateSettingsAction } from "@/actions/settings";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/Button";
 import { supabasePersistent } from "@/lib/supabase-clients";
 import { IS_ZATCA_ENABLED } from "@/config/features";
 
@@ -200,13 +201,26 @@ export default function InvoicingSettingsClient({
 						<label className="text-sm font-medium text-gray-700">
 							اللون الأساسي للعلامة التجارية
 						</label>
-						<div className="relative flex items-center">
-							<input
-								type="color"
-								value={brandColor}
-								onChange={(e) => setBrandColor(e.target.value)}
-								className="w-full h-[4.5rem] rounded-xl border border-gray-200 p-1.5 cursor-pointer bg-white focus:ring-2 focus:ring-[#7f2dfb] focus:border-transparent transition-all"
-							/>
+						<div className="flex items-center gap-3">
+							<div className="relative flex items-center flex-1">
+								<input
+									type="color"
+									value={brandColor}
+									onChange={(e) => setBrandColor(e.target.value)}
+									className="w-full h-[4.5rem] rounded-xl border border-gray-200 p-1.5 cursor-pointer bg-white focus:ring-2 focus:ring-[#7f2dfb] focus:border-transparent transition-all"
+								/>
+							</div>
+							{brandColor !== "#7f2dfb" && (
+								<Button
+									variant="ghost"
+									size="sm"
+									type="button"
+									onClick={() => setBrandColor("#7f2dfb")}
+									className="h-[4.5rem] px-4 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200"
+								>
+									إرجاع اللون الافتراضي
+								</Button>
+							)}
 						</div>
 					</div>
 

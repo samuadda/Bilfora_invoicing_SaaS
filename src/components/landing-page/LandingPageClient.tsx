@@ -273,7 +273,7 @@ export default function LandingPageClient() {
 							كيف تبلفرها ؟
 						</TextAnimate>
 						<Text variant="body-large" color="muted" className="mt-4">
-							من التسجيل إلى فاتورتك الأولى - أقل من دقيقتين
+							من التسجيل إلى فاتورتك الأولى أقل من دقيقتين
 						</Text>
 					</div>
 					<ElegantFeatures content={content} />
