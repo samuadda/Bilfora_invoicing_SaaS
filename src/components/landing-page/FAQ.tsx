@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { TextAnimate } from "@/components/landing-page/text-animate";
-import { ChevronDown, HelpCircle, Shield, FileText, CreditCard, Lock, Download, WifiOff } from "lucide-react";
+import { ChevronDown, HelpCircle, Shield, FileText, CreditCard, Lock, Download } from "lucide-react";
 import Link from "next/link";
 import { Section, Container, Text, Button } from "@/components/ui";
 
@@ -10,7 +10,7 @@ const faqs = [
   {
     question: "هل بِلفورا مجاني؟",
     answer:
-      "نعم، توجد خطة مجانية تتيح لك إنشاء 5 فواتير شهرياً، وهي مثالية للمستقلين في بداية مشوارهم. يمكنك الترقية في أي وقت عندما تحتاج إلى المزيد من الفواتير.",
+      "نعم بلفورا مجاني بشكل كامل ، على الأقل في نسخة التجريبية الحالية :)",
     icon: HelpCircle,
   },
   {
@@ -22,7 +22,7 @@ const faqs = [
   {
     question: "هل يمكنني تخصيص شكل الفاتورة؟",
     answer:
-      "بالتأكيد! يمكنك إضافة شعارك، تغيير الألوان، وتعديل بعض النصوص لتناسب هوية علامتك التجارية. في الباقة الاحترافية، يمكنك إزالة شعار بِلفورا تماماً.",
+      "بالتأكيد! يمكنك إضافة شعارك، تغيير الألوان، وتعديل بعض النصوص لتناسب هوية علامتك التجارية. في الباقة الاحترافية.",
     icon: FileText,
   },
   {
@@ -42,12 +42,6 @@ const faqs = [
     answer:
       "يمكنك تصدير جميع بياناتك (العملاء، الفواتير، الخدمات) في أي وقت بصيغة Excel أو PDF. لا نقفل حسابك أبداً يمكنك العودة في أي وقت.",
     icon: Download,
-  },
-  {
-    question: "هل يمكنني استخدامه بدون إنترنت؟",
-    answer:
-      "نعم، بِلفورا يعمل في وضع عدم الاتصال. يمكنك إنشاء الفواتير وتعديلها حتى بدون اتصال بالإنترنت، وسيتم مزامنة البيانات تلقائياً عند عودة الاتصال.",
-    icon: WifiOff,
   },
 ];
 

@@ -11,7 +11,6 @@ import {
 	Shield,
 	Smartphone,
 	Users,
-	Zap,
 } from "lucide-react";
 import Link from "next/link";
 import MainButton from "@/components/MainButton";
@@ -96,13 +95,6 @@ const faqData: FAQItem[] = [
 		answer: "يمكنك تصدير التقارير بسهولة بصيغ مختلفة مثل Excel وPDF، مما يتيح لك تحليل البيانات ومراجعتها خارج النظام.",
 		category: "التقارير",
 		icon: <FileText className="w-5 h-5" />,
-	},
-	{
-		id: 11,
-		question: "هل النظام يعمل بدون إنترنت؟",
-		answer: "نعم، النظام يعمل في وضع عدم الاتصال، حيث يمكنك إنشاء الفواتير وحفظها محلياً، ثم مزامنتها عند عودة الاتصال بالإنترنت.",
-		category: "الوصول",
-		icon: <Zap className="w-5 h-5" />,
 	},
 	{
 		id: 12,

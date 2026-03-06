@@ -498,7 +498,7 @@
               - img [ref=e692]
               - generic [ref=e695]: هل بِلفورا مجاني؟
             - img [ref=e697]
-          - paragraph [ref=e700]: نعم، توجد خطة مجانية تتيح لك إنشاء 5 فواتير شهرياً، وهي مثالية للمستقلين في بداية مشوارهم. يمكنك الترقية في أي وقت عندما تحتاج إلى المزيد من الفواتير.
+          - paragraph [ref=e700]: نعم بلفورا مجاني بشكل كامل ، على الأقل في نسخة التجريبية الحالية :)
         - button "هل الفواتير معتمدة من هيئة الزكاة والضريبة؟" [ref=e702]:
           - generic [ref=e703]:
             - img [ref=e704]
@@ -559,10 +559,10 @@
               - paragraph [ref=e782]: منصة ذكية لإصدار الفواتير الإلكترونية للمستقلين وأصحاب الأعمال. أنشئ فواتيرك بسهولة واحترافية في ثوانٍ.
               - generic [ref=e783]:
                 - link [ref=e784] [cursor=pointer]:
-                  - /url: https://twitter.com/bilfora
+                  - /url: https://x.com/samuadda
                   - img [ref=e785]
                 - link [ref=e787] [cursor=pointer]:
-                  - /url: https://linkedin.com/company/bilfora
+                  - /url: https://linkedin.com/in/saddiq-daut/
                   - img [ref=e788]
             - generic [ref=e790]:
               - heading "المنتج" [level=3] [ref=e791]

@@ -99,10 +99,6 @@ export default function LandingPageClient() {
 									لا تحتاج محاسب ولا خبرة سابقة.
 									<br className="hidden sm:block" />
 									أنشئ فواتير احترافية بثوانٍ. ودع الإكسل، وابدأ تظهر كأنك شركة كبيرة.
-									<br />
-									<span className="font-bold text-[#012d46] bg-purple-50 px-2 rounded-md border border-purple-100 mt-2 inline-block">
-										خلّي المحاسبة علينا، وركّز أنت في تجارتك
-									</span>
 								</Text>
 							</m.div>
 
@@ -289,6 +285,7 @@ export default function LandingPageClient() {
 				</m.div>
 
 				{/* Reviews */}
+				{/* Reviews - Hidden until real reviews are gathered
 				<Section
 					padding="large"
 					background="muted"
@@ -325,6 +322,7 @@ export default function LandingPageClient() {
 					<div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-slate-50"></div>
 					<div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-slate-50"></div>
 				</Section>
+				*/}
 
 				<m.div
 					initial={{ opacity: 0, y: 30 }}
@@ -390,7 +388,7 @@ export default function LandingPageClient() {
 									</p>
 									<div className="flex items-center gap-4">
 										<Link
-											href="https://twitter.com/bilfora"
+											href="https://x.com/samuadda"
 											target="_blank"
 											rel="noopener noreferrer"
 											className="text-gray-400 hover:text-[#7f2dfb] transition-colors p-1"
@@ -404,7 +402,7 @@ export default function LandingPageClient() {
 											</svg>
 										</Link>
 										<Link
-											href="https://linkedin.com/company/bilfora"
+											href="https://linkedin.com/in/saddiq-daut/"
 											target="_blank"
 											rel="noopener noreferrer"
 											className="text-gray-400 hover:text-[#7f2dfb] transition-colors p-1"

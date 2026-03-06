@@ -19,9 +19,9 @@ type AnimationVariant =
 
 interface TextAnimateProps extends MotionProps {
   /**
-   * The text content to animate
+   * The text/React contents to animate
    */
-  children: string;
+  children: React.ReactNode;
   /**
    * The class name to be applied to the component
    */
@@ -313,20 +313,33 @@ export function TextAnimate({
 }: TextAnimateProps) {
   const MotionComponent = motion.create(Component);
 
+  // Helper to convert React Node to string safely for splitting text
+  const extractText = (node: React.ReactNode): string => {
+    if (typeof node === 'string') return node;
+    if (typeof node === 'number') return String(node);
+    if (Array.isArray(node)) return node.map(extractText).join('');
+    if (node && typeof node === 'object' && 'props' in node && node.props && node.props.children) {
+      return extractText(node.props.children);
+    }
+    return '';
+  };
+
+  const textString = extractText(children);
+
   let segments: string[] = [];
   switch (by) {
     case "word":
-      segments = children.split(/(\s+)/);
+      segments = textString.split(/(\s+)/);
       break;
     case "character":
-      segments = children.split("");
+      segments = textString.split("");
       break;
     case "line":
-      segments = children.split("\n");
+      segments = textString.split("\n");
       break;
     case "text":
     default:
-      segments = [children];
+      segments = [textString];
       break;
   }
 

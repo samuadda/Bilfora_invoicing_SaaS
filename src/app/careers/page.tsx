@@ -29,7 +29,7 @@ export default function CareersPage() {
                         للأسف، لا توجد وظائف شاغرة في الوقت الحالي. ولكننا نكبر بسرعة! تابعنا على لينكد إن لتبقى على اطلاع بأحدث الفرص.
                     </p>
                     <a 
-                        href="https://linkedin.com/company/bilfora" 
+                        href="https://linkedin.com/in/saddiq-daut/" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-block"
