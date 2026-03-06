@@ -43,11 +43,12 @@ export async function recordPaymentAction(data: CreatePaymentInput) {
         return { success: false, error: "Failed to record payment" };
     }
 
-    // 2. Refresh Invoice Data to check totals
+    // 2. Refresh Invoice Data to check totals (ownership check prevents IDOR)
     const { data: invoice, error: fetchError } = await supabase
         .from("invoices")
         .select("total_amount, payments(amount)")
         .eq("id", payment.invoice_id)
+        .eq("user_id", user.id)
         .single();
 
     if (fetchError || !invoice) {
@@ -61,14 +62,13 @@ export async function recordPaymentAction(data: CreatePaymentInput) {
     const totalPaid = invoice.payments?.reduce((sum: number, p: any) => sum + Number(p.amount), 0) || 0;
     const invoiceTotal = Number(invoice.total_amount);
 
-    // 3. Update Status if Fully Paid
-    // We only auto-update to 'paid'. If it was 'paid' and now isn't (e.g. edited invoice), logic is more complex.
-    // Here we strictly handle the "Mark as Paid" flow.
+    // 3. Update Status if Fully Paid (ownership check prevents IDOR)
     if (totalPaid >= invoiceTotal - 0.5) { // 0.5 buffer for rounding errors
         await supabase
             .from("invoices")
             .update({ status: "paid" })
-            .eq("id", payment.invoice_id);
+            .eq("id", payment.invoice_id)
+            .eq("user_id", user.id);
     }
 
     revalidatePath(`/dashboard/invoices/${payment.invoice_id}`);

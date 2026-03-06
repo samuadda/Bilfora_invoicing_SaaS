@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageSquare, X, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { MessageSquare, X, Send, Loader2, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
 import { supabasePersistent } from "@/lib/supabase-clients";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +16,14 @@ export function FeedbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [currentUser, setCurrentUser] = useState<FeedbackUser | null>(null);
-  const [message, setMessage] = useState("");
+  
+  // Wizard state
+  const [step, setStep] = useState(1);
+  const [uiRating, setUiRating] = useState<number | null>(null);
+  const [likedMost, setLikedMost] = useState("");
+  const [hatedMost, setHatedMost] = useState("");
+  const [missingFeatures, setMissingFeatures] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { toast } = useToast();
@@ -57,10 +64,7 @@ export function FeedbackWidget() {
 
     const handleInvoiceCreated = () => {
       if (!hasSubmitted) {
-        // slight delay to let the invoice success toast show first
-        setTimeout(() => {
-          setIsOpen(true);
-        }, 1500);
+        setTimeout(() => setIsOpen(true), 1500);
       }
     };
 
@@ -72,9 +76,8 @@ export function FeedbackWidget() {
     };
   }, [hasSubmitted]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim() || !currentUser) return;
+  const handleSubmit = async () => {
+    if (!currentUser) return;
 
     setIsSubmitting(true);
     try {
@@ -83,7 +86,10 @@ export function FeedbackWidget() {
         body: {
           name: currentUser.name,
           email: currentUser.email,
-          message: message.trim(),
+          uiRating,
+          likedMost: likedMost.trim(),
+          hatedMost: hatedMost.trim(),
+          missingFeatures: missingFeatures.trim(),
         },
       });
 
@@ -101,12 +107,13 @@ export function FeedbackWidget() {
         user_id: currentUser.id,
         user_name: currentUser.name,
         user_email: currentUser.email,
-        message: message.trim(),
+        ui_rating: uiRating,
+        liked_most: likedMost.trim(),
+        hated_most: hatedMost.trim(),
+        missing_features: missingFeatures.trim(),
       });
 
-      if (dbError) {
-         throw new Error(`Database Error: ${dbError.message}`);
-      }
+      if (dbError) throw new Error(`Database Error: ${dbError.message}`);
 
       // 3. Update profile to prevent future popups
       const { error: profileError } = await supabasePersistent
@@ -114,9 +121,7 @@ export function FeedbackWidget() {
         .update({ has_submitted_feedback: true })
         .eq("id", currentUser.id);
 
-      if (profileError) {
-          throw new Error(`Profile Update Error: ${profileError.message}`);
-      }
+      if (profileError) throw new Error(`Profile Update Error: ${profileError.message}`);
 
       setHasSubmitted(true);
       setShowSuccess(true);
@@ -124,14 +129,22 @@ export function FeedbackWidget() {
       // Auto-close after success
       setTimeout(() => {
         setIsOpen(false);
-        setTimeout(() => setShowSuccess(false), 500); // reset state after closing
+        setTimeout(() => {
+          setShowSuccess(false);
+          setStep(1);
+          setUiRating(null);
+          setLikedMost("");
+          setHatedMost("");
+          setMissingFeatures("");
+        }, 500); 
       }, 3000);
       
-    } catch (err: any) {
+    } catch (err) {
       console.error("Feedback submission error:", err);
+      const errorMessage = err instanceof Error ? err.message : "لم نتمكن من إرسال ملاحظاتك، يرجى المحاولة لاحقاً.";
       toast({
         title: "عذراً، حدث خطأ",
-        description: err.message || "لم نتمكن من إرسال ملاحظاتك، يرجى المحاولة لاحقاً.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -145,28 +158,97 @@ export function FeedbackWidget() {
       <button
         onClick={() => setIsOpen(true)}
         className="flex items-center justify-center w-12 h-12 md:w-auto md:h-auto md:px-4 md:py-3 bg-[#7f2dfb] hover:bg-[#6c26d9] text-white rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 group"
-        aria-label="شاركنا رأيك"
+        aria-label="شاركني رأيك"
       >
         <MessageSquare className="w-5 h-5 md:ml-2" />
-        <span className="hidden md:block font-medium">شاركنا رأيك</span>
+        <span className="hidden md:block font-medium">شاركني رأيك</span>
       </button>
     </div>
   );
 
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">كيف تقيم تصميم الواجهة؟</h3>
+            <p className="text-gray-500 mb-6 text-sm">أريد أن أعرف مدى سهولة استخدامك للنظام وشعورك العام نحو التصميم.</p>
+            <div className="flex justify-center flex-row-reverse gap-4 my-8">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <button
+                  key={rating}
+                  onClick={() => setUiRating(rating)}
+                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all font-bold text-2xl border-2 ${
+                    uiRating === rating 
+                      ? "bg-[#7f2dfb] text-white scale-110 shadow-md border-[#7f2dfb]" 
+                      : "bg-white text-gray-400 border-gray-100 hover:border-[#7f2dfb]/50 hover:text-[#7f2dfb]"
+                  }`}
+                >
+                  {rating}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">ما أكثر شيء أعجبك؟</h3>
+            <p className="text-gray-500 mb-4 text-sm">أخبرني عن الميزات أو الأجزاء التي نالت إعجابك وتجدها مفيدة.</p>
+            <textarea
+              rows={4}
+              value={likedMost}
+              onChange={(e) => setLikedMost(e.target.value)}
+              placeholder="اكتب هنا..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all resize-none outline-none"
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">ما أكثر شيء أزعجك أو لم يعجبك؟</h3>
+            <p className="text-gray-500 mb-4 text-sm">أنا أقدر صراحتك. ما الذي يسبب لك إحباطاً أو صعوبة في الاستخدام؟</p>
+            <textarea
+              rows={4}
+              value={hatedMost}
+              onChange={(e) => setHatedMost(e.target.value)}
+              placeholder="اكتب هنا..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all resize-none outline-none"
+            />
+          </div>
+        );
+      case 4:
+        return (
+          <div className="animate-in slide-in-from-right-4 fade-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">هل هناك ميزة تمنيت وجودها ولم تجدها؟</h3>
+            <p className="text-gray-500 mb-4 text-sm">إذا كان هناك أداة أو ميزة ستجعل حياتك أسهل، أخبرني بها!</p>
+            <textarea
+              rows={4}
+              value={missingFeatures}
+              onChange={(e) => setMissingFeatures(e.target.value)}
+              placeholder="اكتب هنا..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all resize-none outline-none"
+            />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
-      {!hasSubmitted && !isOpen && StickyButton}
+      {!isOpen && StickyButton}
 
       {/* Modal Overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
             onClick={() => !isSubmitting && !showSuccess && setIsOpen(false)}
           />
 
-          {/* Modal Content */}
           <div 
             className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all"
             role="dialog"
@@ -180,13 +262,16 @@ export function FeedbackWidget() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900">شكراً لك!</h3>
                 <p className="text-gray-500 text-lg">
-                  ملاحظاتك تهمنا وتساعدنا في تحسين بلفورا باستمرار.
+                  ملاحظاتك تهمني وتساعدني في تحسين بلفورا باستمرار.
                 </p>
               </div>
             ) : (
-              <>
+              <div className="flex flex-col h-full">
+                {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                  <h3 className="text-xl font-bold text-gray-900">ما رأيك في بلفورا؟</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-[#7f2dfb] bg-[#7f2dfb]/10 px-3 py-1 rounded-full">الخطوة {step} من 4</span>
+                  </div>
                   <button
                     onClick={() => setIsOpen(false)}
                     disabled={isSubmitting}
@@ -196,52 +281,74 @@ export function FeedbackWidget() {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6">
-                  <div className="mb-4">
-                    <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                      نحن سعداء لانضمامك إلينا! كيف كانت تجربتك حتى الآن؟ هل هناك ميزة تتمنى إضافتها أو شيء يمكننا تحسينه؟
-                    </p>
-                    <textarea
-                      required
-                      rows={4}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder="اكتب ملاحظاتك، اقتراحاتك، أو واجهتك مشكلة هنا..."
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#7f2dfb]/20 focus:border-[#7f2dfb] transition-all resize-none outline-none"
-                      disabled={isSubmitting}
-                    />
-                  </div>
+                {/* Body */}
+                <div className="p-6">
+                  {renderStepContent()}
+                </div>
 
-                  <div className="flex justify-end gap-3 mt-6">
+                {/* Footer Controls */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl">
+                  {step > 1 ? (
                     <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsOpen(false)}
+                      variant="ghost"
+                      onClick={() => setStep(s => s - 1)}
                       disabled={isSubmitting}
-                      className="rounded-xl px-6"
+                      className="text-gray-500 hover:text-gray-900 flex items-center gap-1"
                     >
-                      إلغاء
+                      <ChevronRight className="w-4 h-4" />
+                      رجوع
                     </Button>
+                  ) : (
+                    <div></div> // spacer
+                  )}
+
+                  {step < 4 ? (
                     <Button
-                      type="submit"
-                      disabled={isSubmitting || !message.trim()}
-                      className="rounded-xl px-6 bg-[#7f2dfb] hover:bg-[#6c26d9] text-white"
+                      onClick={() => {
+                        if (step === 1 && !uiRating) {
+                          toast({
+                            title: "تنبيه (مطلوب)",
+                            description: "يرجى اختيار تقييم من 1 إلى 5 للمتابعة نحو الخطوة التالية.",
+                          });
+                          return;
+                        }
+                        setStep(s => s + 1);
+                      }}
+                      className="bg-[#7f2dfb] hover:bg-[#6c26d9] text-white rounded-xl px-6 flex items-center gap-1"
+                    >
+                      التالي
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        if (!likedMost && !hatedMost && !missingFeatures) {
+                          toast({
+                            title: "تنبيه",
+                            description: "يرجى كتابة ملاحظة في أحد الحقول على الأقل قبل الإرسال النهائي.",
+                          });
+                          return;
+                        }
+                        handleSubmit();
+                      }}
+                      disabled={isSubmitting}
+                      className="bg-[#7f2dfb] hover:bg-[#6c26d9] text-white rounded-xl px-6 flex items-center gap-2"
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-                          جاري الإرسال...
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>جاري الإرسال...</span>
                         </>
                       ) : (
                         <>
-                          <Send className="w-4 h-4 ml-2" />
-                          إرسال التقييم
+                          <Send className="w-4 h-4" />
+                          <span>إرسال التقييم النهائي</span>
                         </>
                       )}
                     </Button>
-                  </div>
-                </form>
-              </>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>

@@ -142,7 +142,7 @@ export function generateInvoiceHtml(
             --text-secondary: #64748b;
             --text-muted: #94a3b8;
             --border: #e2e8f0;
-            --accent: ${seller?.brand_color || '#7f2dfb'};
+            --accent: ${/^#[0-9A-Fa-f]{6}$/.test(seller?.brand_color || '') ? seller!.brand_color : '#7f2dfb'};
             --bg-subtle: #f8fafc;
             --bg-qr: #f1f5f9;
         }

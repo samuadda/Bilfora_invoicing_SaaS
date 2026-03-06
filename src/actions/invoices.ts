@@ -169,7 +169,7 @@ export async function duplicateInvoiceAction(originalId: string): Promise<Action
     }
 
     try {
-        // 1. Fetch Original Invoice with Items
+        // 1. Fetch Original Invoice with Items (ownership check prevents IDOR)
         const { data: original, error: fetchError } = await supabase
             .from("invoices")
             .select(`
@@ -177,6 +177,7 @@ export async function duplicateInvoiceAction(originalId: string): Promise<Action
                 items:invoice_items(*)
             `)
             .eq("id", originalId)
+            .eq("user_id", user.id)
             .single();
 
         if (fetchError || !original) {

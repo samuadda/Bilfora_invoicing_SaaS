@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const TO_EMAIL = Deno.env.get("RESEND_TO_EMAIL") || "BILFORAINVOICE@GMAIL.COM";
+const TO_EMAIL = Deno.env.get("RESEND_TO_EMAIL") || "saddiq0musa@gmail.com";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,10 +15,10 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, message } = await req.json();
+    const { name, email, message, uiRating, likedMost, hatedMost, missingFeatures } = await req.json();
 
-    if (!message) {
-      throw new Error("Message is required");
+    if (!message && !uiRating && !likedMost && !hatedMost && !missingFeatures) {
+      throw new Error("Feedback payload is empty");
     }
 
     if (!RESEND_API_KEY) {
@@ -36,11 +36,25 @@ serve(async (req) => {
         to: [TO_EMAIL],
         subject: `[Bilfora Feedback] New feedback from ${name || 'A User'}`,
         html: `
-          <h2>New Feedback Submission</h2>
-          <p><strong>Name:</strong> ${name || 'N/A'}</p>
-          <p><strong>Email:</strong> ${email || 'N/A'}</p>
-          <h3>Message:</h3>
-          <p style="white-space: pre-wrap; font-family: sans-serif; direction: rtl; text-align: right;">${message}</p>
+          <div style="font-family: sans-serif; direction: rtl; text-align: right;">
+            <h2>تقييم جديد</h2>
+            <p><strong>الاسم:</strong> ${name || 'غير معروف'}</p>
+            <p><strong>البريد الإلكتروني:</strong> ${email || 'غير معروف'}</p>
+            <hr />
+            <p><strong>تقييم الواجهة:</strong> ${uiRating ? `${uiRating} / 5` : 'لم يتم التقييم'}</p>
+            
+            <h3>أكثر شيء أعجبه:</h3>
+            <p style="white-space: pre-wrap;">${likedMost || 'لا يوجد'}</p>
+
+            <h3>أكثر شيء أزعجه:</h3>
+            <p style="white-space: pre-wrap;">${hatedMost || 'لا يوجد'}</p>
+
+            <h3>ميزات مفقودة (تمنى وجودها):</h3>
+            <p style="white-space: pre-wrap;">${missingFeatures || 'لا يوجد'}</p>
+
+            <h3>رسالة إضافية (اختياري):</h3>
+            <p style="white-space: pre-wrap;">${message || 'لا يوجد'}</p>
+          </div>
         `,
       }),
     });
