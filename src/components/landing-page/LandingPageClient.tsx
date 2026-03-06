@@ -357,7 +357,7 @@ export default function LandingPageClient() {
 								وخلص أول فاتورة في دقيقة
 							</span>
 						</h2>
-						
+
 						<div className="relative z-10 flex flex-col sm:flex-row gap-4">
 							<Link href="/register">
 								<Button
