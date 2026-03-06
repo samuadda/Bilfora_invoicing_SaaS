@@ -221,6 +221,7 @@ export default function InvoiceCreationModal({
 			});
 
 			closeModal();
+			window.dispatchEvent(new CustomEvent("invoice-created"));
 			onSuccess?.(result.data.id);
 		} catch (err) {
 			console.error("Unexpected error:", err);
