@@ -12,16 +12,14 @@ import { Safari } from "@/components/landing-page/safari";
 import { Features } from "@/components/landing-page/Features";
 import Iphone15Pro from "@/components/landing-page/iphone-15-pro";
 import { ElegantFeatures } from "@/components/landing-page/elegant-features";
-import { Marquee } from "@/components/landing-page/marquee";
 import { cn } from "@/lib/utils";
 import { Ripple } from "@/components/landing-page/ripple";
 import { Pricing } from "@/components/landing-page/Pricing";
 import { FAQ } from "@/components/landing-page/FAQ";
 import { Logos } from "@/components/landing-page/Logos";
-import { Section, Container, Heading, Text, Card, Button } from "@/components/ui";
+import { Section, Container, Text, Card, Button } from "@/components/ui";
 import { layout } from "@/lib/ui/tokens";
-import { ReviewCard } from "@/components/landing-page/ReviewCard";
-import { heroWords, content, reviews } from "@/data/landing-page";
+import { heroWords, content } from "@/data/landing-page";
 
 /**
  * Client-side landing page component containing all interactive elements.
@@ -42,9 +40,6 @@ export default function LandingPageClient() {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
-
-	const firstRow = reviews.slice(0, reviews.length / 2);
-	const secondRow = reviews.slice(reviews.length / 2);
 
 	const scrollToTop = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });

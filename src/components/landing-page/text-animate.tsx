@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, MotionProps, Variants } from "motion/react";
-import { ElementType } from "react";
+import { ElementType, isValidElement } from "react";
 
 type AnimationType = "text" | "word" | "character" | "line";
 type AnimationVariant =
@@ -318,8 +318,11 @@ export function TextAnimate({
     if (typeof node === 'string') return node;
     if (typeof node === 'number') return String(node);
     if (Array.isArray(node)) return node.map(extractText).join('');
-    if (node && typeof node === 'object' && 'props' in node && node.props && node.props.children) {
-      return extractText(node.props.children);
+    if (isValidElement(node)) {
+      const children = (node.props as Record<string, unknown>)?.children as React.ReactNode;
+      if (children) {
+        return extractText(children);
+      }
     }
     return '';
   };
